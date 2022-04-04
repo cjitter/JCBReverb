@@ -9,10 +9,10 @@ JCBReverbAudioProcessorEditor::JCBReverbAudioProcessorEditor (JCBReverbAudioProc
     auto backgroundImage = ImageCache::getFromMemory(BinaryData::morado_jpg,
                                                      BinaryData::morado_jpgSize);
     
-    if (!backgroundImage.isNull())
-        mFondo.setImage(backgroundImage, RectanglePlacement::stretchToFit);
-    else
-        jassert(!backgroundImage.isNull());
+    //if (!backgroundImage.isNull())
+    mFondo.setImage(backgroundImage, RectanglePlacement::stretchToFit);
+    //else
+        //jassert(!backgroundImage.isNull());
     
     addAndMakeVisible(mFondo);
     
@@ -27,15 +27,15 @@ JCBReverbAudioProcessorEditor::JCBReverbAudioProcessorEditor (JCBReverbAudioProc
     
     addAndMakeVisible(txtTamano);
     txtTamano.setColour(juce::Colours::violet);
-    txtTamano.setText(juce::CharPointer_UTF8("TAMAÑO"));
+    txtTamano.setText(juce::CharPointer_UTF8("REFLEX"));
     
     addAndMakeVisible(txtFiltro);
     txtFiltro.setColour(juce::Colours::violet);
-    txtFiltro.setText("FILTRO");
+    txtFiltro.setText("DAMP");
     
     addAndMakeVisible(txtDifusion);
     txtDifusion.setColour(juce::Colours::violet);
-    txtDifusion.setText(juce::CharPointer_UTF8("DIFUSIÓN"));
+    txtDifusion.setText(juce::CharPointer_UTF8("TAMAÑO"));
     
     addAndMakeVisible(txtEstereo);
     txtEstereo.setColour(juce::Colours::violet);
@@ -47,7 +47,7 @@ JCBReverbAudioProcessorEditor::JCBReverbAudioProcessorEditor (JCBReverbAudioProc
     
     addAndMakeVisible(txtTitulo);
     txtTitulo.setColour(juce::Colours::darkviolet);
-    txtTitulo.setText(juce::CharPointer_UTF8("JCBReverb v0.280322_1"));
+    txtTitulo.setText(juce::CharPointer_UTF8("JCBReverb v030422"));
     
     // Creación de sliders y botones con sus respectivos Attachments
     addAndMakeVisible(inputSlider);
@@ -81,7 +81,7 @@ JCBReverbAudioProcessorEditor::JCBReverbAudioProcessorEditor (JCBReverbAudioProc
     sizeSlider.setColour(juce::Slider::rotarySliderOutlineColourId, juce::Colours::black);
     sizeSlider.setDoubleClickReturnValue (true, 0.5);
     sizeSliderAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processor.apvts,
-                                                                                                  "c_size",
+                                                                                                  "c_reflect",
                                                                                                   sizeSlider);
     
     
@@ -102,9 +102,9 @@ JCBReverbAudioProcessorEditor::JCBReverbAudioProcessorEditor (JCBReverbAudioProc
     diffusionSlider.setColour (juce::Slider::thumbColourId, juce::Colours::violet);
     diffusionSlider.setColour(juce::Slider::backgroundColourId, juce::Colours::black);
     diffusionSlider.setColour(juce::Slider::trackColourId, juce::Colours::violet);
-    diffusionSlider.setDoubleClickReturnValue (true, 0.8);
+    diffusionSlider.setDoubleClickReturnValue (true, 1.0);
     diffusionSliderAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processor.apvts,
-                                                                                                       "e_diffusion",
+                                                                                                       "e_size",
                                                                                                        diffusionSlider);
 
     addAndMakeVisible(spreadSlider);
@@ -260,6 +260,7 @@ void JCBReverbAudioProcessorEditor::resized()
 
     // Bounds
     mFondo.setBoundsRelative(0.f, 0.f, 1.f, 1.f);
+    
     inputSlider.setBounds     (xInput, yInput+correct, wInput, hInput);
     drywetSlider.setBounds    (xDryWet, yDryWet+correct, wDryWet, hDryWet);
     sizeSlider.setBounds      (xSize, ySize+correct, wSize, hSize);

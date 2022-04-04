@@ -309,7 +309,7 @@ void JCBReverbAudioProcessor::assureBufferSize(long bufferSize)
 
 juce::AudioProcessorValueTreeState::ParameterLayout JCBReverbAudioProcessor::createParameterLayout()
 {
-    const int versionHint = 10;
+    const int versionHint = 15;
 
     std::vector <std::unique_ptr<juce::RangedAudioParameter>> params;
     
@@ -329,8 +329,8 @@ juce::AudioProcessorValueTreeState::ParameterLayout JCBReverbAudioProcessor::cre
                                                                                        1.f),
                                                               0.33f);
     
-    auto size = std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("c_size", versionHint),
-                                                            juce::CharPointer_UTF8("Tamaño"),
+    auto reflect = std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("c_reflect", versionHint),
+                                                            juce::CharPointer_UTF8("Reflex"),
                                                             NormalisableRange<float>(0.f,
                                                                                      1.0f,
                                                                                      0.01,
@@ -339,20 +339,20 @@ juce::AudioProcessorValueTreeState::ParameterLayout JCBReverbAudioProcessor::cre
     
 
     auto damp = std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("d_damp", versionHint),
-                                                            juce::CharPointer_UTF8("Filtro"),
+                                                            juce::CharPointer_UTF8("Damp"),
                                                             NormalisableRange<float>(0.f,
                                                                                      1.0f,
                                                                                      0.01,
                                                                                      1.f),
                                                             0.8f);
 
-    auto diffusion = std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("e_diffusion", versionHint),
-                                                                 juce::CharPointer_UTF8("Difusión"),
-                                                                 NormalisableRange<float>(0.f,
-                                                                                          1.f,
-                                                                                          0.01,
+    auto size = std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("e_size", versionHint),
+                                                                 juce::CharPointer_UTF8("Tamaño"),
+                                                                 NormalisableRange<float>(0.5f,
+                                                                                          2.f,
+                                                                                          0.25f,
                                                                                           1.f),
-                                                                 0.5f);
+                                                                 1.f);
 
     
     auto st = std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("f_st", versionHint),
@@ -371,44 +371,44 @@ juce::AudioProcessorValueTreeState::ParameterLayout JCBReverbAudioProcessor::cre
                                                               0);
     
     auto lowgain = std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("h_lowGain", versionHint),
-                                                              juce::CharPointer_UTF8("Reverb graves"),
-                                                              NormalisableRange<float>(-18.f,
-                                                                                        18.f,
+                                                              juce::CharPointer_UTF8("Gain low"),
+                                                              NormalisableRange<float>(-24.f,
+                                                                                        24.f,
                                                                                         0.1f,
                                                                                         1.f),
                                                               0.f);
     
     auto peakgain = std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("i_peakGain", versionHint),
-                                                              juce::CharPointer_UTF8("Reverb medios"),
-                                                              NormalisableRange<float>(-18.f,
-                                                                                        18.f,
+                                                              juce::CharPointer_UTF8("Gain mid"),
+                                                              NormalisableRange<float>(-24.f,
+                                                                                        24.f,
                                                                                         0.1f,
                                                                                         1.f),
                                                               0.f);
     
     auto highgain = std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("j_highGain", versionHint),
-                                                              juce::CharPointer_UTF8("Reverb agudos"),
-                                                              NormalisableRange<float>(-18.f,
-                                                                                        18.f,
+                                                              juce::CharPointer_UTF8("Gain high"),
+                                                              NormalisableRange<float>(-24.f,
+                                                                                        24.f,
                                                                                         0.1f,
                                                                                         1.f),
                                                               0.f);
     
     auto lowpassfreq = std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("k_lpf", versionHint),
-                                                              juce::CharPointer_UTF8("Reverb pasobajo "),
-                                                              NormalisableRange<float>(500.f,
-                                                                                       19000.f,
+                                                              juce::CharPointer_UTF8("Freq LPF"),
+                                                              NormalisableRange<float>(1000.f,
+                                                                                       20000.f,
                                                                                        1.f,
                                                                                        0.25f),
-                                                              19000.f);
+                                                              20000.f);
     
     auto highpassfreq = std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("l_hpf", versionHint),
-                                                              juce::CharPointer_UTF8("Reverb pasoalto "),
+                                                              juce::CharPointer_UTF8("Freq HPF"),
                                                               NormalisableRange<float>(20.f,
-                                                                                       5000.f,
+                                                                                       1000.f,
                                                                                        1.f,
                                                                                        0.25f),
-                                                              33.f);
+                                                              20.f);
     
     auto outputs = std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("m_output", versionHint),
                                                               juce::CharPointer_UTF8("Salida"),
@@ -419,27 +419,21 @@ juce::AudioProcessorValueTreeState::ParameterLayout JCBReverbAudioProcessor::cre
                                                               1.f);
     
     
-
-
-
     params.push_back(std::move(input));
     params.push_back(std::move(drywet));
-    params.push_back(std::move(size));
+    params.push_back(std::move(reflect));
     params.push_back(std::move(damp));
-    params.push_back(std::move(diffusion));
+    params.push_back(std::move(size));
     params.push_back(std::move(st));
     params.push_back(std::move(freeze));
     
     params.push_back(std::move(lowgain));
     params.push_back(std::move(peakgain));
     params.push_back(std::move(highgain));
-    
     params.push_back(std::move(lowpassfreq));
     params.push_back(std::move(highpassfreq));
-    
     params.push_back(std::move(outputs));
 
-    
     return {params.begin(), params.end()};
 }
 
