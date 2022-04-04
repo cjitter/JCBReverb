@@ -1,6 +1,7 @@
 **/.DS_Store
+**/Assets
+**/Builds/MacOSX/build/Debug
+**/Builds/MacOSX/build/Release
 **/JUCE
 **/JuceLibraryCode
-**/Builds
 **/zVar
-**/Assets
