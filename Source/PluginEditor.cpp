@@ -47,7 +47,7 @@ JCBReverbAudioProcessorEditor::JCBReverbAudioProcessorEditor (JCBReverbAudioProc
     
     addAndMakeVisible(txtTitulo);
     txtTitulo.setColour(juce::Colours::darkviolet);
-    txtTitulo.setText(juce::CharPointer_UTF8("JCBReverb v030422"));
+    txtTitulo.setText(juce::CharPointer_UTF8("JCBReverbST 0.0.8"));
     
     // Creación de sliders y botones con sus respectivos Attachments
     addAndMakeVisible(inputSlider);
@@ -253,7 +253,7 @@ void JCBReverbAudioProcessorEditor::resized()
     txtTitulo.setBoundingBox(juce::Parallelogram<float>(juce::Rectangle<float>(7.10*getWidth()/17.f,
                                                                                correct+getHeight()/12.f,
                                                                                getWidth(),
-                                                                               getHeight()/15.f)));
+                                                                               getHeight()/20.f)));
     
     txtTitulo.setFontHeight (getHeight()/20.f);
     
