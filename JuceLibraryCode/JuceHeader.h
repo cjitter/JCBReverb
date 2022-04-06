@@ -53,7 +53,7 @@ namespace ProjectInfo
 {
     const char* const  projectName    = "JCBReverbST";
     const char* const  companyName    = "Coeval";
-    const char* const  versionString  = "0.0.10";
-    const int          versionNumber  = 0xa;
+    const char* const  versionString  = "0.1.0";
+    const int          versionNumber  = 0x100;
 }
 #endif
