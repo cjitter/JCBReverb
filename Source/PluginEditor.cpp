@@ -47,7 +47,7 @@ JCBReverbAudioProcessorEditor::JCBReverbAudioProcessorEditor (JCBReverbAudioProc
     
     addAndMakeVisible(txtTitulo);
     txtTitulo.setColour(juce::Colours::darkviolet);
-    txtTitulo.setText(juce::CharPointer_UTF8("JCBReverbST 0.0.8"));
+    txtTitulo.setText(juce::CharPointer_UTF8("JCBReverbST 0.2.3"));
     
     // Creación de sliders y botones con sus respectivos Attachments
     addAndMakeVisible(inputSlider);
@@ -129,8 +129,89 @@ JCBReverbAudioProcessorEditor::JCBReverbAudioProcessorEditor (JCBReverbAudioProc
                                                                                                     "g_freeze",
                                                                                                     freezeButton);
     
+    /////////////
+    
+    addAndMakeVisible(thdSlider);
+    //thdSlider.setTooltip (TRANS("Umbral en dB (0 -50 dB)"));
+    thdSlider.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
+    thdSlider.setTextBoxStyle (juce::Slider::NoTextBox, false, 80, 20);
+    thdSlider.setColour (juce::Slider::thumbColourId, juce::Colours::violet);
+    thdSlider.setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::violet);
+    thdSlider.setColour(juce::Slider::rotarySliderOutlineColourId, juce::Colours::black);
+    
+    thdSlider.setDoubleClickReturnValue (true, -12);
+    thdSliderAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processor.apvts,
+                                                                                                 "s_thd",
+                                                                                                 thdSlider);
+    
+    addAndMakeVisible(ratioSlider);
+    ratioSlider.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
+    ratioSlider.setTextBoxStyle (juce::Slider::NoTextBox, false, 80, 20);
+    ratioSlider.setColour (juce::Slider::thumbColourId, juce::Colours::violet);
+    ratioSlider.setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::violet);
+    ratioSlider.setColour(juce::Slider::rotarySliderOutlineColourId, juce::Colours::black);
+    ratioSlider.setDoubleClickReturnValue (true, 2);
+    ratioSliderAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processor.apvts,
+                                                                                                   "t_ratio",
+                                                                                                   ratioSlider);
+    
+    addAndMakeVisible(atkSlider);
+    atkSlider.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
+    atkSlider.setTextBoxStyle (juce::Slider::NoTextBox, false, 80, 20);
+    atkSlider.setColour (juce::Slider::thumbColourId, juce::Colours::violet);
+    atkSlider.setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::violet);
+    atkSlider.setColour(juce::Slider::rotarySliderOutlineColourId, juce::Colours::black);
+    atkSlider.setDoubleClickReturnValue (true, 15);
+    atkSliderAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processor.apvts,
+                                                                                                 "u_atk",
+                                                                                                 atkSlider);
+    
+    addAndMakeVisible(relSlider);
+    relSlider.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
+    relSlider.setTextBoxStyle (juce::Slider::NoTextBox, false, 80, 20);
+    relSlider.setColour (juce::Slider::thumbColourId, juce::Colours::violet);
+    relSlider.setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::violet);
+    relSlider.setColour(juce::Slider::rotarySliderOutlineColourId, juce::Colours::black);
+    relSlider.setDoubleClickReturnValue (true, 25);
+    relSliderAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processor.apvts,
+                                                                                                 "v_rel",
+                                                                                                 relSlider);
+    
+    addAndMakeVisible(makeupSlider);
+    makeupSlider.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
+    makeupSlider.setTextBoxStyle (juce::Slider::NoTextBox, false, 80, 20);
+    makeupSlider.setColour (juce::Slider::thumbColourId, juce::Colours::violet);
+    makeupSlider.setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::violet);
+    makeupSlider.setColour(juce::Slider::rotarySliderOutlineColourId, juce::Colours::black);
+    makeupSlider.setDoubleClickReturnValue (true, 0);
+    makeupSliderAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processor.apvts,
+                                                                                                   "w_makeup",
+                                                                                                    makeupSlider);
+    
+
+    addAndMakeVisible(onCompSlider);
+    onCompSlider.setSliderStyle (juce::Slider::LinearHorizontal);
+    onCompSlider.setTextBoxStyle (juce::Slider::NoTextBox, true, 1, 1);
+    onCompSlider.setColour (juce::Slider::thumbColourId, juce::Colours::violet);
+    onCompSlider.setColour(juce::Slider::backgroundColourId, juce::Colours::violet);
+    onCompSlider.setColour(juce::Slider::trackColourId, juce::Colours::darkviolet);
+    onCompSlider.setDoubleClickReturnValue (true, 0);
+    onCompSliderAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processor.apvts,
+                                                                                                    "r_onoffCOMP",
+                                                                                                    onCompSlider);
+    
+    
+    
+
+
 
     
+    
+    
+    
+    
+    
+    /////////////
     auto size = processor.getSavedSize();
     setResizable(true, true);
     setSize(size.x, size.y);
@@ -196,6 +277,40 @@ void JCBReverbAudioProcessorEditor::resized()
     auto wButton = getWidth() * 75/ancho;
     auto hButton = getHeight() * 17/alto;
     
+    /////////////
+    
+    auto xThd = getWidth() * 8/ancho;
+    auto yThd = getHeight() * 2/alto;
+    auto wThd = getWidth() * 48/ancho;
+    auto hThd = getHeight() * 48/alto;
+    
+    //48, 8, 48, 48
+    auto xRatio = getWidth() * 56/ancho;
+    auto yRatio = getHeight() * 2/alto;
+    auto wRatio = getWidth() * 48/ancho;
+    auto hRatio = getHeight() * 48/alto;
+    
+    auto xAtk = getWidth() * 104/ancho;
+    auto yAtk = getHeight() * 2/alto;
+    auto wAtk = getWidth() * 48/ancho;
+    auto hAtk = getHeight() * 48/alto;
+    
+    auto xRel = getWidth() * 152/ancho;
+    auto yRel = getHeight() * 2/alto;
+    auto wRel = getWidth() * 48/ancho;
+    auto hRel = getHeight() * 48/alto;
+    
+    auto xMake = getWidth() * 200/ancho;
+    auto yMake = getHeight() * 2/alto;
+    auto wMake = getWidth() * 48/ancho;
+    auto hMake = getHeight() * 48/alto;
+    
+    auto xOnComp = getWidth() * 248/ancho;
+    auto yOnComp = getHeight() * 2/alto;
+    auto wOnComp = getWidth() * 48/ancho;
+    auto hOnComp = getHeight() * 48/alto;
+
+    ////////////
     auto correct = 11;
     
     processor.setSavedSize({getWidth(), getHeight()});
@@ -250,8 +365,8 @@ void JCBReverbAudioProcessorEditor::resized()
     
     txtEstereo.setFontHeight (getHeight()/10.f);
     
-    txtTitulo.setBoundingBox(juce::Parallelogram<float>(juce::Rectangle<float>(7.10*getWidth()/17.f,
-                                                                               correct+getHeight()/12.f,
+    txtTitulo.setBoundingBox(juce::Parallelogram<float>(juce::Rectangle<float>(7.52*getWidth()/17.f,
+                                                                               correct+getHeight()/1.15f,
                                                                                getWidth(),
                                                                                getHeight()/20.f)));
     
@@ -268,4 +383,13 @@ void JCBReverbAudioProcessorEditor::resized()
     diffusionSlider.setBounds (xDiffusion, yDiffusion+correct, wDiffusion, hDiffusion);
     spreadSlider.setBounds    (xSpread, ySpread+correct, wSpread, hSpread);
     freezeButton.setBounds    (xButton, yButton+correct, wButton, hButton);
+    
+    thdSlider.setBounds       (xThd, yThd, wThd, hThd);
+    ratioSlider.setBounds     (xRatio, yRatio, wRatio, hRatio);
+    atkSlider.setBounds       (xAtk, yAtk, wAtk, hAtk);
+    relSlider.setBounds       (xRel, yRel, wRel, hRel);
+    makeupSlider.setBounds    (xMake, yMake, wMake, hMake);
+    onCompSlider.setBounds    (xOnComp, yOnComp, wOnComp, hOnComp);
+
+    
 }
