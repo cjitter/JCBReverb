@@ -6,7 +6,7 @@
               pluginEditorRequiresKeys="0" pluginIsSynth="0" pluginManufacturer="Coeval"
               pluginManufacturerCode="COEV" pluginName="JCBReverbST" pluginProducesMidiOut="0"
               pluginRTASCategory="" pluginSilenceInIsSilenceOut="0" pluginWantsMidiIn="0"
-              projectType="audioplug" version="0.2.3" displaySplashScreen="0"
+              projectType="audioplug" version="0.2.4" displaySplashScreen="0"
               jucerFormatVersion="1" pluginFormats="buildAAX,buildAU,buildVST3"
               buildVST="0" buildVST3="1" buildAU="1" buildAUv3="0" buildRTAS="0"
               buildAAX="1" buildStandalone="0" enableIAA="0" pluginVST3Category="Reverb"
