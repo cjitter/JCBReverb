@@ -19,6 +19,8 @@ public:
     
 private:
     
+    juce::TooltipWindow tooltipVentana;
+    
     // Declarar variables
     int const ancho {700};
     int const alto  {200};

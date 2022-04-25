@@ -77,6 +77,9 @@ protected:
 	void assureBufferSize(long bufferSize);
 	
 private:
+    
+    //float rmsPreLevelLeft, rmsPreLevelRight, rmsPostLevelLeft, rmsPostLevelRight;
+    
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (JCBReverbAudioProcessor)
 	

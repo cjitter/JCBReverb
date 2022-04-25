@@ -16,6 +16,12 @@ JCBReverbAudioProcessorEditor::JCBReverbAudioProcessorEditor (JCBReverbAudioProc
     
     addAndMakeVisible(mFondo);
     
+    // Tooltips
+    //tooltipVentana.getDesktopScaleFactor();
+    //tooltipVentana.setColour(juce::TooltipWindow::ColourIds::backgroundColourId, juce::Colours::darkviolet);
+    //tooltipVentana.displayTip(Point<int> (100,100), "HEEEEELPPPP");
+    
+    
     // Creación de textos reajustables
     addAndMakeVisible(txtEntrada);
     txtEntrada.setColour(juce::Colours::whitesmoke);
@@ -59,7 +65,7 @@ JCBReverbAudioProcessorEditor::JCBReverbAudioProcessorEditor (JCBReverbAudioProc
     titleLink.changeWidthToFitText();
     titleLink.setFont(juce::Font(10.f), true);
     titleLink.setTooltip (TRANS("https://github.com/cjitter"));
-    titleLink.setButtonText (TRANS("JCBReverbST 0.2.4"));
+    titleLink.setButtonText (TRANS("JCBReverbST 0.3.0"));
     
     // Labels COMP Y EQ
     addAndMakeVisible(labelThd);
@@ -84,7 +90,7 @@ JCBReverbAudioProcessorEditor::JCBReverbAudioProcessorEditor (JCBReverbAudioProc
     
     addAndMakeVisible(labelOnComp);
     labelOnComp.setColour(juce::Colours::white);
-    labelOnComp.setText(juce::CharPointer_UTF8("ON COMP"));
+    labelOnComp.setText(juce::CharPointer_UTF8("MIX COMP"));
     
     //
     addAndMakeVisible(labelHPF);
@@ -133,6 +139,7 @@ JCBReverbAudioProcessorEditor::JCBReverbAudioProcessorEditor (JCBReverbAudioProc
     inputSlider.setColour(juce::Slider::trackColourId, juce::Colours::darkviolet);
     inputSlider.setColour(juce::Slider::backgroundColourId, juce::Colours::whitesmoke);
     inputSlider.setDoubleClickReturnValue(true, 1.0);
+    //inputSlider.setTooltip ("Control ganancia entrada en dB");
     inputSliderAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processor.apvts,
                                                                                                    "a_input",
                                                                                                    inputSlider);
@@ -147,17 +154,6 @@ JCBReverbAudioProcessorEditor::JCBReverbAudioProcessorEditor (JCBReverbAudioProc
     drywetSliderAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processor.apvts,
                                                                                                     "b_drywet",
                                                                                                     drywetSlider);
-    
-    addAndMakeVisible(freezeSlider);
-    freezeSlider.setSliderStyle (juce::Slider::LinearHorizontal);
-    freezeSlider.setTextBoxStyle (juce::Slider::NoTextBox, true, 1, 1);
-    freezeSlider.setColour (juce::Slider::thumbColourId, juce::Colours::darkviolet);
-    freezeSlider.setColour(juce::Slider::trackColourId, juce::Colours::darkviolet);
-    freezeSlider.setColour(juce::Slider::backgroundColourId, juce::Colours::whitesmoke);
-    freezeSlider.setDoubleClickReturnValue (true, 0);
-    freezeSliderAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processor.apvts,
-                                                                                                    "g_freeze",
-                                                                                                    freezeSlider);
     
     
     addAndMakeVisible(reflexSlider);
@@ -205,133 +201,18 @@ JCBReverbAudioProcessorEditor::JCBReverbAudioProcessorEditor (JCBReverbAudioProc
                                                                                                     "f_st",
                                                                                                     spreadSlider);
     
-    //Output
-    addAndMakeVisible (outputSlider);
-    outputSlider.setSliderStyle (juce::Slider::LinearVertical);
-    outputSlider.setTextBoxStyle (juce::Slider::NoTextBox, false, 1, 1);
-    outputSlider.setColour (juce::Slider::thumbColourId, juce::Colours::darkviolet);
-    outputSlider.setColour(juce::Slider::trackColourId, juce::Colours::darkviolet);
-    outputSlider.setColour(juce::Slider::backgroundColourId, juce::Colours::whitesmoke);
-    outputSlider.setDoubleClickReturnValue (true, 1);
-    outputSliderAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processor.apvts,
-                                                                                                    "m_output",
-                                                                                                    outputSlider);
+    addAndMakeVisible(freezeSlider);
+    freezeSlider.setSliderStyle (juce::Slider::LinearHorizontal);
+    freezeSlider.setTextBoxStyle (juce::Slider::NoTextBox, true, 1, 1);
+    freezeSlider.setColour (juce::Slider::thumbColourId, juce::Colours::darkviolet);
+    freezeSlider.setColour(juce::Slider::trackColourId, juce::Colours::darkviolet);
+    freezeSlider.setColour(juce::Slider::backgroundColourId, juce::Colours::whitesmoke);
+    freezeSlider.setDoubleClickReturnValue (true, 0);
+    freezeSliderAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processor.apvts,
+                                                                                                    "g_freeze",
+                                                                                                    freezeSlider);
     
-    // COMP
-    addAndMakeVisible(thdSlider);
-    //thdSlider.setTooltip (TRANS("Umbral en dB (0 -50 dB)"));
-    thdSlider.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
-    thdSlider.setTextBoxStyle (juce::Slider::NoTextBox, false, 1, 1);
-    thdSlider.setColour (juce::Slider::thumbColourId, juce::Colours::deepskyblue);
-    thdSlider.setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::deepskyblue);
-    thdSlider.setColour(juce::Slider::rotarySliderOutlineColourId, juce::Colours::whitesmoke);
-    
-    thdSlider.setDoubleClickReturnValue (true, -12);
-    thdSliderAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processor.apvts,
-                                                                                                 "s_thd",
-                                                                                                 thdSlider);
-    
-    addAndMakeVisible(ratioSlider);
-    ratioSlider.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
-    ratioSlider.setTextBoxStyle (juce::Slider::NoTextBox, false, 1, 1);
-    ratioSlider.setColour (juce::Slider::thumbColourId, juce::Colours::deepskyblue);
-    ratioSlider.setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::deepskyblue);
-    ratioSlider.setColour(juce::Slider::rotarySliderOutlineColourId, juce::Colours::whitesmoke);
-    ratioSlider.setDoubleClickReturnValue (true, 2);
-    ratioSliderAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processor.apvts,
-                                                                                                   "t_ratio",
-                                                                                                   ratioSlider);
-    
-    addAndMakeVisible(atkSlider);
-    atkSlider.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
-    atkSlider.setTextBoxStyle (juce::Slider::NoTextBox, false, 1, 1);
-    atkSlider.setColour (juce::Slider::thumbColourId, juce::Colours::deepskyblue);
-    atkSlider.setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::deepskyblue);
-    atkSlider.setColour(juce::Slider::rotarySliderOutlineColourId, juce::Colours::whitesmoke);
-    atkSlider.setDoubleClickReturnValue (true, 15);
-    atkSliderAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processor.apvts,
-                                                                                                 "u_atk",
-                                                                                                 atkSlider);
-    
-    addAndMakeVisible(relSlider);
-    relSlider.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
-    relSlider.setTextBoxStyle (juce::Slider::NoTextBox, false, 1, 1);
-    relSlider.setColour (juce::Slider::thumbColourId, juce::Colours::deepskyblue);
-    relSlider.setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::deepskyblue);
-    relSlider.setColour(juce::Slider::rotarySliderOutlineColourId, juce::Colours::whitesmoke);
-    relSlider.setDoubleClickReturnValue (true, 25);
-    relSliderAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processor.apvts,
-                                                                                                 "v_rel",
-                                                                                                 relSlider);
-    
-    addAndMakeVisible(makeupSlider);
-    makeupSlider.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
-    makeupSlider.setTextBoxStyle (juce::Slider::NoTextBox, false, 1, 1);
-    makeupSlider.setColour (juce::Slider::thumbColourId, juce::Colours::deepskyblue);
-    makeupSlider.setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::deepskyblue);
-    makeupSlider.setColour(juce::Slider::rotarySliderOutlineColourId, juce::Colours::whitesmoke);
-    makeupSlider.setDoubleClickReturnValue (true, 0);
-    makeupSliderAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processor.apvts,
-                                                                                                   "w_makeup",
-                                                                                                    makeupSlider);
-    
-
-    addAndMakeVisible(onCompSlider);
-    onCompSlider.setSliderStyle (juce::Slider::LinearHorizontal);
-    onCompSlider.setTextBoxStyle (juce::Slider::NoTextBox, true, 1, 1);
-    onCompSlider.setColour (juce::Slider::thumbColourId, juce::Colours::deepskyblue);
-    onCompSlider.setColour(juce::Slider::backgroundColourId, juce::Colours::deepskyblue);
-    onCompSlider.setColour(juce::Slider::trackColourId, juce::Colours::whitesmoke);
-    onCompSlider.setDoubleClickReturnValue (true, 1);
-    onCompSliderAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processor.apvts,
-                                                                                                    "r_onoffCOMP",
-                                                                                                    onCompSlider);
-    
-    // FILTROS
-    addAndMakeVisible (hpfSlider);
-    hpfSlider.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
-    hpfSlider.setTextBoxStyle (juce::Slider::NoTextBox, false, 1, 1);
-    hpfSlider.setColour (juce::Slider::thumbColourId, juce::Colours::darkviolet);
-    hpfSlider.setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::violet);
-    hpfSlider.setColour(juce::Slider::rotarySliderOutlineColourId, juce::Colours::whitesmoke);
-    hpfSlider.setDoubleClickReturnValue (true, 20);
-    hpfSliderAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processor.apvts,
-                                                                                                 "l_hpf",
-                                                                                                 hpfSlider);
-    
-    addAndMakeVisible (lpfSlider);
-    lpfSlider.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
-    lpfSlider.setTextBoxStyle (juce::Slider::NoTextBox, false, 1, 1);
-    lpfSlider.setColour (juce::Slider::thumbColourId, juce::Colours::darkviolet);
-    lpfSlider.setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::whitesmoke);
-    lpfSlider.setColour(juce::Slider::rotarySliderOutlineColourId, juce::Colours::violet);
-    lpfSlider.setDoubleClickReturnValue (true, 20);
-    lpfSliderAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processor.apvts,
-                                                                                                 "k_lpf",
-                                                                                                 lpfSlider);
-    // EQ
-    addAndMakeVisible(onEqSlider);
-    onEqSlider.setSliderStyle (juce::Slider::LinearHorizontal);
-    onEqSlider.setTextBoxStyle (juce::Slider::NoTextBox, true, 1, 1);
-    onEqSlider.setColour (juce::Slider::thumbColourId, juce::Colours::seagreen);
-    onEqSlider.setColour(juce::Slider::backgroundColourId, juce::Colours::whitesmoke);
-    onEqSlider.setColour(juce::Slider::trackColourId, juce::Colours::seagreen);
-    onEqSlider.setDoubleClickReturnValue (true, 0);
-    onEqSliderAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processor.apvts,
-                                                                                                  "q_onoffEQ",
-                                                                                                  onEqSlider);
-    
-    addAndMakeVisible (lowFreqSlider);
-    lowFreqSlider.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
-    lowFreqSlider.setTextBoxStyle (juce::Slider::NoTextBox, false, 1, 1);
-    lowFreqSlider.setColour (juce::Slider::thumbColourId, juce::Colours::seagreen);
-    lowFreqSlider.setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::seagreen);
-    lowFreqSlider.setColour(juce::Slider::rotarySliderOutlineColourId, juce::Colours::whitesmoke);
-    lowFreqSlider.setDoubleClickReturnValue (true, 500);
-    lowFreqSliderAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processor.apvts,
-                                                                                                     "n_lowFreq",
-                                                                                                     lowFreqSlider);
-    
+    // EQ gains
     addAndMakeVisible (lowGainSlider);
     lowGainSlider.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
     lowGainSlider.setTextBoxStyle (juce::Slider::NoTextBox, false, 1, 1);
@@ -343,16 +224,7 @@ JCBReverbAudioProcessorEditor::JCBReverbAudioProcessorEditor (JCBReverbAudioProc
                                                                                                      "h_lowGain",
                                                                                                      lowGainSlider);
     
-    addAndMakeVisible (peakFreqSlider);
-    peakFreqSlider.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
-    peakFreqSlider.setTextBoxStyle (juce::Slider::NoTextBox, false, 1, 1);
-    peakFreqSlider.setColour (juce::Slider::thumbColourId, juce::Colours::seagreen);
-    peakFreqSlider.setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::seagreen);
-    peakFreqSlider.setColour(juce::Slider::rotarySliderOutlineColourId, juce::Colours::whitesmoke);
-    peakFreqSlider.setDoubleClickReturnValue (true, 500);
-    peakFreqSliderAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processor.apvts,
-                                                                                                      "o_peakFreq",
-                                                                                                      peakFreqSlider);
+
     
     addAndMakeVisible (peakGainSlider);
     peakGainSlider.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
@@ -365,16 +237,7 @@ JCBReverbAudioProcessorEditor::JCBReverbAudioProcessorEditor (JCBReverbAudioProc
                                                                                                       "i_peakGain",
                                                                                                       peakGainSlider);
     
-    addAndMakeVisible (hiFreqSlider);
-    hiFreqSlider.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
-    hiFreqSlider.setTextBoxStyle (juce::Slider::NoTextBox, false, 1, 1);
-    hiFreqSlider.setColour (juce::Slider::thumbColourId, juce::Colours::seagreen);
-    hiFreqSlider.setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::seagreen);
-    hiFreqSlider.setColour(juce::Slider::rotarySliderOutlineColourId, juce::Colours::whitesmoke);
-    hiFreqSlider.setDoubleClickReturnValue (true, 500);
-    hiFreqSliderAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processor.apvts,
-                                                                                                    "p_hiFreq",
-                                                                                                    hiFreqSlider);
+
     
     addAndMakeVisible (hiGainSlider);
     hiGainSlider.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
@@ -387,6 +250,159 @@ JCBReverbAudioProcessorEditor::JCBReverbAudioProcessorEditor (JCBReverbAudioProc
                                                                                                     "j_hiGain",
                                                                                                     hiGainSlider);
     
+    
+    // FILTROS
+    addAndMakeVisible (lpfSlider);
+    lpfSlider.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
+    lpfSlider.setTextBoxStyle (juce::Slider::NoTextBox, false, 1, 1);
+    lpfSlider.setColour (juce::Slider::thumbColourId, juce::Colours::darkviolet);
+    lpfSlider.setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::whitesmoke);
+    lpfSlider.setColour(juce::Slider::rotarySliderOutlineColourId, juce::Colours::violet);
+    lpfSlider.setDoubleClickReturnValue (true, 20);
+    lpfSliderAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processor.apvts,
+                                                                                                 "k_lpf",
+                                                                                                 lpfSlider);
+    
+
+        addAndMakeVisible (hpfSlider);
+    hpfSlider.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
+    hpfSlider.setTextBoxStyle (juce::Slider::NoTextBox, false, 1, 1);
+    hpfSlider.setColour (juce::Slider::thumbColourId, juce::Colours::darkviolet);
+    hpfSlider.setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::violet);
+    hpfSlider.setColour(juce::Slider::rotarySliderOutlineColourId, juce::Colours::whitesmoke);
+    hpfSlider.setDoubleClickReturnValue (true, 20);
+    hpfSliderAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processor.apvts,
+                                                                                                 "l_hpf",
+                                                                                                 hpfSlider);
+    
+    //Output
+    addAndMakeVisible (outputSlider);
+    outputSlider.setSliderStyle (juce::Slider::LinearVertical);
+    outputSlider.setTextBoxStyle (juce::Slider::NoTextBox, false, 1, 1);
+    outputSlider.setColour (juce::Slider::thumbColourId, juce::Colours::darkviolet);
+    outputSlider.setColour(juce::Slider::trackColourId, juce::Colours::darkviolet);
+    outputSlider.setColour(juce::Slider::backgroundColourId, juce::Colours::whitesmoke);
+    outputSlider.setDoubleClickReturnValue (true, 1);
+    outputSliderAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processor.apvts,
+                                                                                                    "m_output",
+                                                                                                    outputSlider);
+    
+    
+    // EQ freq y on/off
+    addAndMakeVisible (lowFreqSlider);
+    lowFreqSlider.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
+    lowFreqSlider.setTextBoxStyle (juce::Slider::NoTextBox, false, 1, 1);
+    lowFreqSlider.setColour (juce::Slider::thumbColourId, juce::Colours::seagreen);
+    lowFreqSlider.setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::seagreen);
+    lowFreqSlider.setColour(juce::Slider::rotarySliderOutlineColourId, juce::Colours::whitesmoke);
+    lowFreqSlider.setDoubleClickReturnValue (true, 500);
+    lowFreqSliderAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processor.apvts,
+                                                                                                     "n_lowFreq",
+                                                                                                     lowFreqSlider);
+    
+    addAndMakeVisible (peakFreqSlider);
+    peakFreqSlider.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
+    peakFreqSlider.setTextBoxStyle (juce::Slider::NoTextBox, false, 1, 1);
+    peakFreqSlider.setColour (juce::Slider::thumbColourId, juce::Colours::seagreen);
+    peakFreqSlider.setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::seagreen);
+    peakFreqSlider.setColour(juce::Slider::rotarySliderOutlineColourId, juce::Colours::whitesmoke);
+    peakFreqSlider.setDoubleClickReturnValue (true, 500);
+    peakFreqSliderAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processor.apvts,
+                                                                                                      "o_peakFreq",
+                                                                                                      peakFreqSlider);
+    
+    addAndMakeVisible (hiFreqSlider);
+    hiFreqSlider.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
+    hiFreqSlider.setTextBoxStyle (juce::Slider::NoTextBox, false, 1, 1);
+    hiFreqSlider.setColour (juce::Slider::thumbColourId, juce::Colours::seagreen);
+    hiFreqSlider.setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::seagreen);
+    hiFreqSlider.setColour(juce::Slider::rotarySliderOutlineColourId, juce::Colours::whitesmoke);
+    hiFreqSlider.setDoubleClickReturnValue (true, 500);
+    hiFreqSliderAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processor.apvts,
+                                                                                                    "p_hiFreq",
+                                                                                                    hiFreqSlider);
+    
+    addAndMakeVisible(onEqSlider);
+    onEqSlider.setSliderStyle (juce::Slider::LinearHorizontal);
+    onEqSlider.setTextBoxStyle (juce::Slider::NoTextBox, true, 1, 1);
+    onEqSlider.setColour (juce::Slider::thumbColourId, juce::Colours::seagreen);
+    onEqSlider.setColour(juce::Slider::backgroundColourId, juce::Colours::whitesmoke);
+    onEqSlider.setColour(juce::Slider::trackColourId, juce::Colours::seagreen);
+    onEqSlider.setDoubleClickReturnValue (true, 0);
+    onEqSliderAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processor.apvts,
+                                                                                                  "q_onoffEQ",
+                                                                                                  onEqSlider);
+    
+    
+    // COMP
+    addAndMakeVisible(onCompSlider);
+    onCompSlider.setSliderStyle (juce::Slider::LinearHorizontal);
+    onCompSlider.setTextBoxStyle (juce::Slider::NoTextBox, true, 1, 1);
+    onCompSlider.setColour (juce::Slider::thumbColourId, juce::Colours::deepskyblue);
+    onCompSlider.setColour(juce::Slider::backgroundColourId, juce::Colours::deepskyblue);
+    onCompSlider.setColour(juce::Slider::trackColourId, juce::Colours::whitesmoke);
+    onCompSlider.setDoubleClickReturnValue (true, 1);
+    onCompSliderAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processor.apvts,
+                                                                                                    "r_COMPON",
+                                                                                                    onCompSlider);
+    
+    addAndMakeVisible(thdSlider);
+    thdSlider.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
+    thdSlider.setTextBoxStyle (juce::Slider::NoTextBox, false, 1, 1);
+    thdSlider.setColour (juce::Slider::thumbColourId, juce::Colours::deepskyblue);
+    thdSlider.setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::deepskyblue);
+    thdSlider.setColour(juce::Slider::rotarySliderOutlineColourId, juce::Colours::whitesmoke);
+    
+    thdSlider.setDoubleClickReturnValue (true, -12);
+    thdSliderAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processor.apvts,
+                                                                                                 "s_COMPTHD",
+                                                                                                 thdSlider);
+    
+    addAndMakeVisible(ratioSlider);
+    ratioSlider.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
+    ratioSlider.setTextBoxStyle (juce::Slider::NoTextBox, false, 1, 1);
+    ratioSlider.setColour (juce::Slider::thumbColourId, juce::Colours::deepskyblue);
+    ratioSlider.setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::deepskyblue);
+    ratioSlider.setColour(juce::Slider::rotarySliderOutlineColourId, juce::Colours::whitesmoke);
+    ratioSlider.setDoubleClickReturnValue (true, 2);
+    ratioSliderAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processor.apvts,
+                                                                                                   "t_COMPRATIO",
+                                                                                                   ratioSlider);
+    
+    addAndMakeVisible(atkSlider);
+    atkSlider.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
+    atkSlider.setTextBoxStyle (juce::Slider::NoTextBox, false, 1, 1);
+    atkSlider.setColour (juce::Slider::thumbColourId, juce::Colours::deepskyblue);
+    atkSlider.setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::deepskyblue);
+    atkSlider.setColour(juce::Slider::rotarySliderOutlineColourId, juce::Colours::whitesmoke);
+    atkSlider.setDoubleClickReturnValue (true, 15);
+    atkSliderAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processor.apvts,
+                                                                                                 "u_COMPATK",
+                                                                                                 atkSlider);
+    
+    addAndMakeVisible(relSlider);
+    relSlider.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
+    relSlider.setTextBoxStyle (juce::Slider::NoTextBox, false, 1, 1);
+    relSlider.setColour (juce::Slider::thumbColourId, juce::Colours::deepskyblue);
+    relSlider.setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::deepskyblue);
+    relSlider.setColour(juce::Slider::rotarySliderOutlineColourId, juce::Colours::whitesmoke);
+    relSlider.setDoubleClickReturnValue (true, 25);
+    relSliderAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processor.apvts,
+                                                                                                 "v_COMPREL",
+                                                                                                 relSlider);
+    
+    addAndMakeVisible(makeupSlider);
+    makeupSlider.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
+    makeupSlider.setTextBoxStyle (juce::Slider::NoTextBox, false, 1, 1);
+    makeupSlider.setColour (juce::Slider::thumbColourId, juce::Colours::deepskyblue);
+    makeupSlider.setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::deepskyblue);
+    makeupSlider.setColour(juce::Slider::rotarySliderOutlineColourId, juce::Colours::whitesmoke);
+    makeupSlider.setDoubleClickReturnValue (true, 0);
+    makeupSliderAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processor.apvts,
+                                                                                                   "w_COMPMAKEUP",
+                                                                                                    makeupSlider);
+    
+    
 
     
     
@@ -394,7 +410,7 @@ JCBReverbAudioProcessorEditor::JCBReverbAudioProcessorEditor (JCBReverbAudioProc
     auto size = processor.getSavedSize();
     setResizable(true, true);
     setSize(size.x, size.y);
-    setResizeLimits(ancho*1.65f, alto*1.65f, ancho*2.65, alto*2.65);
+    setResizeLimits(ancho*1.5f, alto*1.5f, ancho*2.5f, alto*2.5f);
     getConstrainer()->setFixedAspectRatio(ancho/alto);
 }
 
@@ -407,13 +423,13 @@ void JCBReverbAudioProcessorEditor::paint (Graphics& g)
 {
     g.fillAll (juce::Colours::black);
     
-    txtEntrada.draw  (g, 1.0f);
-    txtDryWet.draw   (g, 1.0f);
-    txtReflex.draw   (g, 1.0f);
-    txtDamp.draw   (g, 1.0f);
-    txtDimension.draw (g, 1.0f);
-    txtEstereo.draw  (g, 1.0f);
-    txtTitulo.draw   (g, 1.0f);
+//    txtEntrada.draw  (g, 1.0f);
+//    txtDryWet.draw   (g, 1.0f);
+//    txtReflex.draw   (g, 1.0f);
+//    txtDamp.draw   (g, 1.0f);
+//    txtDimension.draw (g, 1.0f);
+//    txtEstereo.draw  (g, 1.0f);
+//    txtTitulo.draw   (g, 1.0f);
     
 }
 
@@ -553,7 +569,7 @@ void JCBReverbAudioProcessorEditor::resized()
     
     
     // Corrección offset
-    auto correct = 11;
+    auto correct = 12;
     
     processor.setSavedSize({getWidth(), getHeight()});
     
@@ -661,6 +677,7 @@ void JCBReverbAudioProcessorEditor::resized()
     
     titleLink.setBounds       (xUrl, yUrl, wUrl, hUrl);
     
+    
     // LABELS COMP
     labelThd.setBoundingBox(juce::Parallelogram<float>(juce::Rectangle<float>(getWidth()/30.f,
                                                                               correct+getHeight()/5.75f,
@@ -762,7 +779,4 @@ void JCBReverbAudioProcessorEditor::resized()
                                                                               getHeight()/25.f)));
     labelEQHighGain.setFontHeight    (getHeight()/10.f);
     
-    
-
-
 }
