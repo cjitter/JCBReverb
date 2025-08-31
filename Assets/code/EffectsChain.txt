@@ -1,0 +1,120 @@
+// =============================================================================
+// EFFECTS CHAIN BLOCK - Bit Crusher & Downsampling
+// =============================================================================
+// Procesamiento de efectos adicionales post-distorsión
+// Downsampling mejorado con phasor manual y edge detection
+//
+// ENTRADAS:
+// - in1: Audio L distorsionado (desde DistortionCore out1)
+// - in2: Audio R distorsionado (desde DistortionCore out2)
+//
+// SALIDAS:
+// - out1: L con efectos aplicados → OutputStage in1
+// - out2: R con efectos aplicados → OutputStage in2
+// =============================================================================
+
+// -----------------------------------------------------------------------------
+// FUNCIONES
+// -----------------------------------------------------------------------------
+
+// Bit Crusher - Reduce la resolución de bits (modo clean)
+bitCrusher(inl, inr, bits) {
+    steps = pow(2, bits) - 1;
+    invSteps = 1 / steps;
+    l = round(inl * steps) * invSteps;
+    r = round(inr * steps) * invSteps;
+    return l, r;
+}
+
+// -----------------------------------------------------------------------------
+// PARÁMETROS
+// -----------------------------------------------------------------------------
+Param g_BITS(16, min=2, default=16, max=16);
+Param h_BITSON(0, min=0, default=0, max=1);
+Param m_DOWNSAMPLE(0, min=0, default=0, max=99);  // Factor de downsampling
+Param n_DOWNSAMPLEON(0, min=0, default=0, max=1); // Activar downsampling
+
+// HISTORIALES
+History hBits(0);
+History hBitson(0);
+History hDownsample(0);
+History hDownsampleOn(0);
+
+// Historiales para el downsampler mejorado
+History dsPhase(0);
+History dsTrigPrev(0);
+History dsEnablePrev(0);
+
+// CONSTANTES
+smoothFactor = 0.999;
+onSmooth = 0.9; // respuesta rápida para activación
+
+// =============================================================================
+// PROCESAMIENTO
+// =============================================================================
+
+// Entradas desde DistortionCore
+processedL = in1;
+processedR = in2;
+
+// Smoothing de parámetros
+hBits = hBits * smoothFactor + g_BITS * (1 - smoothFactor);
+bits = hBits;
+
+hBitson = hBitson * smoothFactor + h_BITSON * (1 - smoothFactor);
+bitson = hBitson;
+
+hDownsample = hDownsample * smoothFactor + m_DOWNSAMPLE * (1 - smoothFactor);
+
+hDownsampleOn = hDownsampleOn * onSmooth + n_DOWNSAMPLEON * (1 - onSmooth);
+downsampleOn = hDownsampleOn;
+
+// -----------------------------------------------------------------------------
+// BIT CRUSHER
+// -----------------------------------------------------------------------------
+bitL, bitR = bitCrusher(processedL, processedR, bits);
+
+// DC Blocker después del bit crusher
+bcL = dcblock(bitL);
+bcR = dcblock(bitR);
+
+// Mezclar señal original con bit crushed
+withBitCrusherL = mix(processedL, bcL, bitson);
+withBitCrusherR = mix(processedR, bcR, bitson);
+
+// -----------------------------------------------------------------------------
+// DOWNSAMPLING MEJORADO (con phasor manual y edge detection)
+// -----------------------------------------------------------------------------
+// Calcular frecuencia del decimador basada en el parámetro
+// Convertir el parámetro (0-99) a factor de decimación entero (1-100)
+deciFactor = max(1, floor(hDownsample + 1));
+deciFreq   = samplerate / deciFactor;   // 1 latch por cada N muestras
+
+// Edge de activación (reset de fase al pasar de OFF→ON)
+enableNow  = downsampleOn > 0.5;
+enableEdge = enableNow > dsEnablePrev;   // flanco de subida
+dsEnablePrev = enableNow;
+
+// Phasor manual 0..1 con reset en el flanco de activación
+inc = 1 / deciFactor;                   // incremento por muestra
+dsPhase = enableEdge ? 0 : (dsPhase + inc);
+dsPhase = dsPhase - floor(dsPhase);     // wrap a 0..1
+
+// Disparo robusto: en el wrap-around (fase actual < fase anterior) o si N==1
+dsEdgeWrap = dsPhase < dsTrigPrev;      // detecta wrap-around
+dsEdge = (enableEdge + dsEdgeWrap + (deciFactor == 1)) > 0.5;
+dsTrigPrev = dsPhase;
+
+// Latch SOLO en el flanco
+dsHeldL = latch(withBitCrusherL, dsEdge);
+dsHeldR = latch(withBitCrusherR, dsEdge);
+
+// Aplicar downsampling
+wetFinalL = mix(withBitCrusherL, dsHeldL, downsampleOn);
+wetFinalR = mix(withBitCrusherR, dsHeldR, downsampleOn);
+
+// -----------------------------------------------------------------------------
+// SALIDAS
+// -----------------------------------------------------------------------------
+out1 = wetFinalL;  // L con efectos → OutputStage in1
+out2 = wetFinalR;  // R con efectos → OutputStage in2

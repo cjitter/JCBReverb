@@ -1,0 +1,464 @@
+// =============================================================================
+// CROSSOVER STAGE - LR4 3-Band Crossover with Band Selection - ACTUALIZADO
+// =============================================================================
+// ENTRADAS: in1=L trimmed, in2=R trimmed, in3=L dry, in4=R dry
+// SALIDAS: out1=L banda, out2=R banda, out3=L dry comp, out4=R dry comp, out5=L bypass, out6=R bypass
+
+// PARÁMETROS
+Param j_HPF(250, min=20, default=250, max=1000);
+Param k_LPF(5000, min=1000, default=5000, max=20000);
+Param l_SC(0, min=0, default=0, max=1);
+Param o_BAND(1, min=0, default=1, max=2);
+Param p_BANDSOLO(0, min=0, default=0, max=1);
+
+// HISTORIALES Canal L
+History L_l1_x1(0), L_l1_x2(0), L_l1_y1(0), L_l1_y2(0);
+History L_l2_x1(0), L_l2_x2(0), L_l2_y1(0), L_l2_y2(0);
+History L_h1_x1(0), L_h1_x2(0), L_h1_y1(0), L_h1_y2(0);
+History L_h2_x1(0), L_h2_x2(0), L_h2_y1(0), L_h2_y2(0);
+History L_m1_x1(0), L_m1_x2(0), L_m1_y1(0), L_m1_y2(0);
+History L_m2_x1(0), L_m2_x2(0), L_m2_y1(0), L_m2_y2(0);
+History L_u1_x1(0), L_u1_x2(0), L_u1_y1(0), L_u1_y2(0);
+History L_u2_x1(0), L_u2_x2(0), L_u2_y1(0), L_u2_y2(0);
+
+// All-pass LOW L
+History L_ap_low_lp1_x1(0), L_ap_low_lp1_x2(0), L_ap_low_lp1_y1(0), L_ap_low_lp1_y2(0);
+History L_ap_low_lp2_x1(0), L_ap_low_lp2_x2(0), L_ap_low_lp2_y1(0), L_ap_low_lp2_y2(0);
+History L_ap_low_hp1_x1(0), L_ap_low_hp1_x2(0), L_ap_low_hp1_y1(0), L_ap_low_hp1_y2(0);
+History L_ap_low_hp2_x1(0), L_ap_low_hp2_x2(0), L_ap_low_hp2_y1(0), L_ap_low_hp2_y2(0);
+
+// HISTORIALES Canal R
+History R_l1_x1(0), R_l1_x2(0), R_l1_y1(0), R_l1_y2(0);
+History R_l2_x1(0), R_l2_x2(0), R_l2_y1(0), R_l2_y2(0);
+History R_h1_x1(0), R_h1_x2(0), R_h1_y1(0), R_h1_y2(0);
+History R_h2_x1(0), R_h2_x2(0), R_h2_y1(0), R_h2_y2(0);
+History R_m1_x1(0), R_m1_x2(0), R_m1_y1(0), R_m1_y2(0);
+History R_m2_x1(0), R_m2_x2(0), R_m2_y1(0), R_m2_y2(0);
+History R_u1_x1(0), R_u1_x2(0), R_u1_y1(0), R_u1_y2(0);
+History R_u2_x1(0), R_u2_x2(0), R_u2_y1(0), R_u2_y2(0);
+
+// All-pass LOW R
+History R_ap_low_lp1_x1(0), R_ap_low_lp1_x2(0), R_ap_low_lp1_y1(0), R_ap_low_lp1_y2(0);
+History R_ap_low_lp2_x1(0), R_ap_low_lp2_x2(0), R_ap_low_lp2_y1(0), R_ap_low_lp2_y2(0);
+History R_ap_low_hp1_x1(0), R_ap_low_hp1_x2(0), R_ap_low_hp1_y1(0), R_ap_low_hp1_y2(0);
+History R_ap_low_hp2_x1(0), R_ap_low_hp2_x2(0), R_ap_low_hp2_y1(0), R_ap_low_hp2_y2(0);
+
+// --- All-pass para DRY compensation (L/R) ---
+History L_ap1_lp1_x1(0), L_ap1_lp1_x2(0), L_ap1_lp1_y1(0), L_ap1_lp1_y2(0);
+History L_ap1_lp2_x1(0), L_ap1_lp2_x2(0), L_ap1_lp2_y1(0), L_ap1_lp2_y2(0);
+History L_ap1_hp1_x1(0), L_ap1_hp1_x2(0), L_ap1_hp1_y1(0), L_ap1_hp1_y2(0);
+History L_ap1_hp2_x1(0), L_ap1_hp2_x2(0), L_ap1_hp2_y1(0), L_ap1_hp2_y2(0);
+
+History L_ap2_lp1_x1(0), L_ap2_lp1_x2(0), L_ap2_lp1_y1(0), L_ap2_lp1_y2(0);
+History L_ap2_lp2_x1(0), L_ap2_lp2_x2(0), L_ap2_lp2_y1(0), L_ap2_lp2_y2(0);
+History L_ap2_hp1_x1(0), L_ap2_hp1_x2(0), L_ap2_hp1_y1(0), L_ap2_hp1_y2(0);
+History L_ap2_hp2_x1(0), L_ap2_hp2_x2(0), L_ap2_hp2_y1(0), L_ap2_hp2_y2(0);
+
+History R_ap1_lp1_x1(0), R_ap1_lp1_x2(0), R_ap1_lp1_y1(0), R_ap1_lp1_y2(0);
+History R_ap1_lp2_x1(0), R_ap1_lp2_x2(0), R_ap1_lp2_y1(0), R_ap1_lp2_y2(0);
+History R_ap1_hp1_x1(0), R_ap1_hp1_x2(0), R_ap1_hp1_y1(0), R_ap1_hp1_y2(0);
+History R_ap1_hp2_x1(0), R_ap1_hp2_x2(0), R_ap1_hp2_y1(0), R_ap1_hp2_y2(0);
+
+History R_ap2_lp1_x1(0), R_ap2_lp1_x2(0), R_ap2_lp1_y1(0), R_ap2_lp1_y2(0);
+History R_ap2_lp2_x1(0), R_ap2_lp2_x2(0), R_ap2_lp2_y1(0), R_ap2_lp2_y2(0);
+History R_ap2_hp1_x1(0), R_ap2_hp1_x2(0), R_ap2_hp1_y1(0), R_ap2_hp1_y2(0);
+History R_ap2_hp2_x1(0), R_ap2_hp2_x2(0), R_ap2_hp2_y1(0), R_ap2_hp2_y2(0);
+
+// Smoothing
+History hBand(1);
+History hBandSolo(0);
+History hpfFreqHistory(250);
+History lpfFreqHistory(5000);
+History scEnableHistory(0);
+
+// CONSTANTES
+smoothFactor = 0.999;
+TWOPI = 6.283185307179586;
+QBW = 0.7071067811865476;
+
+// PROCESAMIENTO
+lTrimmed = in1;
+rTrimmed = in2;
+lIn = in3;
+rIn = in4;
+
+// Smoothing - ACTUALIZAR para incluir Band Solo
+smoothHpfFreq = (hpfFreqHistory * smoothFactor) + (j_HPF * (1 - smoothFactor));
+hpfFreqHistory = fixdenorm(smoothHpfFreq);
+smoothLpfFreq = (lpfFreqHistory * smoothFactor) + (k_LPF * (1 - smoothFactor));
+lpfFreqHistory = fixdenorm(smoothLpfFreq);
+smoothScEnable = (scEnableHistory * smoothFactor) + (l_SC * (1 - smoothFactor));
+scEnableHistory = fixdenorm(smoothScEnable);
+hBand = hBand * smoothFactor + o_BAND * (1 - smoothFactor);
+smoothedBand = hBand;
+
+// NUEVO: Smoothing para Band Solo
+hBandSolo = hBandSolo * smoothFactor + p_BANDSOLO * (1 - smoothFactor);
+
+// PROCESAMIENTO (después del smoothing)
+
+// Proteger frecuencias
+sr = samplerate;
+loF = max(10, min(smoothHpfFreq, 0.45 * sr));
+hiFr = max(10, min(smoothLpfFreq, 0.45 * sr));
+hiF = max(hiFr, loF + 1);
+
+// Coeficientes Butterworth @ freq_low
+w0_lo = TWOPI * loF / sr;
+cos_lo = cos(w0_lo);
+sin_lo = sin(w0_lo);
+alpha_lo = sin_lo / (2 * QBW);
+a0_lo = 1 + alpha_lo;
+a1_lo = -2 * cos_lo;
+a2_lo = 1 - alpha_lo;
+
+lp_b0_l = ((1 - cos_lo) * 0.5) / a0_lo;
+lp_b1_l = (1 - cos_lo) / a0_lo;
+lp_b2_l = lp_b0_l;
+lp_a1_l = a1_lo / a0_lo;
+lp_a2_l = a2_lo / a0_lo;
+
+hp_b0_l = ((1 + cos_lo) * 0.5) / a0_lo;
+hp_b1_l = -(1 + cos_lo) / a0_lo;
+hp_b2_l = hp_b0_l;
+hp_a1_l = lp_a1_l;
+hp_a2_l = lp_a2_l;
+
+// Coeficientes Butterworth @ freq_high
+w0_hi = TWOPI * hiF / sr;
+cos_hi = cos(w0_hi);
+sin_hi = sin(w0_hi);
+alpha_hi = sin_hi / (2 * QBW);
+a0_hi = 1 + alpha_hi;
+a1_hi = -2 * cos_hi;
+a2_hi = 1 - alpha_hi;
+
+lp_b0_h = ((1 - cos_hi) * 0.5) / a0_hi;
+lp_b1_h = (1 - cos_hi) / a0_hi;
+lp_b2_h = lp_b0_h;
+lp_a1_h = a1_hi / a0_hi;
+lp_a2_h = a2_hi / a0_hi;
+
+hp_b0_h = ((1 + cos_hi) * 0.5) / a0_hi;
+hp_b1_h = -(1 + cos_hi) / a0_hi;
+hp_b2_h = hp_b0_h;
+hp_a1_h = lp_a1_h;
+hp_a2_h = lp_a2_h;
+
+// CROSSOVER LR4 CANAL L
+L_x = lTrimmed;
+
+// LP Stage 1 LOW
+L_l1_x1p = fixdenorm(L_l1_x1); L_l1_x2p = fixdenorm(L_l1_x2);
+L_l1_y1p = fixdenorm(L_l1_y1); L_l1_y2p = fixdenorm(L_l1_y2);
+L_low_s1 = lp_b0_l*L_x + lp_b1_l*L_l1_x1p + lp_b2_l*L_l1_x2p - lp_a1_l*L_l1_y1p - lp_a2_l*L_l1_y2p;
+L_l1_x2 = L_l1_x1p; L_l1_x1 = L_x; L_l1_y2 = L_l1_y1p; L_l1_y1 = L_low_s1;
+
+// LP Stage 2 LOW
+L_l2_x1p = fixdenorm(L_l2_x1); L_l2_x2p = fixdenorm(L_l2_x2);
+L_l2_y1p = fixdenorm(L_l2_y1); L_l2_y2p = fixdenorm(L_l2_y2);
+L_low_raw = lp_b0_l*L_low_s1 + lp_b1_l*L_l2_x1p + lp_b2_l*L_l2_x2p - lp_a1_l*L_l2_y1p - lp_a2_l*L_l2_y2p;
+L_l2_x2 = L_l2_x1p; L_l2_x1 = L_low_s1; L_l2_y2 = L_l2_y1p; L_l2_y1 = L_low_raw;
+
+// HP Stage 1 REST
+L_h1_x1p = fixdenorm(L_h1_x1); L_h1_x2p = fixdenorm(L_h1_x2);
+L_h1_y1p = fixdenorm(L_h1_y1); L_h1_y2p = fixdenorm(L_h1_y2);
+L_rest_s1 = hp_b0_l*L_x + hp_b1_l*L_h1_x1p + hp_b2_l*L_h1_x2p - hp_a1_l*L_h1_y1p - hp_a2_l*L_h1_y2p;
+L_h1_x2 = L_h1_x1p; L_h1_x1 = L_x; L_h1_y2 = L_h1_y1p; L_h1_y1 = L_rest_s1;
+
+// HP Stage 2 REST
+L_h2_x1p = fixdenorm(L_h2_x1); L_h2_x2p = fixdenorm(L_h2_x2);
+L_h2_y1p = fixdenorm(L_h2_y1); L_h2_y2p = fixdenorm(L_h2_y2);
+L_rest = hp_b0_l*L_rest_s1 + hp_b1_l*L_h2_x1p + hp_b2_l*L_h2_x2p - hp_a1_l*L_h2_y1p - hp_a2_l*L_h2_y2p;
+L_h2_x2 = L_h2_x1p; L_h2_x1 = L_rest_s1; L_h2_y2 = L_h2_y1p; L_h2_y1 = L_rest;
+
+// COMPENSACIÓN ALL-PASS para LOW
+// LP stage 1
+L_ap_low_lp1_x1p = fixdenorm(L_ap_low_lp1_x1); L_ap_low_lp1_x2p = fixdenorm(L_ap_low_lp1_x2);
+L_ap_low_lp1_y1p = fixdenorm(L_ap_low_lp1_y1); L_ap_low_lp1_y2p = fixdenorm(L_ap_low_lp1_y2);
+L_ap_low_lp_s1 = lp_b0_h*L_low_raw + lp_b1_h*L_ap_low_lp1_x1p + lp_b2_h*L_ap_low_lp1_x2p - lp_a1_h*L_ap_low_lp1_y1p - lp_a2_h*L_ap_low_lp1_y2p;
+L_ap_low_lp1_x2 = L_ap_low_lp1_x1p; L_ap_low_lp1_x1 = L_low_raw;
+L_ap_low_lp1_y2 = L_ap_low_lp1_y1p; L_ap_low_lp1_y1 = L_ap_low_lp_s1;
+
+// LP stage 2
+L_ap_low_lp2_x1p = fixdenorm(L_ap_low_lp2_x1); L_ap_low_lp2_x2p = fixdenorm(L_ap_low_lp2_x2);
+L_ap_low_lp2_y1p = fixdenorm(L_ap_low_lp2_y1); L_ap_low_lp2_y2p = fixdenorm(L_ap_low_lp2_y2);
+L_ap_low_lp = lp_b0_h*L_ap_low_lp_s1 + lp_b1_h*L_ap_low_lp2_x1p + lp_b2_h*L_ap_low_lp2_x2p - lp_a1_h*L_ap_low_lp2_y1p - lp_a2_h*L_ap_low_lp2_y2p;
+L_ap_low_lp2_x2 = L_ap_low_lp2_x1p; L_ap_low_lp2_x1 = L_ap_low_lp_s1;
+L_ap_low_lp2_y2 = L_ap_low_lp2_y1p; L_ap_low_lp2_y1 = L_ap_low_lp;
+
+// HP stage 1
+L_ap_low_hp1_x1p = fixdenorm(L_ap_low_hp1_x1); L_ap_low_hp1_x2p = fixdenorm(L_ap_low_hp1_x2);
+L_ap_low_hp1_y1p = fixdenorm(L_ap_low_hp1_y1); L_ap_low_hp1_y2p = fixdenorm(L_ap_low_hp1_y2);
+L_ap_low_hp_s1 = hp_b0_h*L_low_raw + hp_b1_h*L_ap_low_hp1_x1p + hp_b2_h*L_ap_low_hp1_x2p - hp_a1_h*L_ap_low_hp1_y1p - hp_a2_h*L_ap_low_hp1_y2p;
+L_ap_low_hp1_x2 = L_ap_low_hp1_x1p; L_ap_low_hp1_x1 = L_low_raw;
+L_ap_low_hp1_y2 = L_ap_low_hp1_y1p; L_ap_low_hp1_y1 = L_ap_low_hp_s1;
+
+// HP stage 2
+L_ap_low_hp2_x1p = fixdenorm(L_ap_low_hp2_x1); L_ap_low_hp2_x2p = fixdenorm(L_ap_low_hp2_x2);
+L_ap_low_hp2_y1p = fixdenorm(L_ap_low_hp2_y1); L_ap_low_hp2_y2p = fixdenorm(L_ap_low_hp2_y2);
+L_ap_low_hp = hp_b0_h*L_ap_low_hp_s1 + hp_b1_h*L_ap_low_hp2_x1p + hp_b2_h*L_ap_low_hp2_x2p - hp_a1_h*L_ap_low_hp2_y1p - hp_a2_h*L_ap_low_hp2_y2p;
+L_ap_low_hp2_x2 = L_ap_low_hp2_x1p; L_ap_low_hp2_x1 = L_ap_low_hp_s1;
+L_ap_low_hp2_y2 = L_ap_low_hp2_y1p; L_ap_low_hp2_y1 = L_ap_low_hp;
+
+L_low = L_ap_low_lp + L_ap_low_hp;
+
+// SEGUNDO CORTE @ freq_high
+// LP Stage 1 MID
+L_m1_x1p = fixdenorm(L_m1_x1); L_m1_x2p = fixdenorm(L_m1_x2);
+L_m1_y1p = fixdenorm(L_m1_y1); L_m1_y2p = fixdenorm(L_m1_y2);
+L_mid_s1 = lp_b0_h*L_rest + lp_b1_h*L_m1_x1p + lp_b2_h*L_m1_x2p - lp_a1_h*L_m1_y1p - lp_a2_h*L_m1_y2p;
+L_m1_x2 = L_m1_x1p; L_m1_x1 = L_rest; L_m1_y2 = L_m1_y1p; L_m1_y1 = L_mid_s1;
+
+// LP Stage 2 MID
+L_m2_x1p = fixdenorm(L_m2_x1); L_m2_x2p = fixdenorm(L_m2_x2);
+L_m2_y1p = fixdenorm(L_m2_y1); L_m2_y2p = fixdenorm(L_m2_y2);
+L_mid = lp_b0_h*L_mid_s1 + lp_b1_h*L_m2_x1p + lp_b2_h*L_m2_x2p - lp_a1_h*L_m2_y1p - lp_a2_h*L_m2_y2p;
+L_m2_x2 = L_m2_x1p; L_m2_x1 = L_mid_s1; L_m2_y2 = L_m2_y1p; L_m2_y1 = L_mid;
+
+// HP Stage 1 HIGH
+L_u1_x1p = fixdenorm(L_u1_x1); L_u1_x2p = fixdenorm(L_u1_x2);
+L_u1_y1p = fixdenorm(L_u1_y1); L_u1_y2p = fixdenorm(L_u1_y2);
+L_high_s1 = hp_b0_h*L_rest + hp_b1_h*L_u1_x1p + hp_b2_h*L_u1_x2p - hp_a1_h*L_u1_y1p - hp_a2_h*L_u1_y2p;
+L_u1_x2 = L_u1_x1p; L_u1_x1 = L_rest; L_u1_y2 = L_u1_y1p; L_u1_y1 = L_high_s1;
+
+// HP Stage 2 HIGH
+L_u2_x1p = fixdenorm(L_u2_x1); L_u2_x2p = fixdenorm(L_u2_x2);
+L_u2_y1p = fixdenorm(L_u2_y1); L_u2_y2p = fixdenorm(L_u2_y2);
+L_high = hp_b0_h*L_high_s1 + hp_b1_h*L_u2_x1p + hp_b2_h*L_u2_x2p - hp_a1_h*L_u2_y1p - hp_a2_h*L_u2_y2p;
+L_u2_x2 = L_u2_x1p; L_u2_x1 = L_high_s1; L_u2_y2 = L_u2_y1p; L_u2_y1 = L_high;
+
+lowL = L_low;
+midL = L_mid;
+highL = L_high;
+
+// CROSSOVER LR4 CANAL R (igual estructura que L)
+R_x = rTrimmed;
+
+// CROSSOVER LR4 CANAL R
+R_x = rTrimmed;
+
+// LP Stage 1 LOW
+R_l1_x1p = fixdenorm(R_l1_x1); R_l1_x2p = fixdenorm(R_l1_x2);
+R_l1_y1p = fixdenorm(R_l1_y1); R_l1_y2p = fixdenorm(R_l1_y2);
+R_low_s1 = lp_b0_l*R_x + lp_b1_l*R_l1_x1p + lp_b2_l*R_l1_x2p - lp_a1_l*R_l1_y1p - lp_a2_l*R_l1_y2p;
+R_l1_x2 = R_l1_x1p; R_l1_x1 = R_x; R_l1_y2 = R_l1_y1p; R_l1_y1 = R_low_s1;
+
+// LP Stage 2 LOW
+R_l2_x1p = fixdenorm(R_l2_x1); R_l2_x2p = fixdenorm(R_l2_x2);
+R_l2_y1p = fixdenorm(R_l2_y1); R_l2_y2p = fixdenorm(R_l2_y2);
+R_low_raw = lp_b0_l*R_low_s1 + lp_b1_l*R_l2_x1p + lp_b2_l*R_l2_x2p - lp_a1_l*R_l2_y1p - lp_a2_l*R_l2_y2p;
+R_l2_x2 = R_l2_x1p; R_l2_x1 = R_low_s1; R_l2_y2 = R_l2_y1p; R_l2_y1 = R_low_raw;
+
+// HP Stage 1 REST
+R_h1_x1p = fixdenorm(R_h1_x1); R_h1_x2p = fixdenorm(R_h1_x2);
+R_h1_y1p = fixdenorm(R_h1_y1); R_h1_y2p = fixdenorm(R_h1_y2);
+R_rest_s1 = hp_b0_l*R_x + hp_b1_l*R_h1_x1p + hp_b2_l*R_h1_x2p - hp_a1_l*R_h1_y1p - hp_a2_l*R_h1_y2p;
+R_h1_x2 = R_h1_x1p; R_h1_x1 = R_x; R_h1_y2 = R_h1_y1p; R_h1_y1 = R_rest_s1;
+
+// HP Stage 2 REST
+R_h2_x1p = fixdenorm(R_h2_x1); R_h2_x2p = fixdenorm(R_h2_x2);
+R_h2_y1p = fixdenorm(R_h2_y1); R_h2_y2p = fixdenorm(R_h2_y2);
+R_rest = hp_b0_l*R_rest_s1 + hp_b1_l*R_h2_x1p + hp_b2_l*R_h2_x2p - hp_a1_l*R_h2_y1p - hp_a2_l*R_h2_y2p;
+R_h2_x2 = R_h2_x1p; R_h2_x1 = R_rest_s1; R_h2_y2 = R_h2_y1p; R_h2_y1 = R_rest;
+
+// COMPENSACIÓN ALL-PASS LOW R
+// LP stage 1
+R_ap_low_lp1_x1p = fixdenorm(R_ap_low_lp1_x1); R_ap_low_lp1_x2p = fixdenorm(R_ap_low_lp1_x2);
+R_ap_low_lp1_y1p = fixdenorm(R_ap_low_lp1_y1); R_ap_low_lp1_y2p = fixdenorm(R_ap_low_lp1_y2);
+R_ap_low_lp_s1 = lp_b0_h*R_low_raw + lp_b1_h*R_ap_low_lp1_x1p + lp_b2_h*R_ap_low_lp1_x2p - lp_a1_h*R_ap_low_lp1_y1p - lp_a2_h*R_ap_low_lp1_y2p;
+R_ap_low_lp1_x2 = R_ap_low_lp1_x1p; R_ap_low_lp1_x1 = R_low_raw;
+R_ap_low_lp1_y2 = R_ap_low_lp1_y1p; R_ap_low_lp1_y1 = R_ap_low_lp_s1;
+
+// LP stage 2
+R_ap_low_lp2_x1p = fixdenorm(R_ap_low_lp2_x1); R_ap_low_lp2_x2p = fixdenorm(R_ap_low_lp2_x2);
+R_ap_low_lp2_y1p = fixdenorm(R_ap_low_lp2_y1); R_ap_low_lp2_y2p = fixdenorm(R_ap_low_lp2_y2);
+R_ap_low_lp = lp_b0_h*R_ap_low_lp_s1 + lp_b1_h*R_ap_low_lp2_x1p + lp_b2_h*R_ap_low_lp2_x2p - lp_a1_h*R_ap_low_lp2_y1p - lp_a2_h*R_ap_low_lp2_y2p;
+R_ap_low_lp2_x2 = R_ap_low_lp2_x1p; R_ap_low_lp2_x1 = R_ap_low_lp_s1;
+R_ap_low_lp2_y2 = R_ap_low_lp2_y1p; R_ap_low_lp2_y1 = R_ap_low_lp;
+
+// HP stage 1
+R_ap_low_hp1_x1p = fixdenorm(R_ap_low_hp1_x1); R_ap_low_hp1_x2p = fixdenorm(R_ap_low_hp1_x2);
+R_ap_low_hp1_y1p = fixdenorm(R_ap_low_hp1_y1); R_ap_low_hp1_y2p = fixdenorm(R_ap_low_hp1_y2);
+R_ap_low_hp_s1 = hp_b0_h*R_low_raw + hp_b1_h*R_ap_low_hp1_x1p + hp_b2_h*R_ap_low_hp1_x2p - hp_a1_h*R_ap_low_hp1_y1p - hp_a2_h*R_ap_low_hp1_y2p;
+R_ap_low_hp1_x2 = R_ap_low_hp1_x1p; R_ap_low_hp1_x1 = R_low_raw;
+R_ap_low_hp1_y2 = R_ap_low_hp1_y1p; R_ap_low_hp1_y1 = R_ap_low_hp_s1;
+
+// HP stage 2
+R_ap_low_hp2_x1p = fixdenorm(R_ap_low_hp2_x1); R_ap_low_hp2_x2p = fixdenorm(R_ap_low_hp2_x2);
+R_ap_low_hp2_y1p = fixdenorm(R_ap_low_hp2_y1); R_ap_low_hp2_y2p = fixdenorm(R_ap_low_hp2_y2);
+R_ap_low_hp = hp_b0_h*R_ap_low_hp_s1 + hp_b1_h*R_ap_low_hp2_x1p + hp_b2_h*R_ap_low_hp2_x2p - hp_a1_h*R_ap_low_hp2_y1p - hp_a2_h*R_ap_low_hp2_y2p;
+R_ap_low_hp2_x2 = R_ap_low_hp2_x1p; R_ap_low_hp2_x1 = R_ap_low_hp_s1;
+R_ap_low_hp2_y2 = R_ap_low_hp2_y1p; R_ap_low_hp2_y1 = R_ap_low_hp;
+
+R_low = R_ap_low_lp + R_ap_low_hp;
+
+// SEGUNDO CORTE
+// LP Stage 1 MID
+R_m1_x1p = fixdenorm(R_m1_x1); R_m1_x2p = fixdenorm(R_m1_x2);
+R_m1_y1p = fixdenorm(R_m1_y1); R_m1_y2p = fixdenorm(R_m1_y2);
+R_mid_s1 = lp_b0_h*R_rest + lp_b1_h*R_m1_x1p + lp_b2_h*R_m1_x2p - lp_a1_h*R_m1_y1p - lp_a2_h*R_m1_y2p;
+R_m1_x2 = R_m1_x1p; R_m1_x1 = R_rest; R_m1_y2 = R_m1_y1p; R_m1_y1 = R_mid_s1;
+
+// LP Stage 2 MID
+R_m2_x1p = fixdenorm(R_m2_x1); R_m2_x2p = fixdenorm(R_m2_x2);
+R_m2_y1p = fixdenorm(R_m2_y1); R_m2_y2p = fixdenorm(R_m2_y2);
+R_mid = lp_b0_h*R_mid_s1 + lp_b1_h*R_m2_x1p + lp_b2_h*R_m2_x2p - lp_a1_h*R_m2_y1p - lp_a2_h*R_m2_y2p;
+R_m2_x2 = R_m2_x1p; R_m2_x1 = R_mid_s1; R_m2_y2 = R_m2_y1p; R_m2_y1 = R_mid;
+
+// HP Stage 1 HIGH
+R_u1_x1p = fixdenorm(R_u1_x1); R_u1_x2p = fixdenorm(R_u1_x2);
+R_u1_y1p = fixdenorm(R_u1_y1); R_u1_y2p = fixdenorm(R_u1_y2);
+R_high_s1 = hp_b0_h*R_rest + hp_b1_h*R_u1_x1p + hp_b2_h*R_u1_x2p - hp_a1_h*R_u1_y1p - hp_a2_h*R_u1_y2p;
+R_u1_x2 = R_u1_x1p; R_u1_x1 = R_rest; R_u1_y2 = R_u1_y1p; R_u1_y1 = R_high_s1;
+
+// HP Stage 2 HIGH
+R_u2_x1p = fixdenorm(R_u2_x1); R_u2_x2p = fixdenorm(R_u2_x2);
+R_u2_y1p = fixdenorm(R_u2_y1); R_u2_y2p = fixdenorm(R_u2_y2);
+R_high = hp_b0_h*R_high_s1 + hp_b1_h*R_u2_x1p + hp_b2_h*R_u2_x2p - hp_a1_h*R_u2_y1p - hp_a2_h*R_u2_y2p;
+R_u2_x2 = R_u2_x1p; R_u2_x1 = R_high_s1; R_u2_y2 = R_u2_y1p; R_u2_y1 = R_high;
+
+lowR = R_low;
+midR = R_mid;
+highR = R_high;
+
+// SELECTOR DE BANDA Y SOLO - SECCIÓN ACTUALIZADA
+wLow = max(0, 1 - abs(smoothedBand - 0));
+wMid = max(0, 1 - abs(smoothedBand - 1));
+wHigh = max(0, 1 - abs(smoothedBand - 2));
+wSum = max(1e-9, wLow + wMid + wHigh);
+wLow /= wSum; wMid /= wSum; wHigh /= wSum;
+
+// Banda seleccionada para procesar
+preBandL = wLow*lowL + wMid*midL + wHigh*highL;
+preBandR = wLow*lowR + wMid*midR + wHigh*highR;
+
+// Suma de todas las bandas
+sumBandsL = lowL + midL + highL;
+sumBandsR = lowR + midR + highR;
+
+// ACTUALIZACIÓN: Solo continuo en lugar de binario
+// Solo como cantidad continua (0..1), dependiente del crossover
+//soloAmt = clamp(hBandSolo * smoothScEnable, 0, 1);
+soloAmt = clamp((1 - hBandSolo) * smoothScEnable, 0, 1);  // Añadir (1 - ...)
+
+// Atenúa progresivamente lo que NO es la banda seleccionada
+bypassWhenActiveL = (sumBandsL - preBandL) * soloAmt;  // Sin el (1 - ...)
+bypassWhenActiveR = (sumBandsR - preBandR) * soloAmt;
+
+// Conmutación por enable: si desactivado, banda ancha
+preDistInL = mix(lTrimmed, preBandL, smoothScEnable);
+preDistInR = mix(rTrimmed, preBandR, smoothScEnable);
+
+// -----------------------------------------------------------------------------
+// ALL-PASS DE COMPENSACIÓN PARA DRY (2 etapas: loF y hiF), con fixdenorm
+// Entrada del all-pass: lIn/rIn (dry pre-trim que ya recibimos por in3/in4)
+// -----------------------------------------------------------------------------
+
+// ===== L: Stage 1 @ loF (LP + HP sobre dry, 2 biquads por rama) =====
+// LP s1
+L_ap1_lp1_x1p = fixdenorm(L_ap1_lp1_x1); L_ap1_lp1_x2p = fixdenorm(L_ap1_lp1_x2);
+L_ap1_lp1_y1p = fixdenorm(L_ap1_lp1_y1); L_ap1_lp1_y2p = fixdenorm(L_ap1_lp1_y2);
+L_ap1_lp_s1 = lp_b0_l*lIn + lp_b1_l*L_ap1_lp1_x1p + lp_b2_l*L_ap1_lp1_x2p - lp_a1_l*L_ap1_lp1_y1p - lp_a2_l*L_ap1_lp1_y2p;
+L_ap1_lp1_x2 = L_ap1_lp1_x1p; L_ap1_lp1_x1 = lIn; L_ap1_lp1_y2 = L_ap1_lp1_y1p; L_ap1_lp1_y1 = L_ap1_lp_s1;
+// LP s2
+L_ap1_lp2_x1p = fixdenorm(L_ap1_lp2_x1); L_ap1_lp2_x2p = fixdenorm(L_ap1_lp2_x2);
+L_ap1_lp2_y1p = fixdenorm(L_ap1_lp2_y1); L_ap1_lp2_y2p = fixdenorm(L_ap1_lp2_y2);
+L_ap1_lp = lp_b0_l*L_ap1_lp_s1 + lp_b1_l*L_ap1_lp2_x1p + lp_b2_l*L_ap1_lp2_x2p - lp_a1_l*L_ap1_lp2_y1p - lp_a2_l*L_ap1_lp2_y2p;
+L_ap1_lp2_x2 = L_ap1_lp2_x1p; L_ap1_lp2_x1 = L_ap1_lp_s1; L_ap1_lp2_y2 = L_ap1_lp2_y1p; L_ap1_lp2_y1 = L_ap1_lp;
+
+// HP s1
+L_ap1_hp1_x1p = fixdenorm(L_ap1_hp1_x1); L_ap1_hp1_x2p = fixdenorm(L_ap1_hp1_x2);
+L_ap1_hp1_y1p = fixdenorm(L_ap1_hp1_y1); L_ap1_hp1_y2p = fixdenorm(L_ap1_hp1_y2);
+L_ap1_hp_s1 = hp_b0_l*lIn + hp_b1_l*L_ap1_hp1_x1p + hp_b2_l*L_ap1_hp1_x2p - hp_a1_l*L_ap1_hp1_y1p - hp_a2_l*L_ap1_hp1_y2p;
+L_ap1_hp1_x2 = L_ap1_hp1_x1p; L_ap1_hp1_x1 = lIn; L_ap1_hp1_y2 = L_ap1_hp1_y1p; L_ap1_hp1_y1 = L_ap1_hp_s1;
+// HP s2
+L_ap1_hp2_x1p = fixdenorm(L_ap1_hp2_x1); L_ap1_hp2_x2p = fixdenorm(L_ap1_hp2_x2);
+L_ap1_hp2_y1p = fixdenorm(L_ap1_hp2_y1); L_ap1_hp2_y2p = fixdenorm(L_ap1_hp2_y2);
+L_ap1_hp = hp_b0_l*L_ap1_hp_s1 + hp_b1_l*L_ap1_hp2_x1p + hp_b2_l*L_ap1_hp2_x2p - hp_a1_l*L_ap1_hp2_y1p - hp_a2_l*L_ap1_hp2_y2p;
+L_ap1_hp2_x2 = L_ap1_hp2_x1p; L_ap1_hp2_x1 = L_ap1_hp_s1; L_ap1_hp2_y2 = L_ap1_hp2_y1p; L_ap1_hp2_y1 = L_ap1_hp;
+
+L_stage1 = L_ap1_lp + L_ap1_hp; // all-pass @ loF
+
+// ===== L: Stage 2 @ hiF (LP + HP sobre L_stage1) =====
+// LP s1
+L_ap2_lp1_x1p = fixdenorm(L_ap2_lp1_x1); L_ap2_lp1_x2p = fixdenorm(L_ap2_lp1_x2);
+L_ap2_lp1_y1p = fixdenorm(L_ap2_lp1_y1); L_ap2_lp1_y2p = fixdenorm(L_ap2_lp1_y2);
+L_ap2_lp_s1 = lp_b0_h*L_stage1 + lp_b1_h*L_ap2_lp1_x1p + lp_b2_h*L_ap2_lp1_x2p - lp_a1_h*L_ap2_lp1_y1p - lp_a2_h*L_ap2_lp1_y2p;
+L_ap2_lp1_x2 = L_ap2_lp1_x1p; L_ap2_lp1_x1 = L_stage1; L_ap2_lp1_y2 = L_ap2_lp1_y1p; L_ap2_lp1_y1 = L_ap2_lp_s1;
+// LP s2
+L_ap2_lp2_x1p = fixdenorm(L_ap2_lp2_x1); L_ap2_lp2_x2p = fixdenorm(L_ap2_lp2_x2);
+L_ap2_lp2_y1p = fixdenorm(L_ap2_lp2_y1); L_ap2_lp2_y2p = fixdenorm(L_ap2_lp2_y2);
+L_ap2_lp = lp_b0_h*L_ap2_lp_s1 + lp_b1_h*L_ap2_lp2_x1p + lp_b2_h*L_ap2_lp2_x2p - lp_a1_h*L_ap2_lp2_y1p - lp_a2_h*L_ap2_lp2_y2p;
+L_ap2_lp2_x2 = L_ap2_lp2_x1p; L_ap2_lp2_x1 = L_ap2_lp_s1; L_ap2_lp2_y2 = L_ap2_lp2_y1p; L_ap2_lp2_y1 = L_ap2_lp;
+
+// HP s1
+L_ap2_hp1_x1p = fixdenorm(L_ap2_hp1_x1); L_ap2_hp1_x2p = fixdenorm(L_ap2_hp1_x2);
+L_ap2_hp1_y1p = fixdenorm(L_ap2_hp1_y1); L_ap2_hp1_y2p = fixdenorm(L_ap2_hp1_y2);
+L_ap2_hp_s1 = hp_b0_h*L_stage1 + hp_b1_h*L_ap2_hp1_x1p + hp_b2_h*L_ap2_hp1_x2p - hp_a1_h*L_ap2_hp1_y1p - hp_a2_h*L_ap2_hp1_y2p;
+L_ap2_hp1_x2 = L_ap2_hp1_x1p; L_ap2_hp1_x1 = L_stage1; L_ap2_hp1_y2 = L_ap2_hp1_y1p; L_ap2_hp1_y1 = L_ap2_hp_s1;
+// HP s2
+L_ap2_hp2_x1p = fixdenorm(L_ap2_hp2_x1); L_ap2_hp2_x2p = fixdenorm(L_ap2_hp2_x2);
+L_ap2_hp2_y1p = fixdenorm(L_ap2_hp2_y1); L_ap2_hp2_y2p = fixdenorm(L_ap2_hp2_y2);
+L_ap2_hp = hp_b0_h*L_ap2_hp_s1 + hp_b1_h*L_ap2_hp2_x1p + hp_b2_h*L_ap2_hp2_x2p - hp_a1_h*L_ap2_hp2_y1p - hp_a2_h*L_ap2_hp2_y2p;
+L_ap2_hp2_x2 = L_ap2_hp2_x1p; L_ap2_hp2_x1 = L_ap2_hp_s1; L_ap2_hp2_y2 = L_ap2_hp2_y1p; L_ap2_hp2_y1 = L_ap2_hp;
+
+dryAllpassL = L_ap2_lp + L_ap2_hp;
+
+// ===== R: Stage 1 @ loF =====
+R_ap1_lp1_x1p = fixdenorm(R_ap1_lp1_x1); R_ap1_lp1_x2p = fixdenorm(R_ap1_lp1_x2);
+R_ap1_lp1_y1p = fixdenorm(R_ap1_lp1_y1); R_ap1_lp1_y2p = fixdenorm(R_ap1_lp1_y2);
+R_ap1_lp_s1 = lp_b0_l*rIn + lp_b1_l*R_ap1_lp1_x1p + lp_b2_l*R_ap1_lp1_x2p - lp_a1_l*R_ap1_lp1_y1p - lp_a2_l*R_ap1_lp1_y2p;
+R_ap1_lp1_x2 = R_ap1_lp1_x1p; R_ap1_lp1_x1 = rIn; R_ap1_lp1_y2 = R_ap1_lp1_y1p; R_ap1_lp1_y1 = R_ap1_lp_s1;
+
+R_ap1_lp2_x1p = fixdenorm(R_ap1_lp2_x1); R_ap1_lp2_x2p = fixdenorm(R_ap1_lp2_x2);
+R_ap1_lp2_y1p = fixdenorm(R_ap1_lp2_y1); R_ap1_lp2_y2p = fixdenorm(R_ap1_lp2_y2);
+R_ap1_lp = lp_b0_l*R_ap1_lp_s1 + lp_b1_l*R_ap1_lp2_x1p + lp_b2_l*R_ap1_lp2_x2p - lp_a1_l*R_ap1_lp2_y1p - lp_a2_l*R_ap1_lp2_y2p;
+R_ap1_lp2_x2 = R_ap1_lp2_x1p; R_ap1_lp2_x1 = R_ap1_lp_s1; R_ap1_lp2_y2 = R_ap1_lp2_y1p; R_ap1_lp2_y1 = R_ap1_lp;
+
+R_ap1_hp1_x1p = fixdenorm(R_ap1_hp1_x1); R_ap1_hp1_x2p = fixdenorm(R_ap1_hp1_x2);
+R_ap1_hp1_y1p = fixdenorm(R_ap1_hp1_y1); R_ap1_hp1_y2p = fixdenorm(R_ap1_hp1_y2);
+R_ap1_hp_s1 = hp_b0_l*rIn + hp_b1_l*R_ap1_hp1_x1p + hp_b2_l*R_ap1_hp1_x2p - hp_a1_l*R_ap1_hp1_y1p - hp_a2_l*R_ap1_hp1_y2p;
+R_ap1_hp1_x2 = R_ap1_hp1_x1p; R_ap1_hp1_x1 = rIn; R_ap1_hp1_y2 = R_ap1_hp1_y1p; R_ap1_hp1_y1 = R_ap1_hp_s1;
+
+R_ap1_hp2_x1p = fixdenorm(R_ap1_hp2_x1); R_ap1_hp2_x2p = fixdenorm(R_ap1_hp2_x2);
+R_ap1_hp2_y1p = fixdenorm(R_ap1_hp2_y1); R_ap1_hp2_y2p = fixdenorm(R_ap1_hp2_y2);
+R_ap1_hp = hp_b0_l*R_ap1_hp_s1 + hp_b1_l*R_ap1_hp2_x1p + hp_b2_l*R_ap1_hp2_x2p - lp_a1_l*R_ap1_hp2_y1p - lp_a2_l*R_ap1_hp2_y2p;
+R_ap1_hp2_x2 = R_ap1_hp2_x1p; R_ap1_hp2_x1 = R_ap1_hp_s1; R_ap1_hp2_y2 = R_ap1_hp2_y1p; R_ap1_hp2_y1 = R_ap1_hp;
+
+R_stage1 = R_ap1_lp + R_ap1_hp;
+
+// ===== R: Stage 2 @ hiF =====
+R_ap2_lp1_x1p = fixdenorm(R_ap2_lp1_x1); R_ap2_lp1_x2p = fixdenorm(R_ap2_lp1_x2);
+R_ap2_lp1_y1p = fixdenorm(R_ap2_lp1_y1); R_ap2_lp1_y2p = fixdenorm(R_ap2_lp1_y2);
+R_ap2_lp_s1 = lp_b0_h*R_stage1 + lp_b1_h*R_ap2_lp1_x1p + lp_b2_h*R_ap2_lp1_x2p - lp_a1_h*R_ap2_lp1_y1p - lp_a2_h*R_ap2_lp1_y2p;
+R_ap2_lp1_x2 = R_ap2_lp1_x1p; R_ap2_lp1_x1 = R_stage1; R_ap2_lp1_y2 = R_ap2_lp1_y1p; R_ap2_lp1_y1 = R_ap2_lp_s1;
+
+R_ap2_lp2_x1p = fixdenorm(R_ap2_lp2_x1); R_ap2_lp2_x2p = fixdenorm(R_ap2_lp2_x2);
+R_ap2_lp2_y1p = fixdenorm(R_ap2_lp2_y1); R_ap2_lp2_y2p = fixdenorm(R_ap2_lp2_y2);
+R_ap2_lp = lp_b0_h*R_ap2_lp_s1 + lp_b1_h*R_ap2_lp2_x1p + lp_b2_h*R_ap2_lp2_x2p - lp_a1_h*R_ap2_lp2_y1p - lp_a2_h*R_ap2_lp2_y2p;
+R_ap2_lp2_x2 = R_ap2_lp2_x1p; R_ap2_lp2_x1 = R_ap2_lp_s1; R_ap2_lp2_y2 = R_ap2_lp2_y1p; R_ap2_lp2_y1 = R_ap2_lp;
+
+R_ap2_hp1_x1p = fixdenorm(R_ap2_hp1_x1); R_ap2_hp1_x2p = fixdenorm(R_ap2_hp1_x2);
+R_ap2_hp1_y1p = fixdenorm(R_ap2_hp1_y1); R_ap2_hp1_y2p = fixdenorm(R_ap2_hp1_y2);
+R_ap2_hp_s1 = hp_b0_h*R_stage1 + hp_b1_h*R_ap2_hp1_x1p + hp_b2_h*R_ap2_hp1_x2p - hp_a1_h*R_ap2_hp1_y1p - hp_a2_h*R_ap2_hp1_y2p;
+R_ap2_hp1_x2 = R_ap2_hp1_x1p; R_ap2_hp1_x1 = R_stage1; R_ap2_hp1_y2 = R_ap2_hp1_y1p; R_ap2_hp1_y1 = R_ap2_hp_s1;
+
+R_ap2_hp2_x1p = fixdenorm(R_ap2_hp2_x1); R_ap2_hp2_x2p = fixdenorm(R_ap2_hp2_x2);
+R_ap2_hp2_y1p = fixdenorm(R_ap2_hp2_y1); R_ap2_hp2_y2p = fixdenorm(R_ap2_hp2_y2);
+R_ap2_hp = hp_b0_h*R_ap2_hp_s1 + hp_b1_h*R_ap2_hp2_x1p + hp_b2_h*R_ap2_hp2_x2p - hp_a1_h*R_ap2_hp2_y1p - hp_a2_h*R_ap2_hp2_y2p;
+R_ap2_hp2_x2 = R_ap2_hp2_x1p; R_ap2_hp2_x1 = R_ap2_hp_s1; R_ap2_hp2_y2 = R_ap2_hp2_y1p; R_ap2_hp2_y1 = R_ap2_hp;
+
+dryAllpassR = R_ap2_lp + R_ap2_hp;
+
+// Mezcla con enable suavizado: si el crossover está OFF, dry pasa directo
+dryCompL = mix(lIn, dryAllpassL, smoothScEnable);
+dryCompR = mix(rIn, dryAllpassR, smoothScEnable);
+
+// SALIDAS
+out1 = preDistInL;      // L banda seleccionada o full band
+out2 = preDistInR;      // R banda seleccionada o full band
+out3 = dryCompL;        // L dry compensado
+out4 = dryCompR;        // R dry compensado
+out5 = bypassWhenActiveL; // L bandas bypass (para multiband)
+out6 = bypassWhenActiveR; // R bandas bypass (para multiband)

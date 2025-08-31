@@ -1,0 +1,554 @@
+// =============================================================================
+// DISTORTION CORE BLOCK - Multi-Algorithm Distortion with Tilt & Tone - ACTUALIZADO
+// =============================================================================
+// Procesamiento de distorsión con 8 algoritmos, Tilt PRE/POST, Tone PRE/POST y morphing
+// DC mejorado con tanh para asimetría suave
+//
+// ENTRADAS:
+// - in1: Audio L (desde CrossoverStage out1)
+// - in2: Audio R (desde CrossoverStage out2)
+//
+// SALIDAS:
+// - out1: L distorsionado con tilt, tone y DC blocker
+// - out2: R distorsionado con tilt, tone y DC blocker
+// =============================================================================
+
+// -----------------------------------------------------------------------------
+// FUNCIONES DE DISTORSIÓN (SIN CAMBIOS - MANTENER TODAS)
+// -----------------------------------------------------------------------------
+// MODO 0 - Soft Clipping
+softclip(inl, inr, dr, dc, cell) {
+    lDrivePos = dr * (1.0 + dc);
+    lDriveNeg = dr * (1.0 - dc);
+    rDrivePos = dr * (1.0 + dc);
+    rDriveNeg = dr * (1.0 - dc);
+
+    lNorm = (inl >= 0 ? inl * lDrivePos : inl * lDriveNeg) / cell;
+    rNorm = (inr >= 0 ? inr * rDrivePos : inr * rDriveNeg) / cell;
+
+    lCubic = lNorm - (lNorm * lNorm * lNorm) / 3;
+    rCubic = rNorm - (rNorm * rNorm * rNorm) / 3;
+
+    lLimited = sign(lNorm) * (2.0 / 3.0);
+    rLimited = sign(rNorm) * (2.0 / 3.0);
+
+    lOut = (abs(lNorm) <= 1) ? lCubic : lLimited;
+    rOut = (abs(rNorm) <= 1) ? rCubic : rLimited;
+
+    return lOut * cell, rOut * cell;
+}
+
+// MODO 1 - Sigmoid
+sigmoid(inl, inr, dr, dc, cell) {
+    lDrivePos = dr * (1.0 + dc);
+    lDriveNeg = dr * (1.0 - dc);
+    rDrivePos = dr * (1.0 + dc);
+    rDriveNeg = dr * (1.0 - dc);
+
+    lAdj = inl >= 0 ? inl * lDrivePos : inl * lDriveNeg;
+    rAdj = inr >= 0 ? inr * rDrivePos : inr * rDriveNeg;
+
+    factor = -1;
+    l = (2 * (1 / (1 + exp(factor * lAdj)))) - 1;
+    r = (2 * (1 / (1 + exp(factor * rAdj)))) - 1;
+
+    lOut = clip(l * cell, -cell, cell);
+    rOut = clip(r * cell, -cell, cell);
+
+    return lOut, rOut;
+}
+
+// MODO 2 - Rectificador Full Wave
+rectF(inl, inr, dr, dc, cell) {
+    lDrivePos = dr * (1.0 + dc);
+    lDriveNeg = dr * (1.0 - dc);
+    rDrivePos = dr * (1.0 + dc);
+    rDriveNeg = dr * (1.0 - dc);
+
+    lAdj = inl >= 0 ? inl * lDrivePos : inl * lDriveNeg;
+    rAdj = inr >= 0 ? inr * rDrivePos : inr * rDriveNeg;
+
+    l = sign(lAdj) * abs(lAdj) * 0.707;
+    r = sign(rAdj) * abs(rAdj) * 0.707;
+
+    lOut = clip(l, -cell, cell);
+    rOut = clip(r, -cell, cell);
+    return lOut, rOut;
+}
+
+// MODO 3 - Fuzz Exponencial
+fuzzExp1(inl, inr, dr, dc, cell) {
+    lDrivePos = dr * (1.0 + dc);
+    lDriveNeg = dr * (1.0 - dc);
+    rDrivePos = dr * (1.0 + dc);
+    rDriveNeg = dr * (1.0 - dc);
+
+    lAdj = inl >= 0 ? inl * lDrivePos : inl * lDriveNeg;
+    rAdj = inr >= 0 ? inr * rDrivePos : inr * rDriveNeg;
+
+    signl = sign(lAdj);
+    signr = sign(rAdj);
+
+    l = signl * (1 - exp(-abs(lAdj)));
+    r = signr * (1 - exp(-abs(rAdj)));
+
+    lOut = clip(l, -cell, cell);
+    rOut = clip(r, -cell, cell);
+    return lOut, rOut;
+}
+
+// MODO 4 - Tangente Hiperbólica
+tangenteHiperbolica(inl, inr, dr, dc, cell) {
+    lDrivePos = dr * (1.0 + dc);
+    lDriveNeg = dr * (1.0 - dc);
+    rDrivePos = dr * (1.0 + dc);
+    rDriveNeg = dr * (1.0 - dc);
+
+    l = inl >= 0 ? clip(inl * lDrivePos, -cell, cell)
+                 : clip(inl * lDriveNeg, -cell, cell);
+
+    r = inr >= 0 ? clip(inr * rDrivePos, -cell, cell)
+                 : clip(inr * rDriveNeg, -cell, cell);
+
+    lOut = tanh(l) / tanh(dr);
+    rOut = tanh(r) / tanh(dr);
+    return lOut, rOut;
+}
+
+// MODO 5 - Rectificador Half Wave
+rectH(inl, inr, dr, dc, cell) {
+    lDrivePos = dr * (1.0 + dc);
+    rDrivePos = dr * (1.0 + dc);
+
+    lPositive = max(inl * lDrivePos, 0);
+    rPositive = max(inr * rDrivePos, 0);
+
+    l = clip(lPositive * 0.5, -cell, cell);
+    r = clip(rPositive * 0.5, -cell, cell);
+    return l, r;
+}
+
+// MODO 6 - Arctangente
+arctangent(inl, inr, dr, dc, cell) {
+    lDrivePos = dr * (1.0 + dc);
+    lDriveNeg = dr * (1.0 - dc);
+    rDrivePos = dr * (1.0 + dc);
+    rDriveNeg = dr * (1.0 - dc);
+
+    lAdj = inl >= 0 ? inl * lDrivePos : inl * lDriveNeg;
+    rAdj = inr >= 0 ? inr * rDrivePos : inr * rDriveNeg;
+
+    l = (2 / pi) * atan(lAdj * 2);
+    r = (2 / pi) * atan(rAdj * 2);
+
+    lOut = l * cell;
+    rOut = r * cell;
+    return lOut, rOut;
+}
+
+// MODO 7 - Hard Clip
+hardClip(inl, inr, dr, dc, cell) {
+    lDrivePos = dr * (1.0 + dc);
+    lDriveNeg = dr * (1.0 - dc);
+    rDrivePos = dr * (1.0 + dc);
+    rDriveNeg = dr * (1.0 - dc);
+
+    lDriven = inl >= 0 ? inl * lDrivePos : inl * lDriveNeg;
+    rDriven = inr >= 0 ? inr * rDrivePos : inr * rDriveNeg;
+
+    l = (lDriven > cell) ? cell : ((lDriven < -cell) ? -cell : lDriven);
+    r = (rDriven > cell) ? cell : ((rDriven < -cell) ? -cell : rDriven);
+
+    return l, r;
+}
+
+// -----------------------------------------------------------------------------
+// PARÁMETROS
+// -----------------------------------------------------------------------------
+Param b_DRIVE(1, min=1, default=1, max=50);
+Param c_DC(0, min=0, default=0, max=1);
+Param d_MODE(1, min=0, default=0, max=7);
+Param e_CEILING(0, min=-20, default=0, max=6);
+Param i_TILT(0, min=-6, default=0, max=6);
+Param p_TILTPOS(0, min=0, default=0, max=1);    // NUEVO: 0=Pre, 1=Post
+Param p_DISTON(1, min=0, default=1, max=1);     // NUEVO: Distortion enable
+Param q_TONEON(0, min=0, default=0, max=1);     // NUEVO: Tone filter on/off
+Param r_TONEFREQ(12000, min=20, default=12000, max=20000); // NUEVO: Tone freq
+Param t_TONEQ(0.7071067811865476, min=0.7071067811865476, default=0.7071067811865476, max=16.0); // NUEVO: Tone Q
+Param u_TONEPOS(1, min=0, default=1, max=1);    // NUEVO: 0=Pre, 1=Post
+
+// -----------------------------------------------------------------------------
+// HISTORIALES
+// -----------------------------------------------------------------------------
+History hDrive(0);
+History hDc(0);
+History hMode(0);
+History hTilt(0);
+History hTiltPos(0);
+History hDistOn(1);
+
+// Historiales para filtros Tilt RBJ - Ruta PRE
+History tiltLsL1(0), tiltLsL2(0), tiltLsL3(0), tiltLsL4(0);
+History tiltLsR1(0), tiltLsR2(0), tiltLsR3(0), tiltLsR4(0);
+History tiltHsL1(0), tiltHsL2(0), tiltHsL3(0), tiltHsL4(0);
+History tiltHsR1(0), tiltHsR2(0), tiltHsR3(0), tiltHsR4(0);
+
+// Historiales para filtros Tilt RBJ - Ruta POST
+History postTiltLsL1(0), postTiltLsL2(0), postTiltLsL3(0), postTiltLsL4(0);
+History postTiltLsR1(0), postTiltLsR2(0), postTiltLsR3(0), postTiltLsR4(0);
+History postTiltHsL1(0), postTiltHsL2(0), postTiltHsL3(0), postTiltHsL4(0);
+History postTiltHsR1(0), postTiltHsR2(0), postTiltHsR3(0), postTiltHsR4(0);
+
+// NUEVO: Historiales para TONE filter
+History hToneOn(0), hToneFreq(12000), hToneQ(0.7071067811865476), hTonePos(1);
+// PRE Tone states
+History preToneAL_x1(0), preToneAL_x2(0), preToneAL_y1(0), preToneAL_y2(0);
+History preToneAR_x1(0), preToneAR_x2(0), preToneAR_y1(0), preToneAR_y2(0);
+History preToneBL_x1(0), preToneBL_x2(0), preToneBL_y1(0), preToneBL_y2(0);
+History preToneBR_x1(0), preToneBR_x2(0), preToneBR_y1(0), preToneBR_y2(0);
+// POST Tone states
+History postToneL_x1(0), postToneL_x2(0), postToneL_y1(0), postToneL_y2(0);
+History postToneR_x1(0), postToneR_x2(0), postToneR_y1(0), postToneR_y2(0);
+
+// -----------------------------------------------------------------------------
+// CONSTANTES
+// -----------------------------------------------------------------------------
+smoothFactor = 0.999;
+modeSmoothFactor = 0.99;
+toneSmooth = 0.99;
+
+// =============================================================================
+// PROCESAMIENTO
+// =============================================================================
+
+// Entradas desde CrossoverStage
+preDistInL = in1;
+preDistInR = in2;
+
+// Smoothing de parámetros
+hDrive = hDrive * smoothFactor + b_DRIVE * (1 - smoothFactor);
+drive = hDrive;
+
+hDc = hDc * smoothFactor + c_DC * (1 - smoothFactor);
+dc = hDc;
+
+hMode = hMode * modeSmoothFactor + d_MODE * (1 - modeSmoothFactor);
+smoothedMode = hMode;
+
+hTilt = hTilt * smoothFactor + i_TILT * (1 - smoothFactor);
+tiltDb = hTilt;
+
+hTiltPos = hTiltPos * smoothFactor + p_TILTPOS * (1 - smoothFactor);
+wTiltPost = clamp(hTiltPos, 0, 1);
+wTiltPre = 1 - wTiltPost;
+
+hDistOn = hDistOn * smoothFactor + p_DISTON * (1 - smoothFactor);
+wDist = clamp(hDistOn, 0, 1);
+wClean = 1 - wDist;
+
+// NUEVO: Smoothing para TONE
+hToneOn = hToneOn * toneSmooth + q_TONEON * (1 - toneSmooth);
+toneOn = clamp(hToneOn, 0, 1);
+
+hToneFreq = hToneFreq * smoothFactor + r_TONEFREQ * (1 - smoothFactor);
+toneFreq = hToneFreq;
+
+hToneQ = hToneQ * smoothFactor + t_TONEQ * (1 - smoothFactor);
+tq = clamp(hToneQ, 0.125, 16.0);
+
+hTonePos = hTonePos * smoothFactor + u_TONEPOS * (1 - smoothFactor);
+wTonePost = clamp(hTonePos, 0, 1);
+wTonePre = 1 - wTonePost;
+
+ceiling = dbtoa(e_CEILING);
+
+// Normalizar DC para asimetría
+//dcNorm = hDc * 2.0 - 1.0;
+//dcSkew = tanh(dcNorm * 3.0) * 0.4;
+
+//dcSkew = hDc;  // Ya está en rango 0..1
+
+dcNorm = hDc * 2.0 - 1.0;  // -1 a +1
+dcTanh = tanh(dcNorm * 3.0);  // curva S suave
+dcSkew = (dcTanh + 1.0) * 0.5;  // remapear a 0..1
+
+// -----------------------------------------------------------------------------
+// CÁLCULO DE COEFICIENTES TILT RBJ (sin cambios en esta sección)
+// -----------------------------------------------------------------------------
+fc = 1000.0;
+omega = (fc * twopi) / samplerate;
+sn = sin(omega);
+cs = cos(omega);
+
+Gls = -tiltDb;
+Ghs = tiltDb;
+
+Als = sqrt(dbtoa(Gls));
+Ahs = sqrt(dbtoa(Ghs));
+
+S = 0.5;
+
+alphaLs = 0.5 * sn * sqrt((Als + 1/Als) * (1/S - 1) + 2);
+alphaHs = 0.5 * sn * sqrt((Ahs + 1/Ahs) * (1/S - 1) + 2);
+
+sqrtAls = sqrt(Als);
+sqrtAhs = sqrt(Ahs);
+
+// Low-Shelf
+b0_ls = Als * ((Als + 1) - (Als - 1) * cs + 2 * sqrtAls * alphaLs);
+b1_ls = 2*Als * ((Als - 1) - (Als + 1) * cs);
+b2_ls = Als * ((Als + 1) - (Als - 1) * cs - 2 * sqrtAls * alphaLs);
+a0_ls = (Als + 1) + (Als - 1) * cs + 2 * sqrtAls * alphaLs;
+a1_ls = -2 * ((Als - 1) + (Als + 1) * cs);
+a2_ls = (Als + 1) + (Als - 1) * cs - 2 * sqrtAls * alphaLs;
+
+inv_a0_ls = 1 / a0_ls;
+a0Ls = b0_ls * inv_a0_ls;
+a1Ls = b1_ls * inv_a0_ls;
+a2Ls = b2_ls * inv_a0_ls;
+b1Ls = a1_ls * inv_a0_ls;
+b2Ls = a2_ls * inv_a0_ls;
+
+// High-Shelf
+b0_hs = Ahs * ((Ahs + 1) + (Ahs - 1) * cs + 2 * sqrtAhs * alphaHs);
+b1_hs = -2*Ahs * ((Ahs - 1) + (Ahs + 1) * cs);
+b2_hs = Ahs * ((Ahs + 1) + (Ahs - 1) * cs - 2 * sqrtAhs * alphaHs);
+a0_hs = (Ahs + 1) - (Ahs - 1) * cs + 2 * sqrtAhs * alphaHs;
+a1_hs = 2 * ((Ahs - 1) - (Ahs + 1) * cs);
+a2_hs = (Ahs + 1) - (Ahs - 1) * cs - 2 * sqrtAhs * alphaHs;
+
+inv_a0_hs = 1 / a0_hs;
+a0Hs = b0_hs * inv_a0_hs;
+a1Hs = b1_hs * inv_a0_hs;
+a2Hs = b2_hs * inv_a0_hs;
+b1Hs = a1_hs * inv_a0_hs;
+b2Hs = a2_hs * inv_a0_hs;
+
+// Normalización en el pivote
+cosw = cs;
+sinw = sn;
+cos2 = (cs*cs - sn*sn);
+sin2 = (2*sn*cs);
+
+nr_ls = a0Ls + a1Ls*cosw + a2Ls*cos2;
+ni_ls = -(a1Ls*sinw + a2Ls*sin2);
+dr_ls = 1 + b1Ls*cosw + b2Ls*cos2;
+di_ls = -(b1Ls*sinw + b2Ls*sin2);
+mag2_ls = (nr_ls*nr_ls + ni_ls*ni_ls) / max(1e-12, (dr_ls*dr_ls + di_ls*di_ls));
+mag_ls = sqrt(mag2_ls);
+
+nr_hs = a0Hs + a1Hs*cosw + a2Hs*cos2;
+ni_hs = -(a1Hs*sinw + a2Hs*sin2);
+dr_hs = 1 + b1Hs*cosw + b2Hs*cos2;
+di_hs = -(b1Hs*sinw + b2Hs*sin2);
+mag2_hs = (nr_hs*nr_hs + ni_hs*ni_hs) / max(1e-12, (dr_hs*dr_hs + di_hs*di_hs));
+mag_hs = sqrt(mag2_hs);
+
+gPivot = 1 / max(1e-9, mag_ls * mag_hs);
+
+// -----------------------------------------------------------------------------
+// NUEVO: COEFICIENTES TONE LPF (RBJ con Q variable)
+// -----------------------------------------------------------------------------
+omegaT = (toneFreq * twopi) / samplerate;
+sinT = sin(omegaT);
+cosT = cos(omegaT);
+alphaT = sinT / (2 * tq);
+
+// Coeficientes LPF 2º orden (RBJ)
+b0T = (1 - cosT) * 0.5;
+b1T = 1 - cosT;
+b2T = (1 - cosT) * 0.5;
+a0T = 1 + alphaT;
+a1T = -2 * cosT;
+a2T = 1 - alphaT;
+
+inv_a0T = 1 / a0T;
+t_a0 = b0T * inv_a0T;
+t_a1 = b1T * inv_a0T;
+t_a2 = b2T * inv_a0T;
+t_b1 = a1T * inv_a0T;
+t_b2 = a2T * inv_a0T;
+
+// -----------------------------------------------------------------------------
+// RUTA A (PRE): Tilt → Tone → Distorsión
+// -----------------------------------------------------------------------------
+
+// Aplicar Tilt PRE
+lLs = a0Ls * preDistInL + a1Ls * fixdenorm(tiltLsL2) + a2Ls * fixdenorm(tiltLsL1)
+    - b1Ls * fixdenorm(tiltLsL4) - b2Ls * fixdenorm(tiltLsL3);
+tiltLsL1 = tiltLsL2; tiltLsL2 = preDistInL; tiltLsL3 = tiltLsL4; tiltLsL4 = lLs;
+
+rLs = a0Ls * preDistInR + a1Ls * fixdenorm(tiltLsR2) + a2Ls * fixdenorm(tiltLsR1)
+    - b1Ls * fixdenorm(tiltLsR4) - b2Ls * fixdenorm(tiltLsR3);
+tiltLsR1 = tiltLsR2; tiltLsR2 = preDistInR; tiltLsR3 = tiltLsR4; tiltLsR4 = rLs;
+
+lTiltRaw = a0Hs * lLs + a1Hs * fixdenorm(tiltHsL2) + a2Hs * fixdenorm(tiltHsL1)
+         - b1Hs * fixdenorm(tiltHsL4) - b2Hs * fixdenorm(tiltHsL3);
+tiltHsL1 = tiltHsL2; tiltHsL2 = lLs; tiltHsL3 = tiltHsL4; tiltHsL4 = lTiltRaw;
+
+rTiltRaw = a0Hs * rLs + a1Hs * fixdenorm(tiltHsR2) + a2Hs * fixdenorm(tiltHsR1)
+         - b1Hs * fixdenorm(tiltHsR4) - b2Hs * fixdenorm(tiltHsR3);
+tiltHsR1 = tiltHsR2; tiltHsR2 = rLs; tiltHsR3 = tiltHsR4; tiltHsR4 = rTiltRaw;
+
+lTiltPre = lTiltRaw * gPivot;
+rTiltPre = rTiltRaw * gPivot;
+
+// NUEVO: Aplicar TONE en PRE si está activo
+preAL_x1p = fixdenorm(preToneAL_x1);
+preAL_x2p = fixdenorm(preToneAL_x2);
+preAL_y1p = fixdenorm(preToneAL_y1);
+preAL_y2p = fixdenorm(preToneAL_y2);
+preA_L = t_a0 * lTiltPre + t_a1 * preAL_x1p + t_a2 * preAL_x2p - t_b1 * preAL_y1p - t_b2 * preAL_y2p;
+preToneAL_x2 = preAL_x1p; preToneAL_x1 = lTiltPre; preToneAL_y2 = preAL_y1p; preToneAL_y1 = preA_L;
+
+preAR_x1p = fixdenorm(preToneAR_x1);
+preAR_x2p = fixdenorm(preToneAR_x2);
+preAR_y1p = fixdenorm(preToneAR_y1);
+preAR_y2p = fixdenorm(preToneAR_y2);
+preA_R = t_a0 * rTiltPre + t_a1 * preAR_x1p + t_a2 * preAR_x2p - t_b1 * preAR_y1p - t_b2 * preAR_y2p;
+preToneAR_x2 = preAR_x1p; preToneAR_x1 = rTiltPre; preToneAR_y2 = preAR_y1p; preToneAR_y1 = preA_R;
+
+// Entrada a distorsión ruta A (con TONE si está en PRE)
+inA_L = mix(lTiltPre, preA_L, wTonePre * toneOn);
+inA_R = mix(rTiltPre, preA_R, wTonePre * toneOn);
+
+// Aplicar Distorsión a la señal con Tilt+Tone PRE
+// Aplicar Distorsión a la señal con Tilt PRE
+softL_A, softR_A = softclip(inA_L, inA_R, drive, dcSkew, ceiling);
+sigmL_A, sigmR_A = sigmoid(inA_L, inA_R, drive, dcSkew, ceiling);
+rectL_A, rectR_A = rectF(inA_L, inA_R, drive, dcSkew, ceiling);
+fuzz1L_A, fuzz1R_A = fuzzExp1(inA_L, inA_R, drive, dcSkew, ceiling);
+tanhL_A, tanhR_A = tangenteHiperbolica(inA_L, inA_R, drive, dcSkew, ceiling);
+recthL_A, recthR_A = rectH(inA_L, inA_R, drive, dcSkew, ceiling);
+atanL_A, atanR_A = arctangent(inA_L, inA_R, drive, dcSkew, ceiling);
+hardL_A, hardR_A = hardClip(inA_L, inA_R, drive, dcSkew, ceiling);
+
+mode = smoothedMode;
+w0 = max(0, 1 - abs(mode - 0));
+w1 = max(0, 1 - abs(mode - 1));
+w2 = max(0, 1 - abs(mode - 2));
+w3 = max(0, 1 - abs(mode - 3));
+w4 = max(0, 1 - abs(mode - 4));
+w5 = max(0, 1 - abs(mode - 5));
+w6 = max(0, 1 - abs(mode - 6));
+w7 = max(0, 1 - abs(mode - 7));
+
+sumWeights = w0 + w1 + w2 + w3 + w4 + w5 + w6 + w7 + 0.0001;
+w0 /= sumWeights; w1 /= sumWeights; w2 /= sumWeights; w3 /= sumWeights;
+w4 /= sumWeights; w5 /= sumWeights; w6 /= sumWeights; w7 /= sumWeights;
+
+distL_A = softL_A * w0 + sigmL_A * w1 + rectL_A * w2 + fuzz1L_A * w3 +
+          tanhL_A * w4 + recthL_A * w5 + atanL_A * w6 + hardL_A * w7;
+distR_A = softR_A * w0 + sigmR_A * w1 + rectR_A * w2 + fuzz1R_A * w3 +
+          tanhR_A * w4 + recthR_A * w5 + atanR_A * w6 + hardR_A * w7;
+
+preOutL = dcblock(distL_A);
+preOutR = dcblock(distR_A);
+
+// -----------------------------------------------------------------------------
+// RUTA B (POST): Tone → Distorsión → Tilt
+// -----------------------------------------------------------------------------
+
+// NUEVO: Aplicar TONE en PRE para ruta B si está activo
+preBL_x1p = fixdenorm(preToneBL_x1);
+preBL_x2p = fixdenorm(preToneBL_x2);
+preBL_y1p = fixdenorm(preToneBL_y1);
+preBL_y2p = fixdenorm(preToneBL_y2);
+preB_L = t_a0 * preDistInL + t_a1 * preBL_x1p + t_a2 * preBL_x2p - t_b1 * preBL_y1p - t_b2 * preBL_y2p;
+preToneBL_x2 = preBL_x1p; preToneBL_x1 = preDistInL; preToneBL_y2 = preBL_y1p; preToneBL_y1 = preB_L;
+
+preBR_x1p = fixdenorm(preToneBR_x1);
+preBR_x2p = fixdenorm(preToneBR_x2);
+preBR_y1p = fixdenorm(preToneBR_y1);
+preBR_y2p = fixdenorm(preToneBR_y2);
+preB_R = t_a0 * preDistInR + t_a1 * preBR_x1p + t_a2 * preBR_x2p - t_b1 * preBR_y1p - t_b2 * preBR_y2p;
+preToneBR_x2 = preBR_x1p; preToneBR_x1 = preDistInR; preToneBR_y2 = preBR_y1p; preToneBR_y1 = preB_R;
+
+// Entrada a distorsión ruta B (con TONE si está en PRE)
+inB_L = mix(preDistInL, preB_L, wTonePre * toneOn);
+inB_R = mix(preDistInR, preB_R, wTonePre * toneOn);
+
+// Aplicar Distorsión SIN Tilt
+// Aplicar Distorsión SIN Tilt
+softL_B, softR_B = softclip(inB_L, inB_R, drive, dcSkew, ceiling);
+sigmL_B, sigmR_B = sigmoid(inB_L, inB_R, drive, dcSkew, ceiling);
+rectL_B, rectR_B = rectF(inB_L, inB_R, drive, dcSkew, ceiling);
+fuzz1L_B, fuzz1R_B = fuzzExp1(inB_L, inB_R, drive, dcSkew, ceiling);
+tanhL_B, tanhR_B = tangenteHiperbolica(inB_L, inB_R, drive, dcSkew, ceiling);
+recthL_B, recthR_B = rectH(inB_L, inB_R, drive, dcSkew, ceiling);
+atanL_B, atanR_B = arctangent(inB_L, inB_R, drive, dcSkew, ceiling);
+hardL_B, hardR_B = hardClip(inB_L, inB_R, drive, dcSkew, ceiling);
+
+distL_B = softL_B * w0 + sigmL_B * w1 + rectL_B * w2 + fuzz1L_B * w3 +
+          tanhL_B * w4 + recthL_B * w5 + atanL_B * w6 + hardL_B * w7;
+
+distR_B = softR_B * w0 + sigmR_B * w1 + rectR_B * w2 + fuzz1R_B * w3 +
+          tanhR_B * w4 + recthR_B * w5 + atanR_B * w6 + hardR_B * w7;
+
+postInL = dcblock(distL_B);
+postInR = dcblock(distR_B);
+
+// Aplicar Tilt POST a la señal distorsionada
+postLsL = a0Ls * postInL + a1Ls * fixdenorm(postTiltLsL2) + a2Ls * fixdenorm(postTiltLsL1)
+        - b1Ls * fixdenorm(postTiltLsL4) - b2Ls * fixdenorm(postTiltLsL3);
+postTiltLsL1 = postTiltLsL2; postTiltLsL2 = postInL; 
+postTiltLsL3 = postTiltLsL4; postTiltLsL4 = postLsL;
+
+postLsR = a0Ls * postInR + a1Ls * fixdenorm(postTiltLsR2) + a2Ls * fixdenorm(postTiltLsR1)
+        - b1Ls * fixdenorm(postTiltLsR4) - b2Ls * fixdenorm(postTiltLsR3);
+postTiltLsR1 = postTiltLsR2; postTiltLsR2 = postInR;
+postTiltLsR3 = postTiltLsR4; postTiltLsR4 = postLsR;
+
+postTiltRawL = a0Hs * postLsL + a1Hs * fixdenorm(postTiltHsL2) + a2Hs * fixdenorm(postTiltHsL1)
+             - b1Hs * fixdenorm(postTiltHsL4) - b2Hs * fixdenorm(postTiltHsL3);
+postTiltHsL1 = postTiltHsL2; postTiltHsL2 = postLsL;
+postTiltHsL3 = postTiltHsL4; postTiltHsL4 = postTiltRawL;
+
+postTiltRawR = a0Hs * postLsR + a1Hs * fixdenorm(postTiltHsR2) + a2Hs * fixdenorm(postTiltHsR1)
+             - b1Hs * fixdenorm(postTiltHsR4) - b2Hs * fixdenorm(postTiltHsR3);
+postTiltHsR1 = postTiltHsR2; postTiltHsR2 = postLsR;
+postTiltHsR3 = postTiltHsR4; postTiltHsR4 = postTiltRawR;
+
+postTiltL = postTiltRawL * gPivot;
+postTiltR = postTiltRawR * gPivot;
+
+// -----------------------------------------------------------------------------
+// MORPH PRE/POST Y BYPASS DISTORSIÓN
+// -----------------------------------------------------------------------------
+
+// Morphing entre PRE y POST para TILT
+distMorphL = mix(preOutL, postTiltL, wTiltPost);
+distMorphR = mix(preOutR, postTiltR, wTiltPost);
+
+// NUEVO: Aplicar TONE en POST si está activo
+postL_x1p = fixdenorm(postToneL_x1);
+postL_x2p = fixdenorm(postToneL_x2);
+postL_y1p = fixdenorm(postToneL_y1);
+postL_y2p = fixdenorm(postToneL_y2);
+postToneL = t_a0 * distMorphL + t_a1 * postL_x1p + t_a2 * postL_x2p - t_b1 * postL_y1p - t_b2 * postL_y2p;
+postToneL_x2 = postL_x1p; postToneL_x1 = distMorphL; postToneL_y2 = postL_y1p; postToneL_y1 = postToneL;
+
+postR_x1p = fixdenorm(postToneR_x1);
+postR_x2p = fixdenorm(postToneR_x2);
+postR_y1p = fixdenorm(postToneR_y1);
+postR_y2p = fixdenorm(postToneR_y2);
+postToneR = t_a0 * distMorphR + t_a1 * postR_x1p + t_a2 * postR_x2p - t_b1 * postR_y1p - t_b2 * postR_y2p;
+postToneR_x2 = postR_x1p; postToneR_x1 = distMorphR; postToneR_y2 = postR_y1p; postToneR_y1 = postToneR;
+
+// Aplicar TONE POST si está activo
+withToneL = mix(distMorphL, postToneL, wTonePost * toneOn);
+withToneR = mix(distMorphR, postToneR, wTonePost * toneOn);
+
+// Clean = entrada con Tilt/Tone PRE pero sin distorsión
+cleanL = inA_L;
+cleanR = inA_R;
+
+// Salida final: mezclar entre clean y distorsionado
+processedL = mix(cleanL, withToneL, wDist);
+processedR = mix(cleanR, withToneR, wDist);
+
+// -----------------------------------------------------------------------------
+// SALIDAS
+// -----------------------------------------------------------------------------
+out1 = processedL;  // L procesado completo → EffectsChain in1
+out2 = processedR;  // R procesado completo → EffectsChain in2

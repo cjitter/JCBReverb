@@ -1,0 +1,37 @@
+// =============================================================================
+// INPUT STAGE BLOCK - Input Trim
+// =============================================================================
+// ENTRADAS: in1=Audio L, in2=Audio R | SALIDAS: out1=L trimmed, out2=R trimmed, out3=L dry, out4=R dry
+// =============================================================================
+
+// PARÁMETROS
+Param k_INPUT(0, min=-12, default=0, max=12);
+
+// HISTORIALES
+History hInput(0);
+
+// CONSTANTES
+smoothFactor = 0.999;
+
+// =============================================================================
+// PROCESAMIENTO
+// =============================================================================
+
+// Entrada desde DAW/hardware
+lIn = in1;
+rIn = in2;
+
+// Smoothing del parámetro de trim
+hInput = hInput * smoothFactor + k_INPUT * (1 - smoothFactor);
+inputTrimDb = hInput;
+inputTrimLinear = dbtoa(inputTrimDb);
+
+// INPUT TRIM
+lTrimmed = lIn * inputTrimLinear;
+rTrimmed = rIn * inputTrimLinear;
+
+// SALIDAS
+out1 = lTrimmed;
+out2 = rTrimmed;
+out3 = lIn;
+out4 = rIn;

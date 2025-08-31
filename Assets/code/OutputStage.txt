@@ -1,0 +1,83 @@
+// =============================================================================
+// OUTPUT STAGE BLOCK - Dry/Wet Mix, Output Gain, Bypass & Safety Limiter - ACTUALIZADO
+// =============================================================================
+
+// PARÁMETROS
+Param a_DRYWET(1, min=0, default=1, max=1);
+Param f_BYPASS(0, min=0, default=0, max=1);
+Param l_OUTPUT(0, min=-24, default=0, max=12);  // Output makeup gain
+Param p_SAFELIMITON(0, min=0, default=0, max=1); // Safety limiter
+
+// HISTORIALES
+History hDrywet(0);
+History hBypass(0);
+History hOutput(0);
+History hSafeLimitOn(0);
+
+// CONSTANTES
+smoothFactor = 0.999;
+
+// =============================================================================
+// PROCESAMIENTO
+// =============================================================================
+
+// Entradas
+wetL = in1;                    // Desde EffectsChain
+wetR = in2;                    // Desde EffectsChain
+dryL = in3;                    // Dry compensado desde CrossoverStage
+dryR = in4;                    // Dry compensado desde CrossoverStage
+bypassBandsL = in5;            // Bandas bypass para multiband
+bypassBandsR = in6;            // Bandas bypass para multiband
+
+// Smoothing de parámetros
+hDrywet = hDrywet * smoothFactor + a_DRYWET * (1 - smoothFactor);
+drywet = hDrywet;
+
+hBypass = hBypass * smoothFactor + (1 - f_BYPASS) * (1 - smoothFactor);
+bypass = hBypass;
+
+hOutput = hOutput * smoothFactor + l_OUTPUT * (1 - smoothFactor);
+outputMakeupDb = hOutput;
+outputMakeupLinear = dbtoa(outputMakeupDb);
+
+hSafeLimitOn = hSafeLimitOn * smoothFactor + p_SAFELIMITON * (1 - smoothFactor);
+safeOn = clamp(hSafeLimitOn, 0, 1);
+
+// -----------------------------------------------------------------------------
+// AGREGAR BANDAS BYPASS Y OUTPUT MAKEUP
+// -----------------------------------------------------------------------------
+// Las bandas bypass ya vienen correctamente escaladas desde CrossoverStage
+// Solo aplicamos makeup al wet y luego sumamos las bandas bypass
+
+wetWithMakeupL = (wetL * outputMakeupLinear) + bypassBandsL;
+wetWithMakeupR = (wetR * outputMakeupLinear) + bypassBandsR;
+
+// -----------------------------------------------------------------------------
+// MEZCLA DRY/WET
+// -----------------------------------------------------------------------------
+// Parámetro drywet: 0 = solo dry (original), 1 = solo wet (procesada)
+mixedL = mix(dryL, wetWithMakeupL, drywet);
+mixedR = mix(dryR, wetWithMakeupR, drywet);
+
+// -----------------------------------------------------------------------------
+// SAFETY LIMITER OPCIONAL
+// -----------------------------------------------------------------------------
+// Ceiling fijo a -0.1dB para evitar clipping digital
+safeCeiling = dbtoa(-0.1);
+
+// Limitador simple usando clamp (hard limit)
+safeL = mix(mixedL, clamp(mixedL, -safeCeiling, safeCeiling), safeOn);
+safeR = mix(mixedR, clamp(mixedR, -safeCeiling, safeCeiling), safeOn);
+
+// -----------------------------------------------------------------------------
+// DC BLOCKER FINAL
+// -----------------------------------------------------------------------------
+finalDcBlockedL = dcblock(safeL);
+finalDcBlockedR = dcblock(safeR);
+
+// -----------------------------------------------------------------------------
+// BYPASS GLOBAL
+// -----------------------------------------------------------------------------
+// El bypass mezcla entre la señal original sin procesar y la señal procesada
+out1 = mix(dryL, finalDcBlockedL, bypass);
+out2 = mix(dryR, finalDcBlockedR, bypass);

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<PARAMETERS>
+  <PARAM id="a_DRYWET" value="0.1499999910593033"/>
+  <PARAM id="b_DRIVE" value="50.0"/>
+  <PARAM id="c_DC" value="0.0"/>
+  <PARAM id="d_MODE" value="0.0"/>
+  <PARAM id="e_CEILING" value="-2.999999761581421"/>
+  <PARAM id="f_BYPASS" value="0.0"/>
+  <PARAM id="g_BITS" value="16.0"/>
+  <PARAM id="h_BITSON" value="0.0"/>
+  <PARAM id="i_TILT" value="1.600000143051147"/>
+  <PARAM id="j_HPF" value="435.0"/>
+  <PARAM id="k_INPUT" value="1.788139343261719e-7"/>
+  <PARAM id="k_LPF" value="20000.0"/>
+  <PARAM id="l_OUTPUT" value="2.500000238418579"/>
+  <PARAM id="l_SC" value="1.0"/>
+  <PARAM id="m_DOWNSAMPLE" value="0.0"/>
+  <PARAM id="n_DOWNSAMPLEON" value="0.0"/>
+  <PARAM id="p_DISPLAYMODE" value="0.0"/>
+  <Presets currentPresetID="0" tooltipEnabled="1" presetDisplayText="DEFAULT*"
+           presetTextItalic="1" envelopeVisualEnabled="1" tooltipLanguageEnglish="1"
+           editorWidth="1435" editorHeight="410"/>
+  <ABStates isStateA="1">
+    <StateA/>
+    <StateB/>
+  </ABStates>
+  <PARAM id="o_BAND" value="0.6499999761581421"/>
+  <PARAM id="p_BANDSOLO"/>
+  <PARAM id="p_DISTON"/>
+  <PARAM id="p_SAFELIMITON"/>
+  <PARAM id="p_TILTPOS" value="1.0"/>
+  <PARAM id="q_TONEON" value="0.0"/>
+  <PARAM id="r_TONEFREQ" value="12000.0"/>
+</PARAMETERS>
