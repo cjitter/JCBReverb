@@ -5,4 +5,7 @@
 **/Builds/MacOSX/build/Release
 **/zVar
 zOlds/
+AGENTS.md
+CLAUDE.md
 .idea/
+Docs/
