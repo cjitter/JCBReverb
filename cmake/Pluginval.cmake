@@ -160,9 +160,9 @@ function(add_pluginval_tests target)
 
     # Definir la ruta del plugin según el formato
     if(plugin_format STREQUAL "VST3")
-        set(plugin_path "${CMAKE_CURRENT_BINARY_DIR}/JCBTransient_artefacts/$<CONFIG>/VST3/JCBTransient.vst3")
+        set(plugin_path "${CMAKE_CURRENT_BINARY_DIR}/JCBReverb_artefacts/$<CONFIG>/VST3/JCBReverb.vst3")
     elseif(plugin_format STREQUAL "AU")
-        set(plugin_path "${CMAKE_CURRENT_BINARY_DIR}/JCBTransient_artefacts/$<CONFIG>/AU/JCBTransient.component")
+        set(plugin_path "${CMAKE_CURRENT_BINARY_DIR}/JCBReverb_artefacts/$<CONFIG>/AU/JCBReverb.component")
     else()
         message(WARNING "Unsupported plugin format for pluginval: ${plugin_format}")
         return()

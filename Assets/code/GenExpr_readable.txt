@@ -191,40 +191,43 @@ hishelfCore(input, a0, a1, b1) {
 // -----------------------------------------------------------------------------
 // PARÁMETROS
 // -----------------------------------------------------------------------------
-Param e_SIZE(0, min=0.1, default=1, max=4);
-Param q_ONOFFEQ(0, min=0, default=0, max=1);
-Param u_ATK(0, min=5, default=10, max=250);
-Param i_PEAKGAIN(0, min=-30, default=0, max=30);
-Param r_ONOFFCOMP(0, min=0, default=0, max=1);
-Param k_LPF(0, min=100, default=20000, max=20000);
-Param t_RATIO(0, min=1, default=2, max=20);
-Param n_LOWFREQ(0, min=20, default=500, max=800);
-Param g_FREEZE(0, min=0, default=0, max=1);
-// DAMP: 0 = sin amortiguamiento, 1 = máximo filtrado
-Param d_DAMP(0, min=0, default=0.8, max=1);
-Param f_ST(0, min=0, default=0.5, max=0.8);
-Param c_REFLECT(0, min=0.1, default=0.86, max=0.98);
-// Input trim in dB (-12..+12, 0dB default)
-Param a_INPUT(0, min=-12, default=0, max=12);
+Param a_INPUT(0, min=-12, default=0, max=12); // Input trim in dB (-12..+12, 0dB default)
 Param b_DRYWET(0, min=0, default=0.33, max=1.);
+Param c_REFLECT(0, min=0.1, default=0.86, max=0.98);
+Param d_DAMP(0, min=0, default=0.8, max=0.9); // DAMP: 0 = sin filtro (no damping), 1 = máximo damping
+Param e_SIZE(0, min=0.1, default=1, max=4);
+Param f_ST(0, min=0, default=0.5, max=0.8);
+Param g_FREEZE(0, min=0, default=0, max=1);
+Param h_LOWGAIN(0, min=-30, default=0, max=30);
+Param i_PEAKGAIN(0, min=-30, default=0, max=30);
 Param j_HIGAIN(0, min=-30, default=0, max=30);
+Param k_LPF(0, min=100, default=20000, max=20000);
+Param l_HPF(0, min=20, default=20, max=5000);
+Param m_OUTPUT(0, min=-12, default=0, max=12); // Output trim in dB (-12..+12, 0dB default)
+Param n_LOWFREQ(0, min=20, default=500, max=800);
 Param o_PEAKFREQ(0, min=100, default=800, max=2500);
 Param p_HIFREQ(0, min=800, default=2000, max=15000);
-Param w_MAKEUP(0, min=-6, default=0, max=6);
-Param l_HPF(0, min=20, default=20, max=5000);
-Param v_REL(0, min=5, default=100, max=500);
-// Output trim in dB (-12..+12, 0dB default)
-Param m_OUTPUT(0, min=-12, default=0, max=12);
+Param q_ONOFFEQ(0, min=0, default=0, max=1);
+Param r_ONOFFCOMP(0, min=0, default=0, max=1);
 Param s_THD(0, min=-36, default=-12, max=0);
-Param h_LOWGAIN(0, min=-30, default=0, max=30);
-// PRE/POST switch for EQ+COMP relative to reverb (0=post, 1=pre)
-Param x_PREPOST(0, min=0, default=0, max=1);
-// IO layout mode (1=mono->mono, 2=mono->stereo, 3=stereo->stereo) — sin auto
-Param y_IOMODE(0, min=1, default=3, max=3);
-// Internal smooth bypass (0=process, 1=bypass to DRY). Host-independent.
-Param z_BYPASSS(0, min=0, default=0, max=1);
-// Softclip enable (0=off, 1=on) — afecta solo a rama WET
-Param z_SOFTCLIP(0, min=0, default=0, max=1);
+Param t_RATIO(0, min=1, default=2, max=20);
+Param u_ATK(0, min=0.1, default=10, max=500);
+Param v_REL(0, min=5, default=100, max=1000);
+Param w_MAKEUP(0, min=-6, default=0, max=6);
+Param x_PREPOST(0, min=0, default=0, max=1); // PRE/POST switch for EQ+COMP relative to reverb (0=post, 1=pre)
+Param y_IOMODE(0, min=1, default=3, max=3); // IO layout mode (1=mono->mono, 2=mono->stereo, 3=stereo->stereo)
+Param z_BYPASSS(0, min=0, default=0, max=1); // Internal smooth bypass (0=process, 1=bypass to DRY). Host-independent.
+
+//Param z_SOFTCLIP(0, min=0, default=0, max=1); // Softclip enable (0=off, 1=on) — afecta solo a rama WET
+
+Param aa_DUCK_ON(0, min=0, default=0, max=1);         // Duck enable (0=off, 1=on)
+Param ab_DUCK_DB(0, min=-60, default=-30, max=0);     // Duck depth in dB (negative values: 0 = no duck, -60 = full reduction)
+Param ac_DUCK_ATK(0, min=1, default=10, max=50);      // Duck attack (ms)
+Param ad_DUCK_REL(0, min=20, default=200, max=600);   // Duck release (ms)
+
+Param ae_WOBBLE_ON(0, min=0, default=0, max=1);        // Wobble estéreo ON/OFF (solo WET)
+Param af_WOBBLE_AMT(0, min=0, default=0.5, max=1);     // Profundidad (0..1 → 0..3 dB)
+Param ag_WOBBLE_RATE(0, min=0.1, default=1, max=100); // Velocidad de cambio (Hz)
 
 // -----------------------------------------------------------------------------
 // PARÁMETROS INTERNOS (constantes de diseño y escalas)
@@ -360,6 +363,10 @@ History preL_flag(0);
 // Smoothed PRE/POST blend state
 History prePost_s(0);
 
+History h_wobblePhase(0);
+History h_wobbleTarget(0);
+History h_wobbleSeed(0.12345);
+
 // -----------------------------------------------------------------------------
 // PROCESAMIENTO PRINCIPAL
 // -----------------------------------------------------------------------------
@@ -393,12 +400,15 @@ compEnableSmoothed = h_compEnable * smoothFactor + r_ONOFFCOMP * oneMinusSmooth;
 next_compEnable = fixdenorm(compEnableSmoothed);
 
 // Softclip on/off suavizado
-softclipEnabled = h_softclipEnable * smoothFactor + z_SOFTCLIP * oneMinusSmooth;
-next_softclipEnable = fixdenorm(softclipEnabled);
+//softclipEnabled = h_softclipEnable * smoothFactor + z_SOFTCLIP * oneMinusSmooth;
+//next_softclipEnable = fixdenorm(softclipEnabled);
 
-// Bypass interno suavizado (0=process, 1=bypass a DRY)
-bypassSmoothed = h_bypass * smoothFactor + z_BYPASSS * oneMinusSmooth;
-next_bypass = fixdenorm(bypassSmoothed);
+// Bypass interno inmediato (0=process, 1=bypass a DRY)
+// Rationale: smoothing aquí puede dejar la salida en estados intermedios tras reanudar
+// causando mutes transitorios si WET≈0. Hacemos la conmutación instantánea y el host
+// gestiona cualquier transición visual.
+bypassSmoothed = z_BYPASSS;
+next_bypass = bypassSmoothed;
 
 // Threshold/ratio y tiempos del compresor (suavizados)
 thresholdDb = h_thresholdDb * smoothFactor + s_THD * oneMinusSmooth;
@@ -497,20 +507,11 @@ apBaseL = int(0);
 apGainL = float(0.5);
 apBaseR = int(0);
 apGainR = float(0.5);
-dampPass = 1 - d_DAMP; // pass = 1 - d_DAMP (0 = damping máximo, 1 = sin damping)
-dampLeak = d_DAMP;     // leak = d_DAMP (0 = sin leak, 1 = leak máximo)
+// Invertido: 0 = sin damping (pass=0, leak=1), 1 = máximo damping (pass=0.9, leak=0)
+clampedDamp = min(d_DAMP, 0.9);
+dampPass = clampedDamp;
+dampLeak = 1 - clampedDamp;
 
-// (aliases redundantes de amortiguación eliminados)
-sizeScalePrev = h_sizeScale * 0.999;
-sizeInputScaled = e_SIZE * 0.001;
-sizeScaleSmoothed = sizeInputScaled + sizeScalePrev;
-nextSizeScale = fixdenorm(sizeScaleSmoothed);
-
-// Aliases de tamaño/escalas con FREEZE: forzar a 0.999 sin exceder
-sizeScaleEff = mix(sizeScaleSmoothed, 0.999, freezeOn);
-sizeScaleEff = min(sizeScaleEff, 0.999);
-sizeScaleL = sizeScaleEff;
-sizeScaleR = sizeScaleEff;
 lpfPrev = h_lpfHz * 0.999;
 lpfInputScaled = k_LPF * 0.001;
 lpfHzSmoothed = lpfInputScaled + lpfPrev;
@@ -523,11 +524,21 @@ hpfHz = hpfHzSmoothed;
 nextHpfHz = fixdenorm(hpfHzSmoothed);
 unity = float(1.);
 
+// (aliases redundantes de amortiguación eliminados)
+sizeScalePrev = h_sizeScale * 0.999;
+sizeInputScaled = e_SIZE * 0.001;
+sizeScaleSmoothed = sizeInputScaled + sizeScalePrev;
+nextSizeScale = fixdenorm(sizeScaleSmoothed);
+
+// Tamaño efectivo: no tocar con FREEZE y sin clamp por debajo de 1
+// (mantenemos un techo de seguridad en 4.0 para evitar overflows)
+sizeScaleEff = min(sizeScaleSmoothed, 4.0);
+sizeScaleL = sizeScaleEff;
+sizeScaleR = sizeScaleEff;
 // Baselines
 leftBaselineSamples = int(0); // baseline samples for left
-reflectComplement = 1 - c_REFLECT;
-reflectGate = gate(freezeOn, reflectComplement, choices=1);
-reflectBase = c_REFLECT + reflectGate;
+// En FREEZE forzamos reflect a 1.0 de forma explícita y portable
+reflectBase = mix(c_REFLECT, 1, freezeOn);
 reflectPrev = h_reflectCoef * 0.999;
 reflectInputScaled = reflectBase * 0.001;
 reflectCoefSmoothed = reflectInputScaled + reflectPrev;
@@ -638,8 +649,8 @@ preInputL_sel = mix(preInputL, preL_proc, prePostBinary) * feedGate;
 // - Procesado: LPF/HPF RBJ biquad por canal
 // - Salidas: hpfOutL / hpfOutR (alimentan bancos de combs L/R)
 // - Entradas legibles a pre‑filtros
-preFilterInR = preInputR_sel;
-preFilterInL = preInputL_sel;
+preFilterInR = preInputR_sel * freezeGateSmoothed;
+preFilterInL = preInputL_sel * freezeGateSmoothed;
 
 // Coeficientes LPF (biquad RBJ)
 omega = ((lpfHz * twopi)) / samplerate;
@@ -1281,19 +1292,77 @@ wetPostCompRight = postCOMP_R;
 // - Salidas: out1/out2 (requeridos por Max/Gen)
 wetOutL = wetPostCompLeft * outputTrimLin;
 wetOutR = wetPostCompRight * outputTrimLin;
+
+// --- WOBBLE ESTÉREO (aleatorio suavizado) justo ANTES del DUCK ---
+// Reloj de S&H para objetivo aleatorio
+phaseInc = ag_WOBBLE_RATE / samplerate;
+phaseNext = h_wobblePhase + phaseInc;
+wrapWob = phaseNext >= 1;
+currentPhase = wrapWob ? (phaseNext - 1) : phaseNext;
+
+// LCG simple para generar ruido determinista [-1,1]
+seedNext = fract(h_wobbleSeed * 1103515245.0 + 12345.0);
+noiseRand = (seedNext * 2) - 1;
+
+// Sample & hold de objetivo
+wobbleTargetNext = wrapWob ? noiseRand : h_wobbleTarget;
+
+// Slew adaptativo según RATE (~20% del periodo), limitado entre 30 y 300 ms
+periodMs = 1000 / max(ag_WOBBLE_RATE, 0.05);
+slewMs   = clip(periodMs * 0.2, 0.01, 300);
+wobbleSlewed = slide(wobbleTargetNext, mstosamps(slewMs), mstosamps(slewMs));
+
+// Profundidad en dB máx ≈ 6 dB, escalada por af_WOBBLE_AMT
+wobbleDepthDb = af_WOBBLE_AMT * 6;
+wobbleDepthLin = dbtoa(wobbleDepthDb);
+
+// Respetar el spread actual: escalar por stereoWidthParam
+panEff = wobbleSlewed * stereoWidthParam;
+
+// Ganancias antisimétricas y normalización suave de energía
+gL_wob = pow(wobbleDepthLin,  panEff);
+gR_wob = pow(wobbleDepthLin, -panEff);
+wobNorm = 1 / sqrt(((gL_wob * gL_wob) + (gR_wob * gR_wob)) * 0.5);
+
+wetWobL = wetOutL * gL_wob * wobNorm;
+wetWobR = wetOutR * gR_wob * wobNorm;
+
+// Aplicar solo si está activado
+wetPreDuckL = mix(wetOutL, wetWobL, ae_WOBBLE_ON);
+wetPreDuckR = mix(wetOutR, wetWobR, ae_WOBBLE_ON);
+
+// Ducking in dB based on dry RMS
+// Detector: dry input (ioL_raw/ioR_raw)
+dryEnergy = (ioL_raw * ioL_raw + ioR_raw * ioR_raw) * 0.5;
+dryEnv = slide(dryEnergy, mstosamps(ac_DUCK_ATK), mstosamps(ad_DUCK_REL)); // up=ATK, down=REL
+// Detector más agresivo (*4) para que dispare antes
+dryNorm = min(sqrt(dryEnv) * 4, 1);
+
+// Duck envelope en dB: ab_DUCK_DB ya es negativo (0..-60)
+duckReductionDb = ab_DUCK_DB * dryNorm;
+duckGain = dbtoa(duckReductionDb);
+duckEnv = mix(1, duckGain, aa_DUCK_ON);
+
+wetDuckedL = wetPreDuckL * duckEnv;
+wetDuckedR = wetPreDuckR * duckEnv;
+
 // Softclip solo en la rama WET
-wetClipL = (2 / pi) * tanh(wetOutL);
-wetClipR = (2 / pi) * tanh(wetOutR);
-wetProcessedL = mix(wetOutL, wetClipL, softclipEnabled);
-wetProcessedR = mix(wetOutR, wetClipR, softclipEnabled);
+// wetClipL = 0.6366342928 * tanh(wetOutL);
+// wetClipR = 0.6366342928 * tanh(wetOutR);
+// wetProcessedL = mix(wetOutL, wetClipL, 0); //softclipEnabled
+// wetProcessedR = mix(wetOutR, wetClipR, 0); //softclipEnabled
+
 // Mezcla Dry/Wet y bypass interno (suavizado)
-mixedLeft = mix(dryL, wetProcessedL, dryWet);
-mixedRight = mix(dryR, wetProcessedR, dryWet);
-finalLeftPre = mix(mixedLeft, dryL, bypassSmoothed);
-dcblockLeft = dcblock(finalLeftPre);
-// outMono/out mix computed after both channels are available
+mixedLeft  = mix(dryL, wetDuckedL, dryWet);
+mixedRight = mix(dryR, wetDuckedR, dryWet);
+
+finalLeftPre  = mix(mixedLeft, dryL, bypassSmoothed);
 finalRightPre = mix(mixedRight, dryR, bypassSmoothed);
+
+dcblockLeft  = dcblock(finalLeftPre);
 dcblockRight = dcblock(finalRightPre);
+
+// outMono/out mix computed after both channels are available
 outMono = (dcblockLeft + dcblockRight) * 0.5;
 out1 = mix(dcblockLeft, outMono, isMonoOut);
 out2 = mix(dcblockRight, outMono, isMonoOut);
@@ -1439,11 +1508,17 @@ h_ratio = next_ratio;
 h_thresholdDb = next_thresholdDb;
 h_compEnable = next_compEnable;
 h_outputTrim = next_outputTrim;
+
 // Softclip enable state update
-h_softclipEnable = next_softclipEnable;
+//h_softclipEnable = next_softclipEnable;
+
 // Internal bypass state update
 h_bypass = next_bypass;
 // Pre/Post gap env state
 h_prepostGap = next_prepostGap;
 // PRE/POST switch envelope update (legacy blend state)
 prePost_s = fixdenorm(prePostBlend);
+
+h_wobblePhase = currentPhase;
+h_wobbleTarget = wobbleTargetNext;
+h_wobbleSeed = seedNext;

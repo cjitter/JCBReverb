@@ -170,6 +170,15 @@ target_compile_options(JCBReverb PRIVATE
         -Wall -Wextra -Wno-unused-parameter
 )
 
+# Debug-only diagnostic switches (work with single- or multi-config generators)
+# target_compile_definitions(JCBReverb PRIVATE $<$<CONFIG:Debug>:JCB_DEBUG_PASSTHROUGH=1>)
+# To force absolute silence for isolation, enable the following line (uncomment):
+# target_compile_definitions(JCBReverb PRIVATE $<$<CONFIG:Debug>:JCB_DEBUG_MUTE_OUTPUT=1>)
+# To route Gen out4/out5 to main outs (Debug):
+# target_compile_definitions(JCBReverb PRIVATE $<$<CONFIG:Debug>:JCB_DEBUG_GEN_OUT45=1>)
+# To force 100% wet inside Gen (Debug):
+# target_compile_definitions(JCBReverb PRIVATE $<$<CONFIG:Debug>:JCB_DEBUG_FORCE_WET=1>)
+
 # Testing con pluginval (opcional). Requiere cmake/Pluginval.cmake
 enable_testing()
 include(Pluginval OPTIONAL)
@@ -185,6 +194,10 @@ endif()
 
 # Instalación automática para macOS (se puede desactivar con JUCE_AUTO_INSTALL_PLUGINS OFF)
 if(JUCE_AUTO_INSTALL_PLUGINS)
+    # Do not auto-install on Debug builds to avoid polluting user folders during development
+    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+        message(STATUS "Auto-install skipped: Debug configuration")
+    else()
     # Rutas de instalación del sistema macOS
     set(VST3_DIR "$ENV{HOME}/Library/Audio/Plug-Ins/VST3")
     set(AU_DIR   "$ENV{HOME}/Library/Audio/Plug-Ins/Components")
@@ -229,6 +242,7 @@ if(JUCE_AUTO_INSTALL_PLUGINS)
             COMMENT "Installing AAX plugin to ${AAX_DIR}..."
             VERBATIM
         )
+    endif()
     endif()
 endif()
 

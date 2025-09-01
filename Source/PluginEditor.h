@@ -78,6 +78,9 @@ public:
     
     // Métodos de actualización para controles de reverb se añadirán cuando se implementen
     
+    // Debug overlay
+    void setDebugOverlayVisible(bool v) { debugOverlayVisible = v; repaint(); }
+    
 private:
     // Helper para obtener color de banda
     //==========================================================================
@@ -103,7 +106,7 @@ private:
     static constexpr int MAX_WIDTH = 1437;  // 115% de default
     static constexpr int MAX_HEIGHT = 410;  // 115% de default
     static constexpr int TIMER_HZ = 60;
-    
+
     // Debouncing y timing
     static constexpr juce::uint32 DIAGRAM_BUTTON_DEBOUNCE_MS = 200;
     static constexpr juce::uint32 MIN_UPDATE_INTERVAL_MS = 16; // ~60fps max update
@@ -309,7 +312,11 @@ private:
         
         juce::Colour getInterpolatedBandColour(float bandValue) const;
     };
-    
+
+    // Debug overlay controls
+    bool debugOverlayVisible { true };
+    juce::Label debugLabel;
+
     //==========================================================================
     // LISTENERS ESPECIALIZADOS
     //==========================================================================
@@ -1074,4 +1081,3 @@ private:
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (JCBReverbAudioProcessorEditor)
 };
-

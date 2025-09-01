@@ -114,6 +114,12 @@ JCBReverbAudioProcessorEditor::JCBReverbAudioProcessorEditor (JCBReverbAudioProc
     } else {
         titleText = "JCBReverb v0.9.1";  // Nombre completo para otros DAWs
     }
+
+#if defined(JCB_DEBUG_MUTE_OUTPUT)
+    titleText += " [MUTE]";
+#elif defined(JCB_DEBUG_PASSTHROUGH)
+    titleText += " [PT]";
+#endif
     
     titleLink.setButtonText(titleText);
     
@@ -271,6 +277,9 @@ JCBReverbAudioProcessorEditor::JCBReverbAudioProcessorEditor (JCBReverbAudioProc
     outputMeterR.setValueFunction([this](){ return processor.isInitialized() ? processor.getRmsOutputValue(1) : -100.0f; });
     
     // Callbacks para visualización se añadirán cuando se implemente el display de reverb
+
+    // Inicializar texto debug overlay
+    debugLabel.setText("FS:0  RS:0", juce::dontSendNotification);
     
     
     // CRASH FIX: Iniciar timer AL FINAL para evitar acceso prematuro a valores atómicos
@@ -860,6 +869,11 @@ void JCBReverbAudioProcessorEditor::resized()
     // Medidores de salida (lado derecho)
     outputMeterL.setBounds(getScaledBounds(677, 42, 12, 117));
     outputMeterR.setBounds(getScaledBounds(687, 42, 12, 117));
+
+    // Posicionar debug label en esquina inferior derecha
+    const int dbgW = 220;
+    const int dbgH = 16;
+    debugLabel.setBounds(getWidth() - dbgW - 10, getHeight() - dbgH - 6, dbgW, dbgH);
     
     // COMENTADO: Slider de makeup incorrecto
     // makeupSlider.setBounds(getScaledBounds(677, 40, 22, 130));
@@ -1086,6 +1100,13 @@ void JCBReverbAudioProcessorEditor::timerCallback()
     }
     
     // FFT processing removed - disabled for stability
+
+    // Debug overlay: update counters each frame (lightweight atomics)
+    {
+        const int fs = processor.getDiagFailsafeCount();
+        const int rs = processor.getDiagGenResets();
+        debugLabel.setText(juce::String::formatted("FS:%d  RS:%d", fs, rs), juce::dontSendNotification);
+    }
 }
 
 void JCBReverbAudioProcessorEditor::buttonClicked(juce::Button* button)
@@ -1110,14 +1131,14 @@ void JCBReverbAudioProcessorEditor::buttonClicked(juce::Button* button)
         const bool bypassActive = parameterButtons.bypassButton.getToggleState();
         if (bypassActive) {
             // BYPASS desactiva SOLO SC y DIAGRAM
-                    // sidechainControls.soloScButton.setToggleState(false, juce::sendNotification);
             if (centerButtons.diagramButton.getToggleState()) {
                 centerButtons.diagramButton.setToggleState(false, juce::dontSendNotification);
-                hideDiagram(); // Cerrar DIAGRAM si está abierto
+                hideDiagram();
             }
         }
         updateButtonStates();
-        // Actualizar bypass interno de Gen (z_BYPASSS) – no APVTS
+
+        // Reactivar control de bypass interno de Gen: z_BYPASSS (sin smoothing en Gen)
         if (auto* st = processor.getPluginState())
         {
             for (int i = 0; i < JCBReverb::num_params(); ++i)
@@ -1130,10 +1151,7 @@ void JCBReverbAudioProcessorEditor::buttonClicked(juce::Button* button)
             }
         }
 
-        // Actualizar distortion curve display para ocultar curvas cuando bypass está activo
-    // distortionCurveDisplay.setBypassMode(bypassActive);
-        
-        // Actualizar output meters para usar gradient de entrada cuando bypass está activo
+        // UI: actualizar estado visual de medidores en modo bypass
         outputMeterL.setBypassMode(bypassActive);
         outputMeterR.setBypassMode(bypassActive);
     }

@@ -10,29 +10,529 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 34.0, 88.0, 1626.0, 905.0 ],
+		"rect" : [ 34.0, 87.0, 1852.0, 905.0 ],
 		"gridsize" : [ 15.0, 15.0 ],
 		"boxes" : [ 			{
+				"box" : 				{
+					"id" : "obj-140",
+					"maxclass" : "preset",
+					"numinlets" : 1,
+					"numoutlets" : 5,
+					"outlettype" : [ "preset", "int", "preset", "int", "" ],
+					"patching_rect" : [ 203.0, 543.0, 65.0, 77.0 ],
+					"preset_data" : [ 						{
+							"number" : 1,
+							"data" : [ 5, "obj-94", "attrui", "attr", "x_PREPOST", 5, "obj-94", "attrui", "float", 0.0, 5, "obj-71", "attrui", "attr", "exportfolder", 4, "obj-71", "attrui", "Sequoia:/Users/jcb/JUCEProjects/JCBReverb/exported-code/", 5, "obj-20", "number", "float", 0.0, 5, "obj-21", "number", "float", 1.0, 5, "obj-22", "number", "float", 0.990000009536743, 5, "obj-23", "number", "float", 0.0, 5, "obj-25", "number", "float", 0.5, 5, "obj-28", "toggle", "int", 0, 5, "obj-45", "toggle", "int", 1, 5, "obj-44", "number", "float", 1.0, 5, "obj-31", "number", "float", 30.0, 5, "obj-32", "number", "float", 30.0, 5, "obj-34", "number", "float", -30.0, 5, "obj-56", "number", "float", 6.0, 5, "obj-67", "number", "float", 0.100000001490116, 5, "obj-81", "number", "float", 15000.0, 5, "obj-82", "number", "float", 150.0, 5, "obj-63", "number", "float", 100.0, 5, "obj-68", "number", "float", 250.0, 5, "obj-69", "number", "float", 5000.0, 5, "obj-85", "toggle", "int", 1, 5, "obj-84", "toggle", "int", 1, 5, "obj-70", "number", "float", -23.0, 5, "obj-57", "number", "float", 10.0, 5, "obj-24", "number", "float", 250.0, 5, "obj-16", "number", "float", 0.100000001490116, 5, "obj-108", "number", "float", 0.0, 5, "obj-103", "toggle", "int", 0, 5, "obj-121", "number", "float", 0.0, 5, "obj-127", "toggle", "int", 0, 5, "obj-137", "toggle", "int", 0, 5, "obj-46", "toggle", "int", 1, 5, "obj-78", "number", "float", -25.0, 5, "obj-102", "number", "float", 11.5, 5, "obj-105", "number", "float", 250.0, 5, "obj-115", "toggle", "int", 1, 5, "obj-130", "number", "float", 1.0, 5, "obj-138", "number", "float", 0.100000001490116 ]
+						}
+ ]
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"bgcolor" : [ 1.0, 0.0, 0.0, 1.0 ],
+					"bgcolor2" : [ 0.2, 0.2, 0.2, 1.0 ],
+					"bgfillcolor_angle" : 270.0,
+					"bgfillcolor_autogradient" : 0.0,
+					"bgfillcolor_color" : [ 1.0, 0.0, 0.0, 1.0 ],
+					"bgfillcolor_color1" : [ 1.0, 0.0, 0.0, 1.0 ],
+					"bgfillcolor_color2" : [ 0.2, 0.2, 0.2, 1.0 ],
+					"bgfillcolor_proportion" : 0.5,
+					"bgfillcolor_type" : "gradient",
+					"gradient" : 1,
+					"id" : "obj-139",
+					"maxclass" : "message",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 1701.0, 100.0, 29.5, 22.0 ],
+					"text" : "6"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"format" : 6,
+					"id" : "obj-138",
+					"maxclass" : "flonum",
+					"maximum" : 100.0,
+					"minimum" : 0.1,
+					"numinlets" : 1,
+					"numoutlets" : 2,
+					"outlettype" : [ "", "bang" ],
+					"parameter_enable" : 1,
+					"patching_rect" : [ 1056.0, 741.0, 50.0, 22.0 ],
+					"saved_attribute_attributes" : 					{
+						"valueof" : 						{
+							"parameter_initial" : [ 0.3 ],
+							"parameter_initial_enable" : 1,
+							"parameter_longname" : "number[6]",
+							"parameter_mmax" : 100.0,
+							"parameter_mmin" : 0.1,
+							"parameter_modmode" : 3,
+							"parameter_shortname" : "number[6]",
+							"parameter_type" : 0
+						}
+
+					}
+,
+					"varname" : "number[6]"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-134",
+					"maxclass" : "message",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 1057.0, 773.0, 134.0, 22.0 ],
+					"presentation_linecount" : 2,
+					"text" : "ag_WOBBLE_RATE $1"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"format" : 6,
+					"id" : "obj-130",
+					"maxclass" : "flonum",
+					"maximum" : 1.0,
+					"minimum" : 0.0,
+					"numinlets" : 1,
+					"numoutlets" : 2,
+					"outlettype" : [ "", "bang" ],
+					"parameter_enable" : 1,
+					"patching_rect" : [ 926.0, 741.0, 50.0, 22.0 ],
+					"saved_attribute_attributes" : 					{
+						"valueof" : 						{
+							"parameter_initial" : [ 0.4 ],
+							"parameter_initial_enable" : 1,
+							"parameter_longname" : "number[5]",
+							"parameter_mmax" : 1.0,
+							"parameter_modmode" : 3,
+							"parameter_shortname" : "number[5]",
+							"parameter_type" : 0
+						}
+
+					}
+,
+					"varname" : "number[5]"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-116",
+					"maxclass" : "message",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 926.0, 773.0, 125.0, 22.0 ],
+					"presentation_linecount" : 2,
+					"text" : "af_WOBBLE_AMT $1"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-115",
+					"maxclass" : "toggle",
+					"numinlets" : 1,
+					"numoutlets" : 1,
+					"outlettype" : [ "int" ],
+					"parameter_enable" : 0,
+					"patching_rect" : [ 800.0, 740.0, 24.0, 24.0 ]
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-112",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 926.0, 844.0, 51.0, 22.0 ],
+					"text" : "s toGen"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-110",
+					"maxclass" : "message",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 800.0, 773.0, 121.0, 22.0 ],
+					"presentation_linecount" : 2,
+					"text" : "ae_WOBBLE_ON $1"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"format" : 6,
+					"id" : "obj-105",
+					"maxclass" : "flonum",
+					"maximum" : 600.0,
+					"minimum" : 20.0,
+					"numinlets" : 1,
+					"numoutlets" : 2,
+					"outlettype" : [ "", "bang" ],
+					"parameter_enable" : 1,
+					"patching_rect" : [ 1705.0, 743.0, 50.0, 22.0 ],
+					"saved_attribute_attributes" : 					{
+						"valueof" : 						{
+							"parameter_initial" : [ 200 ],
+							"parameter_initial_enable" : 1,
+							"parameter_longname" : "number[3]",
+							"parameter_mmax" : 600.0,
+							"parameter_mmin" : 20.0,
+							"parameter_modmode" : 3,
+							"parameter_shortname" : "number[3]",
+							"parameter_type" : 0
+						}
+
+					}
+,
+					"varname" : "number[3]"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-104",
+					"maxclass" : "message",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 1705.0, 777.0, 109.0, 22.0 ],
+					"presentation_linecount" : 2,
+					"text" : "ad_DUCK_REL $1"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"format" : 6,
+					"id" : "obj-102",
+					"maxclass" : "flonum",
+					"maximum" : 50.0,
+					"minimum" : 1.0,
+					"numinlets" : 1,
+					"numoutlets" : 2,
+					"outlettype" : [ "", "bang" ],
+					"parameter_enable" : 1,
+					"patching_rect" : [ 1592.0, 743.0, 50.0, 22.0 ],
+					"saved_attribute_attributes" : 					{
+						"valueof" : 						{
+							"parameter_initial" : [ 10 ],
+							"parameter_initial_enable" : 1,
+							"parameter_longname" : "number[4]",
+							"parameter_mmax" : 50.0,
+							"parameter_mmin" : 1.0,
+							"parameter_modmode" : 3,
+							"parameter_shortname" : "number[4]",
+							"parameter_type" : 0
+						}
+
+					}
+,
+					"varname" : "number[4]"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-100",
+					"maxclass" : "message",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 1592.0, 777.0, 108.0, 22.0 ],
+					"presentation_linecount" : 2,
+					"text" : "ac_DUCK_ATK $1"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-99",
+					"maxclass" : "message",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 16.0, 35.0, 49.0, 22.0 ],
+					"presentation_linecount" : 2,
+					"text" : "resume"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-97",
+					"maxclass" : "message",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 31.0, 65.0, 41.0, 22.0 ],
+					"text" : "pause"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-96",
+					"logfreq" : 1,
+					"maxclass" : "spectroscope~",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 343.0, 685.0, 229.0, 100.0 ]
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-93",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 2,
+					"outlettype" : [ "signal", "signal" ],
+					"patching_rect" : [ 110.0, 647.0, 252.0, 22.0 ],
+					"text" : "adoutput~ 1 2"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-92",
+					"logfreq" : 1,
+					"maxclass" : "spectroscope~",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 110.0, 685.0, 229.0, 100.0 ]
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-87",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 1592.0, 844.0, 51.0, 22.0 ],
+					"text" : "s toGen"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"format" : 6,
+					"id" : "obj-78",
+					"maxclass" : "flonum",
+					"maximum" : 0.0,
+					"minimum" : -60.0,
+					"numinlets" : 1,
+					"numoutlets" : 2,
+					"outlettype" : [ "", "bang" ],
+					"parameter_enable" : 1,
+					"patching_rect" : [ 1487.0, 743.0, 50.0, 22.0 ],
+					"saved_attribute_attributes" : 					{
+						"valueof" : 						{
+							"parameter_initial" : [ -30 ],
+							"parameter_initial_enable" : 1,
+							"parameter_longname" : "number[2]",
+							"parameter_mmax" : 0.0,
+							"parameter_mmin" : -60.0,
+							"parameter_modmode" : 3,
+							"parameter_shortname" : "number[2]",
+							"parameter_type" : 0
+						}
+
+					}
+,
+					"varname" : "number[2]"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-60",
+					"maxclass" : "message",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 1487.0, 777.0, 103.0, 22.0 ],
+					"presentation_linecount" : 2,
+					"text" : "ab_DUCK_DB $1"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-46",
+					"maxclass" : "toggle",
+					"numinlets" : 1,
+					"numoutlets" : 1,
+					"outlettype" : [ "int" ],
+					"parameter_enable" : 0,
+					"patching_rect" : [ 1382.0, 743.0, 24.0, 24.0 ]
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-38",
+					"maxclass" : "message",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 1382.0, 777.0, 104.0, 22.0 ],
+					"presentation_linecount" : 2,
+					"text" : "aa_DUCK_ON $1"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"bgcolor" : [ 1.0, 0.0, 0.0, 1.0 ],
+					"bgcolor2" : [ 0.2, 0.2, 0.2, 1.0 ],
+					"bgfillcolor_angle" : 270.0,
+					"bgfillcolor_autogradient" : 0.0,
+					"bgfillcolor_color" : [ 1.0, 0.0, 0.0, 1.0 ],
+					"bgfillcolor_color1" : [ 1.0, 0.0, 0.0, 1.0 ],
+					"bgfillcolor_color2" : [ 0.2, 0.2, 0.2, 1.0 ],
+					"bgfillcolor_proportion" : 0.5,
+					"bgfillcolor_type" : "gradient",
+					"gradient" : 1,
+					"id" : "obj-27",
+					"maxclass" : "message",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 1291.0, 59.0, 29.5, 22.0 ],
+					"text" : "0.5"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-26",
+					"maxclass" : "message",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 1028.0, 59.0, 32.0, 22.0 ],
+					"presentation_linecount" : 2,
+					"text" : "0.25"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-8",
+					"maxclass" : "message",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 1130.0, 59.0, 32.0, 22.0 ],
+					"presentation_linecount" : 2,
+					"text" : "0.75"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-7",
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 1696.0, 584.0, 26.0, 20.0 ],
+					"text" : "NO"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"bgcolor" : [ 1.0, 0.0, 0.0, 1.0 ],
+					"bgcolor2" : [ 0.2, 0.2, 0.2, 1.0 ],
+					"bgfillcolor_angle" : 270.0,
+					"bgfillcolor_autogradient" : 0.0,
+					"bgfillcolor_color" : [ 1.0, 0.0, 0.0, 1.0 ],
+					"bgfillcolor_color1" : [ 1.0, 0.0, 0.0, 1.0 ],
+					"bgfillcolor_color2" : [ 0.2, 0.2, 0.2, 1.0 ],
+					"bgfillcolor_proportion" : 0.5,
+					"bgfillcolor_type" : "gradient",
+					"gradient" : 1,
+					"id" : "obj-4",
+					"maxclass" : "message",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 914.0, 59.0, 29.5, 22.0 ],
+					"text" : "0"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-137",
+					"maxclass" : "toggle",
+					"numinlets" : 1,
+					"numoutlets" : 1,
+					"outlettype" : [ "int" ],
+					"parameter_enable" : 0,
+					"patching_rect" : [ 657.0, 213.0, 24.0, 24.0 ]
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-135",
+					"maxclass" : "message",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 657.0, 257.0, 93.0, 22.0 ],
+					"text" : "z_BYPASSS $1"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-133",
+					"maxclass" : "meter~",
+					"numinlets" : 1,
+					"numoutlets" : 1,
+					"outlettype" : [ "float" ],
+					"patching_rect" : [ 343.0, 542.0, 15.0, 78.0 ]
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-132",
+					"maxclass" : "meter~",
+					"numinlets" : 1,
+					"numoutlets" : 1,
+					"outlettype" : [ "float" ],
+					"patching_rect" : [ 285.0, 542.0, 15.0, 78.0 ]
+				}
+
+			}
+, 			{
 				"box" : 				{
 					"id" : "obj-131",
 					"maxclass" : "newobj",
 					"numinlets" : 0,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 198.5, 151.0, 49.0, 22.0 ],
+					"patching_rect" : [ 246.0, 194.0, 49.0, 22.0 ],
 					"text" : "r toGen"
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"id" : "obj-130",
-					"maxclass" : "message",
-					"numinlets" : 2,
-					"numoutlets" : 1,
-					"outlettype" : [ "" ],
-					"patching_rect" : [ 212.5, 176.0, 35.0, 22.0 ],
-					"text" : "reset"
 				}
 
 			}
@@ -43,8 +543,8 @@
 					"linecount" : 2,
 					"maxclass" : "newobj",
 					"numinlets" : 2,
-					"numoutlets" : 2,
-					"outlettype" : [ "signal", "signal" ],
+					"numoutlets" : 5,
+					"outlettype" : [ "signal", "signal", "signal", "signal", "signal" ],
 					"patcher" : 					{
 						"fileversion" : 1,
 						"appversion" : 						{
@@ -56,20 +556,42 @@
 						}
 ,
 						"classnamespace" : "dsp.gen",
-						"rect" : [ 34.0, 87.0, 1158.0, 907.0 ],
+						"rect" : [ 1955.0, 62.0, 839.0, 984.0 ],
 						"gridsize" : [ 15.0, 15.0 ],
 						"boxes" : [ 							{
 								"box" : 								{
-									"code" : "// VERSION TAG: readable-genexpr-initial (2025-08-30)\n// =============================================================================\n// JCBReverb GenExpr (readable)\n// Uso: pegar en Max/Gen Codebox. Conserva parámetros y funcionalidad.\n//\n// Guía de lectura rápida:\n// 1) Smoothing + I/O: trims (a_INPUT/m_OUTPUT), dry/wet, ruteo `y_IOMODE`.\n// 2) PRE (opcional): EQ/COMP antes de la reverb (suavizado `prePostBlend`).\n// 3) Pre‑filtros: LPF/HPF (RBJ) a entradas difusores.\n// 4) Difusores: Combs (8 por lado) → Allpass (4 por lado), offsets y escalas legibles.\n// 5) M/S + width: `msLeft/msRight` via mid/side + `f_ST`/`widthScale`.\n// 6) EQ/COMP POST: 3‑band EQ y compresor estéreo, bypass suave según PRE/POST.\n// 7) Mezcla Dry/Wet y salida: `out1/out2` (Max requiere estos nombres para outlets).\n//\n// Bloques:\n// - IO: ruteo según `y_IOMODE` (1=mono->mono, 2=mono->stereo, 3=stereo->stereo).\n// - Pre/Post: EQ 3 bandas + Comp pueden ir PRE o POST reverb con `x_PREPOST`.\n// - Pre-filtros: LPF/HPF RBJ sobre entrada a difusores (parámetros `k_LPF`/`l_HPF`).\n// - Difusión: 8 combs por lado (suma normalizada) + 4 allpass por lado.\n// - M/S: control de ancho estéreo `f_ST` con `msLeft/msRight` antes de EQ/COMP.\n// - Dry/Wet: `b_DRYWET`; trims en dB `a_INPUT` (previo) y `m_OUTPUT` (solo WET).\n//\n// Parámetros principales:\n// - `a_INPUT`/`m_OUTPUT` (dB), `b_DRYWET`, `c_REFLECT`, `d_DAMP`, `e_SIZE`, `f_ST`,\n//   `g_FREEZE`, `h_LOWGAIN`, `i_PEAKGAIN`, `j_HIGAIN`, `k_LPF`, `l_HPF`, `n_LOWFREQ`,\n//   `o_PEAKFREQ`, `p_HIFREQ`, `q_ONOFFEQ`, `r_ONOFFCOMP`, `s_THD`, `t_RATIO`,\n//   `u_ATK`, `v_REL`, `w_MAKEUP`, `x_PREPOST`, `y_IOMODE`.\n//\n// Seguridad de orden (Gen): mantener lecturas de delay antes de escrituras y\n// el orden de histories/feedback. Los cambios de nombres respetan cronología.\n// =============================================================================\n\n// =============================================================================\n// ÍNDICE DE BLOQUES (flujo y señales)\n// =============================================================================\n// 1) Smoothing/control mapping\n//    - In: Params UI (a_INPUT..y_IOMODE)\n//    - Out: prePostBlend, outputTrimLin, compEnableSmoothed, dryWet, eqEnabled,\n//           freezeBlend, stereoWidthParam, widthScale, EQ freqs/gains, inputTrimLin\n// 2) I/O + Dry path\n//    - In: in1/in2\n//    - Out: ioL/ioR (wet, con trim y mono route), ioL_raw/ioR_raw (dry), dryL/dryR\n// 3) PRE EQ/COMP (opcional)\n//    - In: preInputL_sel/preInputR_sel\n//    - Out: preL_proc/preR_proc (si prePostBlend activa PRE)\n// 4) Pre‑filtros (LPF/HPF)\n//    - In: preInputL_sel/preInputR_sel\n//    - Out: hpfOutL/hpfOutR (entradas a difusores)\n// 5) COMB BANK (L)\n//    - In: hpfOutL, reflectCoef, leftCombPass/leak, combDelayL*\n//    - Out: earlyLeft\n// 6) ALLPASS (L)\n//    - In: earlyLeft\n//    - Out: msInLeft\n// 7) COMB BANK (R)\n//    - In: hpfOutR, reflectCoef, rightCombPass/leak, combDelayR*\n//    - Out: earlyRight\n// 8) ALLPASS (R)\n//    - In: earlyRight\n//    - Out: msInRight\n// 9) M/S + width\n//    - In: msInLeft/msInRight, widthScale\n//    - Out: msLeft/msRight\n// 10) EQ POST (3 bandas)\n//    - In: wetPreLeft/wetPreRight\n//    - Out: postEqLeft/postEqRight\n// 11) COMP POST (estéreo)\n//    - In: postEqLeft/postEqRight, comp params\n//    - Out: postCOMP_L/postCOMP_R\n// 12) Mezcla + salida\n//    - In: dryL/dryR, postCOMP_L/R, dryWet, outputTrimLin, isMonoOut\n//    - Out: out1/out2\n\n// -----------------------------------------------------------------------------\n// SECCION: FUNCIONES (EQ 3 bandas, shelves, peak)\n// -----------------------------------------------------------------------------\neq3bandas(sigL, sigR, lf, pf, hf, lg, pg, hg, bw) {\n\t// Procesa L y R en paralelo manteniendo la salida R encadenada coherente\n\t// 1) Low-shelf → 2) Peak → 3) High-shelf\n\tlowL, lowR   = lowshelf(sigL, sigR, lf, lg);\n\tpeakL, peakR = peak(lowL, lowR, pf, pg, bw);\n\thighL, highR = hishelf(peakL, peakR, hf, hg);\n\treturn highL, highR;\n}\n\nlowshelf(sigL, sigR, freq, db) {\n    // RBJ-style low-shelf coefficients recalculated on parameter change\n    History shelfGain(0);\n    History cutoff(0);\n    History shelfTerm(0);\n    History w(0);\n    History a0(0);\n    History a1(0);\n    if ((change(freq) != 0) || (change(db) != 0)) {\n        shelfGain = pow(1.059253692627, db * 0.5);\n        cutoff = freq / shelfGain;\n        shelfTerm = (shelfGain * shelfGain) - 1;\n        w = tan((cutoff * pi) / samplerate);\n        a0 = 1 / (w + 1);\n        a1 = w - 1;\n    }\n    leftOut  = lowshelfCore(sigL, a0, a1, shelfTerm, w);\n    rightOut = lowshelfCore(sigR, a0, a1, shelfTerm, w);\n    return leftOut, rightOut;\n}\n\nhishelf(sigL, sigR, freq, db) {\n    // RBJ-style high-shelf coefficients recalculated on parameter change\n    History shelfGain(0);\n    History cutoff(0);\n    History shelfTerm(0);\n    History w(0);\n    History a0(0);\n    History a1(0);\n    if ((change(freq) != 0) || (change(db) != 0)) {\n        shelfGain = pow(1.059253692627, db * 0.25);\n        cutoff = min(freq * shelfGain, samplerate);\n        shelfTerm = (shelfGain * shelfGain) - 1;\n        w = tan((max(cutoff, 0) * pi) / samplerate);\n        a0 = 1 / (w + 1);\n        a1 = w - 1;\n    }\n    leftOut  = hishelfCore(sigL, a0, a1, shelfTerm);\n    rightOut = hishelfCore(sigR, a0, a1, shelfTerm);\n    return leftOut, rightOut;\n}\n\npeakCore(input, w, d2, a0, a1, a2) {\n    // Two-pole peaking core with simple state update\n    History z1(0);\n    History z2(0);\n    History z3(0);\n    History z4(0);\n    stage = (input - z2) * w;\n    z2 = z1;\n    z1 = input;\n    biquadOut = a0 * (stage - (a1 * z3) - (a2 * z4));\n    z4 = z3;\n    z3 = biquadOut;\n    out = input + (biquadOut * d2);\n    return out;\n}\n\nlowshelfCore(input, a0, a1, b1, w) {\n    History z1(0);\n    x = a0 * (input - (a1 * z1));\n    y = w * (x + z1);\n    z1 = x;\n    return (y * b1) + input;\n}\n\npeak(sigL, sigR, freq, db, bw) {\n    // RBJ-style peaking EQ core parameters recalculated on change\n    History w(0);\n    History b0(0);\n    History d0(0);\n    History d(0);\n    History d2(0);\n    History wq(0);\n    History w2(0);\n    History a0(0);\n    History a1(0);\n    History a2(0);\n    if (((change(freq) != 0) || (change(db) != 0)) || (change(bw) != 0)) {\n        w = tan((freq * pi) / samplerate);\n        b0 = pow(1.059253692627, db * 0.5);\n        b = (b0 * b0) - 1;\n        d0 = pow(1.4142135381699, bw);\n        d = clip(((d0 * d0) - 1) / (d0 * b0), 0.01, 100);\n        d2 = d * b;\n        wq = d * w;\n        w2 = w * w;\n        a0 = 1 / ((1 + w2) + wq);\n        a1 = (w2 - 1) * 2;\n        a2 = (1 + w2) - wq;\n    }\n    leftOut  = peakCore(sigL, w, d2, a0, a1, a2);\n    rightOut = peakCore(sigR, w, d2, a0, a1, a2);\n    return leftOut, rightOut;\n}\n\nhishelfCore(input, a0, a1, b1) {\n    History z1(0);\n    x = a0 * (input - (a1 * z1));\n    y = x - z1;\n    z1 = x;\n    out = (y * b1) + input;\n    return out;\n}\n\n// -----------------------------------------------------------------------------\n// PARÁMETROS\n// -----------------------------------------------------------------------------\nParam e_SIZE(0, min=0.1, default=1, max=4);\nParam q_ONOFFEQ(0, min=0, default=0, max=1);\nParam u_ATK(0, min=5, default=10, max=250);\nParam i_PEAKGAIN(0, min=-30, default=0, max=30);\nParam r_ONOFFCOMP(0, min=0, default=0, max=1);\nParam k_LPF(0, min=100, default=20000, max=20000);\nParam t_RATIO(0, min=1, default=2, max=20);\nParam n_LOWFREQ(0, min=20, default=500, max=800);\nParam g_FREEZE(0, min=0, default=0, max=1);\n// DAMP: 0 = sin amortiguamiento, 1 = máximo filtrado\nParam d_DAMP(0, min=0, default=0.8, max=1);\nParam f_ST(0, min=0, default=0.5, max=0.8);\nParam c_REFLECT(0, min=0.1, default=0.86, max=0.98);\n// Input trim in dB (-12..+12, 0dB default)\nParam a_INPUT(0, min=-12, default=0, max=12);\nParam b_DRYWET(0, min=0, default=0.33, max=1.);\nParam j_HIGAIN(0, min=-30, default=0, max=30);\nParam o_PEAKFREQ(0, min=100, default=800, max=2500);\nParam p_HIFREQ(0, min=800, default=2000, max=15000);\nParam w_MAKEUP(0, min=-6, default=0, max=6);\nParam l_HPF(0, min=20, default=20, max=5000);\nParam v_REL(0, min=5, default=100, max=500);\n// Output trim in dB (-12..+12, 0dB default)\nParam m_OUTPUT(0, min=-12, default=0, max=12);\nParam s_THD(0, min=-36, default=-12, max=0);\nParam h_LOWGAIN(0, min=-30, default=0, max=30);\n// PRE/POST switch for EQ+COMP relative to reverb (0=post, 1=pre)\nParam x_PREPOST(0, min=0, default=0, max=1);\n// IO layout mode (1=mono->mono, 2=mono->stereo, 3=stereo->stereo) — sin auto\nParam y_IOMODE(0, min=1, default=3, max=3);\n// Softclip enable (0=off, 1=on) — afecta solo a rama WET\nParam z_SOFTCLIP(0, min=0, default=0, max=1);\n\n// -----------------------------------------------------------------------------\n// PARÁMETROS INTERNOS (constantes de diseño y escalas)\n// -----------------------------------------------------------------------------\n// Nota: Las constantes base de COMB/AP se declaran al inicio del procesamiento,\n// tras finalizar todos los History/Delay, para respetar el orden de Gen.\n\n// -----------------------------------------------------------------------------\n// HISTORIALES Y DELAYS\n// -----------------------------------------------------------------------------\nHistory h_outputTrim(0);\nHistory h_prepostGap(0);\nHistory h_softclipEnable(0);\nHistory h_compEnable(0);\nHistory h_thresholdDb(0);\nHistory h_ratio(0);\nHistory h_attackMs(0);\nHistory h_releaseMs(0);\nHistory h_makeupDb(0);\nHistory h_dryWetStage1(0);\nHistory h_dryWetStage2(0);\nHistory h_eqEnabled(0);\nHistory h_freezeBlend(0);\nHistory h_stereoWidth(0);\nHistory h_lowFreqHz(0);\nHistory h_peakFreqHz(0);\nHistory h_hiFreqHz(0);\nHistory h_lowGainDb(0);\nHistory h_peakGainDb(0);\nHistory h_hiGainDb(0);\nHistory h_inputTrim(0);\nHistory h_sizeScale(0);\nHistory h_lpfHz(0);\nHistory h_hpfHz(0);\nHistory h_reflectCoef(0);\nHistory h_freezeGate(0);\nHistory history_33(0);\nHistory history_34(0);\nHistory history_35(0);\nHistory history_36(0);\nHistory history_37(0);\nHistory history_38(0);\nHistory history_39(0);\nHistory history_40(0);\nHistory history_41(0);\nHistory history_42(0);\nHistory history_43(0);\nHistory history_44(0);\nHistory history_45(0);\nHistory history_46(0);\nHistory history_47(0);\nHistory history_48(0);\nHistory h_combDelayL1(0);\nHistory h_combDelayL2(0);\nHistory h_combDelayL3(0);\nHistory h_combDelayL4(0);\nHistory h_combDelayL5(0);\nHistory h_combDelayL6(0);\nHistory h_combDelayL7(0);\nHistory h_combDelayL8(0);\nDelay delay_57(samplerate);\nHistory h_combStateL1(0);\nDelay delay_59(samplerate);\nHistory h_combStateL2(0);\nDelay delay_61(samplerate);\nHistory h_combStateL3(0);\nDelay delay_63(samplerate);\nHistory h_combStateL4(0);\nDelay delay_65(samplerate);\nHistory h_combStateL5(0);\nDelay delay_67(samplerate);\nHistory h_combStateL6(0);\nDelay delay_69(samplerate);\nHistory h_combStateL7(0);\nDelay delay_71(samplerate);\nHistory h_combStateL8(0);\nDelay delay_73(samplerate);\nDelay delay_74(samplerate);\nDelay delay_75(samplerate);\nDelay delay_76(samplerate);\nDelay delay_77(samplerate);\nDelay delay_78(samplerate);\nDelay delay_79(samplerate);\nDelay delay_80(samplerate);\nHistory h_combDelayR1(0);\nHistory h_combDelayR2(0);\nHistory h_combDelayR3(0);\nHistory h_combDelayR4(0);\nHistory h_combDelayR5(0);\nHistory h_combDelayR6(0);\nHistory h_combDelayR7(0);\nHistory h_combDelayR8(0);\nDelay delay_89(samplerate);\nHistory h_combStateR1(0);\nDelay delay_91(samplerate);\nHistory h_combStateR2(0);\nDelay delay_93(samplerate);\nHistory h_combStateR3(0);\nDelay delay_95(samplerate);\nHistory h_combStateR4(0);\nDelay delay_97(samplerate);\nHistory h_combStateR5(0);\nDelay delay_99(samplerate);\nHistory h_combStateR6(0);\nDelay delay_101(samplerate);\nHistory h_combStateR7(0);\nDelay delay_103(samplerate);\nHistory h_combStateR8(0);\nDelay delay_105(samplerate);\nDelay delay_106(samplerate);\nDelay delay_107(samplerate);\nDelay delay_108(samplerate);\nDelay delay_109(samplerate);\nDelay delay_110(samplerate);\nDelay delay_111(samplerate);\nDelay delay_112(samplerate);\nDelay delay_113(44100);\nHistory h_postRightAccum(0);\nHistory h_postRightOverFlag(0);\nDelay delay_116(44100);\nHistory h_postLeftAccum(0);\nHistory h_postLeftOverFlag(0);\n// States for optional PRE compressor RMS detectors\nDelay delay_preR(44100);\nHistory preR_accum(0);\nHistory preR_flag(0);\nDelay delay_preL(44100);\nHistory preL_accum(0);\nHistory preL_flag(0);\n// RAW drive RMS windows for pre/post crossfade normalization\n// (Eliminados detectores RAW para normalización: enfoque GAP no los usa)\n// Smoothed PRE/POST blend state\nHistory prePost_s(0);\n\n// -----------------------------------------------------------------------------\n// PROCESAMIENTO PRINCIPAL\n// -----------------------------------------------------------------------------\n// Constantes base (44.1 kHz) de delays de COMB y ALLPASS (visibles arriba)\ncombBaseL1 = int(1491); combBaseL2 = int(1617); combBaseL3 = int(1188); combBaseL4 = int(1116);\ncombBaseL5 = int(1557); combBaseL6 = int(1356); combBaseL7 = int(1422); combBaseL8 = int(1277);\ncombBaseR1 = int(1422); combBaseR2 = int(1491); combBaseR3 = int(1116); combBaseR4 = int(1188);\ncombBaseR5 = int(1617); combBaseR6 = int(1356); combBaseR7 = int(1277); combBaseR8 = int(1557);\napL1Base = int(255); apL2Base = int(556); apL3Base = int(441); apL4Base = int(341);\napR1Base = int(255); apR2Base = int(556); apR3Base = int(441); apR4Base = int(341);\n\n// Sección: Smoothing de parámetros y mapeos\n// (Param aliases retirados: usar Param IDs directamente en el código)\n// BLOQUE: Smoothing/control mapping\n// - Entradas: parámetros UI en tiempo real (a_INPUT..y_IOMODE)\n// - Salidas: versiones suavizadas y escaladas para usar en DSP (p. ej., dryWet, prePostBlend, widthScale, freqs/gains EQ)\n\n// Smoothing de parámetros (factor común)\nsmoothFactor = 0.999;\noneMinusSmooth = 1 - smoothFactor;\n\n// Mezcla PRE/POST suavizada (para crossfade de ubicación de procesado)\nprePostBlend = prePost_s * smoothFactor + x_PREPOST * oneMinusSmooth;\n\n// Trim de salida (dB → lineal) suavizado\noutputTrimLin = h_outputTrim * smoothFactor + dbtoa(m_OUTPUT) * oneMinusSmooth;\nnext_outputTrim = fixdenorm(outputTrimLin);\n\n// Compresor: on/off suavizado\ncompEnableSmoothed = h_compEnable * smoothFactor + r_ONOFFCOMP * oneMinusSmooth;\nnext_compEnable = fixdenorm(compEnableSmoothed);\n\n// Softclip on/off suavizado\nsoftclipEnabled = h_softclipEnable * smoothFactor + z_SOFTCLIP * oneMinusSmooth;\nnext_softclipEnable = fixdenorm(softclipEnabled);\n\n// Threshold/ratio y tiempos del compresor (suavizados)\nthresholdDb = h_thresholdDb * smoothFactor + s_THD * oneMinusSmooth;\nnext_thresholdDb = fixdenorm(thresholdDb);\nratio = h_ratio * smoothFactor + t_RATIO * oneMinusSmooth;\nnext_ratio = fixdenorm(ratio);\nattackMs = h_attackMs * smoothFactor + u_ATK * oneMinusSmooth;\nnext_attackMs = fixdenorm(attackMs);\nreleaseMs = h_releaseMs * smoothFactor + v_REL * oneMinusSmooth;\nnext_releaseMs = fixdenorm(releaseMs);\nmakeupDb = h_makeupDb * smoothFactor + w_MAKEUP * oneMinusSmooth;\nnext_makeupDb = fixdenorm(makeupDb);\n\n// Dry/Wet suavizado (doble etapa)\ndryWet = h_dryWetStage1 * smoothFactor + b_DRYWET * oneMinusSmooth;\nnext_dryWetStage1 = fixdenorm(dryWet);\ndryWet = h_dryWetStage2 * smoothFactor + dryWet * oneMinusSmooth;\nnext_dryWetStage2 = fixdenorm(dryWet);\n\n// Constantes útiles\nzero = float(0.);\n\n// EQ on/off suavizado\neqEnabled = h_eqEnabled * smoothFactor + q_ONOFFEQ * oneMinusSmooth;\nnext_eqEnabled = fixdenorm(eqEnabled);\n\n// Freeze suavizado\nfreezeOn = g_FREEZE == 1;\nfreezeBlend = h_freezeBlend * smoothFactor + freezeOn * oneMinusSmooth;\nnext_freezeBlend = fixdenorm(freezeBlend);\n\n// Control de ancho estéreo y escala de width\nstereoWidthParam = h_stereoWidth * smoothFactor + f_ST * oneMinusSmooth;\nnext_stereoWidth = fixdenorm(stereoWidthParam);\nwidthScale = scale(stereoWidthParam, 0, 0.8, 0.707, 1., 1);\n\n// PRE/POST energy latch: only allow PRE/POST blend to move when drive RMS is low\n\n// EQ 3 bandas: freqs y gains suavizados\nlowFreqHz = h_lowFreqHz * smoothFactor + n_LOWFREQ * oneMinusSmooth;\nnext_lowFreqHz = fixdenorm(lowFreqHz);\npeakFreqHz = h_peakFreqHz * smoothFactor + o_PEAKFREQ * oneMinusSmooth;\nnext_peakFreqHz = fixdenorm(peakFreqHz);\nhiFreqHz = h_hiFreqHz * smoothFactor + p_HIFREQ * oneMinusSmooth;\nnext_hiFreqHz = fixdenorm(hiFreqHz);\nlowGainDb = h_lowGainDb * smoothFactor + h_LOWGAIN * oneMinusSmooth;\nnext_lowGainDb = fixdenorm(lowGainDb);\npeakGainDb = h_peakGainDb * smoothFactor + i_PEAKGAIN * oneMinusSmooth;\nnext_peakGainDb = fixdenorm(peakGainDb);\nhiGainDb = h_hiGainDb * smoothFactor + j_HIGAIN * oneMinusSmooth;\nnext_hiGainDb = fixdenorm(hiGainDb);\n\n// Input trim (dB → lineal) suavizado\ninputTrimLin = h_inputTrim * smoothFactor + dbtoa(a_INPUT) * oneMinusSmooth;\nnext_inputTrim = fixdenorm(inputTrimLin);\n\n// -----------------------------------------------------------------------------\n// Sección: I/O y trayecto seco (dry)\n// BLOQUE: Entradas y ruteo\n// - Entradas: in1/in2 del patcher\n// - Salidas: ioL/ioR (ruta WET con trim/mono route), ioL_raw/ioR_raw (ruta DRY sin trim), dryL/dryR (para mezcla final)\n// Entradas crudas y versiones con trim\n// DRY debe usar la señal de entrada sin trim; WET usa trimmed\nleftRaw = in1; rightRaw = in2;\nleftTrimmed = in1 * inputTrimLin;\nrightTrimmed = in2 * inputTrimLin;\n\n// Flags de I/O\nioMode = y_IOMODE;\nisMonoIn = ((ioMode == 1) || (ioMode == 2));\nisMonoOut = (ioMode == 1);\n\n// Ruteo mono para WET (trimmed)\ninMonoRoute = (leftTrimmed + rightTrimmed) * 0.5;\nioL = mix(leftTrimmed, inMonoRoute, isMonoIn);\nioR = mix(rightTrimmed, inMonoRoute, isMonoIn);\n\n// Ruteo mono para DRY (raw, sin trim)\ninMonoRouteRaw = (leftRaw + rightRaw) * 0.5;\nioL_raw = mix(leftRaw, inMonoRouteRaw, isMonoIn);\nioR_raw = mix(rightRaw, inMonoRouteRaw, isMonoIn);\n\n// Trayecto seco (usar raw, sin auto-detección): Left primero, luego Right\ndryLMix = mix(ioL_raw, zero, freezeBlend);\ndryRMix = mix(ioR_raw, zero, freezeBlend);\n\n// Aliases de salida Dry\ndryL = dryLMix;\ndryR = dryRMix;\nwidthComplement = 1 - stereoWidthParam;\n\n// Ganancias de spread estéreo (pre-M/S)\nstereoSpreadMid = sqrt(widthComplement);\nstereoSpreadSide = sqrt(stereoWidthParam);\napBaseL = int(0);\napGainL = float(0.5);\napBaseR = int(0);\napGainR = float(0.5);\ndampPass = 1 - d_DAMP; // pass = 1 - d_DAMP (0 = damping máximo, 1 = sin damping)\ndampLeak = d_DAMP;     // leak = d_DAMP (0 = sin leak, 1 = leak máximo)\n\n// (aliases redundantes de amortiguación eliminados)\nsizeScalePrev = h_sizeScale * 0.999;\nsizeInputScaled = e_SIZE * 0.001;\nsizeScaleSmoothed = sizeInputScaled + sizeScalePrev;\nnextSizeScale = fixdenorm(sizeScaleSmoothed);\n\n// Aliases de tamaño/escalas con FREEZE: forzar a 0.999 sin exceder\nsizeScaleEff = mix(sizeScaleSmoothed, 0.999, freezeOn);\nsizeScaleEff = min(sizeScaleEff, 0.999);\nsizeScaleL = sizeScaleEff;\nsizeScaleR = sizeScaleEff;\nlpfPrev = h_lpfHz * 0.999;\nlpfInputScaled = k_LPF * 0.001;\nlpfHzSmoothed = lpfInputScaled + lpfPrev;\nlpfHz = lpfHzSmoothed;\nnextLpfHz = fixdenorm(lpfHzSmoothed);\nhpfPrev = h_hpfHz * 0.999;\nhpfInputScaled = l_HPF * 0.001;\nhpfHzSmoothed = hpfInputScaled + hpfPrev;\nhpfHz = hpfHzSmoothed;\nnextHpfHz = fixdenorm(hpfHzSmoothed);\nunity = float(1.);\n\n// Baselines\nleftBaselineSamples = int(0); // baseline samples for left\nreflectComplement = 1 - c_REFLECT;\nreflectGate = gate(freezeOn, reflectComplement, choices=1);\nreflectBase = c_REFLECT + reflectGate;\nreflectPrev = h_reflectCoef * 0.999;\nreflectInputScaled = reflectBase * 0.001;\nreflectCoefSmoothed = reflectInputScaled + reflectPrev;\nnextReflectCoef = fixdenorm(reflectCoefSmoothed);\n\n// Alias de coeficiente de reflexión\nreflectCoef = reflectCoefSmoothed;\nbaseOffsetUnits = int(23);\n\n// (re-asignación redundante eliminada) sizeScaleR ya proviene de sizeScaleSmoothed\noffsetSamplesR = baseOffsetUnits * sizeScaleR;\n\n// Control de ancho según modo explícito (sin auto-detección)\n// - MONO OUT: ancho = 0; MONO->ST y ST-ST: ancho = stereoWidthParam\nwidthControl = mix(stereoWidthParam, zero, isMonoOut);\n\n// Symmetric base-offsets for diffuser chains\noffsetSamplesL = leftBaselineSamples;     // 0 samples (left baseline)\nbaseZeroL = zero;             // 0\nbaseZeroR = zero;             // 0\nbaseOffsetL = mix(baseZeroL, offsetSamplesL, widthControl);\nbaseOffsetR = mix(baseZeroR, offsetSamplesR, widthControl);\nfreezeComplement = 1 - (g_FREEZE == 1);\nfreezePrev = h_freezeGate * 0.999;\nfreezeInputScaled = freezeComplement * 0.001;\nfreezeGateSmoothed = freezeInputScaled + freezePrev;\nnextFreezeGate = fixdenorm(freezeGateSmoothed);\n// FREEZE: cortar entrada inmediatamente cuando está activo (sin smoothing)\npreInputR = ioR * (1 - freezeOn);\npreInputL = ioL * (1 - freezeOn);\n\n// -----------------------------------------------------------------------------\n// Sección: PRE (opcional) EQ + COMP antes de reverb\n// BLOQUE: Preprocesado\n// - Entradas: preInputL_sel/preInputR_sel (tras freeze/mono routing)\n// - Salidas: preL_proc/preR_proc (si prePostBlend activa PRE), o bypass a preInput*\n// - Nota: reutiliza los mismos controles que el POST (EQ/COMP), con crossfade por prePostBlend\npreEQ_L_raw, preEQ_R_raw = eq3bandas(preInputL, preInputR,\n    lowFreqHz, peakFreqHz, hiFreqHz, lowGainDb, peakGainDb, hiGainDb, 1);\npreEQ_L = mix(preInputL, preEQ_L_raw, eqEnabled);\npreEQ_R = mix(preInputR, preEQ_R_raw, eqEnabled);\n\n// Pre COMP (RMS window ~300 samples) con A/R, ratio y makeup\npre_relSamps = mstosamps(releaseMs);\npre_atkSamps = mstosamps(attackMs);\npre_win = int(300);\n\n// -----------------------------------------------------------------------------\n// (Eliminado bloque de normalización por RMS del drive RAW: no se usa en enfoque gap)\n\n// Detector RMS Left (PRE)\npreLeftTap = delay_preL.read(pre_win);\npreLeftEnergy = preEQ_L * preEQ_L;\npreLeftAccum = preL_accum + preLeftEnergy;\npreLeftDiff = preLeftAccum - preLeftTap;\npreLeftAvg = preLeftDiff / pre_win;\npreLeftRms = sqrt(preLeftAvg);\npreL_accum_next = fixdenorm(preLeftDiff);\npreLeftDb = atodb(preLeftRms);\npreLeftLvlDb = max(preLeftDb, -96);\npreLeftOver = preLeftLvlDb > thresholdDb;\npreLeftFlagSmoothed = (preL_flag * 0.999) + (preLeftOver * 0.001);\npreL_flag_s = preLeftFlagSmoothed;\npreLeftGainDb = (thresholdDb - preLeftLvlDb) * (1 - (1 / ratio));\npreLeftGainLin = dbtoa(preLeftGainDb);\npreLeftEnvTarget = mix(1, preLeftGainLin, preLeftOver);\npreLeftEnv = slide(preLeftEnvTarget, pre_relSamps, pre_atkSamps);\npreL_out = (preEQ_L * preLeftEnv) * dbtoa(makeupDb);\n\n// Detector RMS Right (PRE)\npreRightTap = delay_preR.read(pre_win);\npreRightEnergy = preEQ_R * preEQ_R;\npreRightAccum = preR_accum + preRightEnergy;\npreRightDiff = preRightAccum - preRightTap;\npreRightAvg = preRightDiff / pre_win;\npreRightRms = sqrt(preRightAvg);\npreR_accum_next = fixdenorm(preRightDiff);\npreRightDb = atodb(preRightRms);\npreRightLvlDb = max(preRightDb, -96);\npreRightOver = preRightLvlDb > thresholdDb;\npreRightFlagSmoothed = (preR_flag * 0.999) + (preRightOver * 0.001);\npreR_flag_s = preRightFlagSmoothed;\npreRightGainDb = (thresholdDb - preRightLvlDb) * (1 - (1 / ratio));\npreRightGainLin = dbtoa(preRightGainDb);\npreRightEnvTarget = mix(1, preRightGainLin, preRightOver);\npreRightEnv = slide(preRightEnvTarget, pre_relSamps, pre_atkSamps);\npreR_out = (preEQ_R * preRightEnv) * dbtoa(makeupDb);\n\n// Aplicar bypass de COMP (usa compEnableSmoothed) sobre el camino PRE\npreR_proc = mix(preEQ_R, preR_out, compEnableSmoothed);\npreL_proc = mix(preEQ_L, preL_out, compEnableSmoothed);\n\n// Selección de entrada a filtros de reverb (0=original, 1=pre-procesada)\n// Equal-power crossfade para entrada a reverb (reduce saltos de energía)\n// Enfoque GAP: procesadores siempre corren; conmutador binario + microgap de ~10ms (decay 0.98)\nprePostBinary = x_PREPOST > 0.5;\nprePostSwitch = change(x_PREPOST) != 0;\ngapEnv = max(h_prepostGap * 0.98, prePostSwitch);\nnext_prepostGap = fixdenorm(gapEnv);\nfeedGate = 1 - gapEnv;\npreInputR_sel = mix(preInputR, preR_proc, prePostBinary) * feedGate;\npreInputL_sel = mix(preInputL, preL_proc, prePostBinary) * feedGate;\n\n// -----------------------------------------------------------------------------\n// Sección: Pre‑filtros (LPF/HPF) a entradas de reverb\n// BLOQUE: Filtrado de entrada a difusores\n// - Entradas: preInputL_sel / preInputR_sel\n// - Procesado: LPF/HPF RBJ biquad por canal\n// - Salidas: hpfOutL / hpfOutR (alimentan bancos de combs L/R)\n// - Entradas legibles a pre‑filtros\npreFilterInR = preInputR_sel;\npreFilterInL = preInputL_sel;\n\n// Coeficientes LPF (biquad RBJ)\nomega = ((lpfHz * twopi)) / samplerate;\nsn = sin(omega);\ncs = cos(omega);\none_over_Q = 1 / unity;\nalpha = ((sn * 0.5)) * one_over_Q;\nb0 = 1 / ((1 + alpha));\na2 = ((((1 - cs)) * 0.5)) * b0;\na1 = ((1 - cs)) * b0;\nb1 = ((-2 * cs)) * b0;\nb2 = ((1 - alpha)) * b0;\n\n// Coeficientes LPF biquad (nombrados)\nlpfA2   = a2;  // feedforward a2\nlpfA1   = a1;  // feedforward a1\nlpfA2_b = a2;  // feedforward a2 (segundo término)\nlpfB1   = b1;  // feedback b1\nlpfB2   = b2;  // feedback b2\nomega_324 = ((hpfHz * twopi)) / samplerate;\nsn_325 = sin(omega_324);\ncs_326 = cos(omega_324);\nalpha_327 = ((sn_325 * 0.5)) / unity;\nb_328 = 1 / ((1 + alpha_327));\na_329 = ((((1 + cs_326)) * 0.5)) * b_328;\na_330 = (-(1 + cs_326)) * b_328;\nb_331 = ((-2 * cs_326)) * b_328;\nb_332 = ((1 - alpha_327)) * b_328;\n\n// Coeficientes HPF biquad (nombrados)\nhpfA2   = a_329; // feedforward a2\nhpfA1   = a_330; // feedforward a1\nhpfA2_b = a_329; // feedforward a2 (segundo término)\nhpfB1   = b_331; // feedback b1\nhpfB2   = b_332; // feedback b2\n\n// LPF biquad (L/R) — forma directa (coeficientes nombrados)\nlpfOutL = (preFilterInL * lpfA2) + (history_37 * lpfA1) + (history_34 * lpfA2_b)\n          - ((history_40 * lpfB1) + (history_36 * lpfB2));\nlpfOutR = (preFilterInR * lpfA2) + (history_38 * lpfA1) + (history_33 * lpfA2_b)\n          - ((history_39 * lpfB1) + (history_35 * lpfB2));\n          \nhistory_33_next_352 = fixdenorm(history_38);\nhistory_34_next_353 = fixdenorm(history_37);\nhistory_35_next_354 = fixdenorm(history_39);\nhistory_36_next_355 = fixdenorm(history_40);\nnextPreInputL = fixdenorm(preInputL_sel);\nnextPreInputR = fixdenorm(preInputR_sel);\nnextLpfOutR = fixdenorm(lpfOutR);\nnextLpfOutL = fixdenorm(lpfOutL);\n\n// -----------------------------------------------------------------------------\n// Sección: HPF biquad (L/R)\n// BLOQUE: Salida de pre‑filtros hacia COMB\n// - Entradas: lpfOutL/lpfOutR + coeficientes hpfA*/hpfB*\n// - Salidas: hpfOutL/hpfOutR (alimentan COMB L/R)\n\n// HPF Right\nhpfOutR = (lpfOutR * hpfA2) + (history_45 * hpfA1) + (history_44 * hpfA2_b)\n          - ((history_47 * hpfB1) + (history_41 * hpfB2));\n\n// HPF Left\nhpfOutL = (lpfOutL * hpfA2) + (history_46 * hpfA1) + (history_42 * hpfA2_b)\n          - ((history_48 * hpfB1) + (history_43 * hpfB2));\n\n// HPF state updates\nhistory_41_next_374 = fixdenorm(history_47);\nhistory_42_next_375 = fixdenorm(history_46);\nhistory_43_next_376 = fixdenorm(history_48);\nhistory_44_next_377 = fixdenorm(history_45);\nhistory_45_next_378 = fixdenorm(lpfOutR);\nhistory_46_next_379 = fixdenorm(lpfOutL);\nhistory_47_next_380 = fixdenorm(hpfOutR);\nhistory_48_next_381 = fixdenorm(hpfOutL);\n\n// -----------------------------------------------------------------------------\n// Entrada a COMB (L): usar hpfOutL directamente\n\n// Coeficientes comunes comb (Left)\n// BLOQUE: COMB BANK (LEFT)\n// - Entradas: hpfOutL, reflectCoef, leftCombPass/leak, delays combDelayL*Smoothed\n// - Salidas: combL1Out..combL8Out → combMixLeft → earlyLeft\n\nleftCombLeak = dampLeak;   // leak = d_DAMP\nleftCombPass = dampPass;   // pass = 1 - d_DAMP\n\n// Comb bank (Left) - 8 líneas\n// Comb base delays at 44.1kHz (Left)\ncombBaseL1 = int(1491);\ncombBaseL2 = int(1617);\n\n// combBaseL* definidos arriba (Constantes de diseño)\nsampleRateScaleL = samplerate / 44100;\ncombScaleL = sampleRateScaleL * sizeScaleL;\ncombDelayL1Scaled = combBaseL1 * combScaleL;\ncombDelayL1Smoothed = (h_combDelayL1 * 0.999) + (combDelayL1Scaled * 0.001);\nnext_combDelayL1 = fixdenorm(combDelayL1Smoothed);\ncombDelayL2Scaled = combBaseL2 * combScaleL;\ncombDelayL2Smoothed = (h_combDelayL2 * 0.999) + (combDelayL2Scaled * 0.001);\nnext_combDelayL2 = fixdenorm(combDelayL2Smoothed);\ncombDelayL3Scaled = combBaseL3 * combScaleL;\ncombDelayL3Smoothed = (h_combDelayL3 * 0.999) + (combDelayL3Scaled * 0.001);\nnext_combDelayL3 = fixdenorm(combDelayL3Smoothed);\ncombDelayL4Scaled = combBaseL4 * combScaleL;\ncombDelayL4Smoothed = (h_combDelayL4 * 0.999) + (combDelayL4Scaled * 0.001);\nnext_combDelayL4 = fixdenorm(combDelayL4Smoothed);\ncombDelayL5Scaled = combBaseL5 * combScaleL;\ncombDelayL5Smoothed = (h_combDelayL5 * 0.999) + (combDelayL5Scaled * 0.001);\nnext_combDelayL5 = fixdenorm(combDelayL5Smoothed);\ncombDelayL6Scaled = combBaseL6 * combScaleL;\ncombDelayL6Smoothed = (h_combDelayL6 * 0.999) + (combDelayL6Scaled * 0.001);\nnext_combDelayL6 = fixdenorm(combDelayL6Smoothed);\ncombDelayL7Scaled = combBaseL7 * combScaleL;\ncombDelayL7Smoothed = (h_combDelayL7 * 0.999) + (combDelayL7Scaled * 0.001);\nnext_combDelayL7 = fixdenorm(combDelayL7Smoothed);\ncombDelayL8Scaled = combBaseL8 * combScaleL;\ncombDelayL8Smoothed = (h_combDelayL8 * 0.999) + (combDelayL8Scaled * 0.001);\nnext_combDelayL8 = fixdenorm(combDelayL8Smoothed);\n\n// 1 - leak (porción pasada) ya definido como leftCombPass\n// --- Comb L1 (Left) ---\n// Inputs: combL1DelayOffset, leftCombLeak/leftCombPass, reflectCoef, hpfOutL\n// Output: combL1Out (feeds combMixLeft)\ncombL1FeedbackScaled = h_combStateL1 * leftCombPass;\n\ndelayOffsetL1Samples = combDelayL4Smoothed;\ncombL1DelayOffset = clip(baseOffsetL + delayOffsetL1Samples, 0, samplerate - 1);\n\ncombL1Tap = delay_57.read(combL1DelayOffset, interp=\"linear\");\n\ncombL1TapScaled = combL1Tap * leftCombLeak;\ncombL1Mix = combL1TapScaled + combL1FeedbackScaled;\n\ncombL1Feedforward = combL1Mix * reflectCoef;\ncombL1Sum = hpfOutL + combL1Feedforward;\ncombL1Out = combL1Sum;\n\nnext_combStateL1 = fixdenorm(combL1Mix);\n// --- Comb L2 (Left) ---\n// Inputs: combL2DelayOffset, leftCombLeak/leftCombPass, reflectCoef, hpfOutL\n// Output: combL2Out\n// --- Comb L2 (Left) ---\ncombL2FeedbackScaled = h_combStateL2 * leftCombPass;\n\ndelayOffsetL2Samples = combDelayL3Smoothed;\ncombL2DelayOffset = clip(baseOffsetL + delayOffsetL2Samples, 0, samplerate - 1);\n\ncombL2Tap = delay_59.read(combL2DelayOffset, interp=\"linear\");\n\ncombL2TapScaled = combL2Tap * leftCombLeak;\ncombL2Mix = combL2TapScaled + combL2FeedbackScaled;\n\ncombL2Feedforward = combL2Mix * reflectCoef;\ncombL2Sum = hpfOutL + combL2Feedforward;\ncombL2Out = combL2Sum;\n\nnext_combStateL2 = fixdenorm(combL2Mix);\n// --- Comb L3 (Left) ---\n// Inputs: combL3DelayOffset, leftCombLeak/leftCombPass, reflectCoef, hpfOutL\n// Output: combL3Out\n// --- Comb L3 (Left) ---\ncombL3FeedbackScaled = h_combStateL3 * leftCombPass;\n\ndelayOffsetL3Samples = combDelayL6Smoothed;\ncombL3DelayOffset = clip(baseOffsetL + delayOffsetL3Samples, 0, samplerate - 1);\n\ncombL3Tap = delay_61.read(combL3DelayOffset, interp=\"linear\");\n\ncombL3TapScaled = combL3Tap * leftCombLeak;\ncombL3Mix = combL3TapScaled + combL3FeedbackScaled;\n\ncombL3Feedforward = combL3Mix * reflectCoef;\ncombL3Sum = hpfOutL + combL3Feedforward;\ncombL3Out = combL3Sum;\n\nnext_combStateL3 = fixdenorm(combL3Mix);\n// --- Comb L4 (Left) ---\n// Inputs: combL4DelayOffset, leftCombLeak/leftCombPass, reflectCoef, hpfOutL\n// Output: combL4Out\n// --- Comb L4 (Left) ---\ncombL4FeedbackScaled = h_combStateL4 * leftCombPass;\n\ndelayOffsetL4Samples = combDelayL8Smoothed;\ncombL4DelayOffset = clip(baseOffsetL + delayOffsetL4Samples, 0, samplerate - 1);\n\ncombL4Tap = delay_63.read(combL4DelayOffset, interp=\"linear\");\n\ncombL4TapScaled = combL4Tap * leftCombLeak;\ncombL4Mix = combL4TapScaled + combL4FeedbackScaled;\n\ncombL4Feedforward = combL4Mix * reflectCoef;\ncombL4Sum = hpfOutL + combL4Feedforward;\ncombL4Out = combL4Sum;\n\nnext_combStateL4 = fixdenorm(combL4Mix);\n// --- Comb L5 (Left) ---\n// Inputs: combL5DelayOffset, leftCombLeak/leftCombPass, reflectCoef, hpfOutL\n// Output: combL5Out\n// --- Comb L5 (Left) ---\ncombL5FeedbackScaled = h_combStateL5 * leftCombPass;\n\ndelayOffsetL5Samples = combDelayL7Smoothed;\ncombL5DelayOffset = clip(baseOffsetL + delayOffsetL5Samples, 0, samplerate - 1);\n\ncombL5Tap = delay_65.read(combL5DelayOffset, interp=\"linear\");\n\ncombL5TapScaled = combL5Tap * leftCombLeak;\ncombL5Mix = combL5TapScaled + combL5FeedbackScaled;\n\ncombL5Feedforward = combL5Mix * reflectCoef;\ncombL5Sum = hpfOutL + combL5Feedforward;\ncombL5Out = combL5Sum;\n\nnext_combStateL5 = fixdenorm(combL5Mix);\n// --- Comb L6 (Left) ---\n// Inputs: combL6DelayOffset, leftCombLeak/leftCombPass, reflectCoef, hpfOutL\n// Output: combL6Out\n// --- Comb L6 (Left) ---\ncombL6FeedbackScaled = h_combStateL6 * leftCombPass;\n\ndelayOffsetL6Samples = combDelayL1Smoothed;\ncombL6DelayOffset = clip(baseOffsetL + delayOffsetL6Samples, 0, samplerate - 1);\n\ncombL6Tap = delay_67.read(combL6DelayOffset, interp=\"linear\");\n\ncombL6TapScaled = combL6Tap * leftCombLeak;\ncombL6Mix = combL6TapScaled + combL6FeedbackScaled;\n\ncombL6Feedforward = combL6Mix * reflectCoef;\ncombL6Sum = hpfOutL + combL6Feedforward;\ncombL6Out = combL6Sum;\n\nnext_combStateL6 = fixdenorm(combL6Mix);\n// --- Comb L7 (Left) ---\n// Inputs: combL7DelayOffset, leftCombLeak/leftCombPass, reflectCoef, hpfOutL\n// Output: combL7Out\n// --- Comb L7 (Left) ---\ncombL7FeedbackScaled = h_combStateL7 * leftCombPass;\n\ndelayOffsetL7Samples = combDelayL2Smoothed;\ncombL7DelayOffset = clip(baseOffsetL + delayOffsetL7Samples, 0, samplerate - 1);\n\ncombL7Tap = delay_69.read(combL7DelayOffset, interp=\"linear\");\n\ncombL7TapScaled = combL7Tap * leftCombLeak;\ncombL7Mix = combL7TapScaled + combL7FeedbackScaled;\n\ncombL7Feedforward = combL7Mix * reflectCoef;\ncombL7Sum = hpfOutL + combL7Feedforward;\ncombL7Out = combL7Sum;\n\nnext_combStateL7 = fixdenorm(combL7Mix);\n// --- Comb L8 (Left) ---\n// Inputs: combL8DelayOffset, leftCombLeak/leftCombPass, reflectCoef, hpfOutL\n// Output: combL8Out\n// --- Comb L8 (Left) ---\ncombL8FeedbackScaled = h_combStateL8 * leftCombPass;\n\ndelayOffsetL8Samples = combDelayL5Smoothed;\ncombL8DelayOffset = clip(baseOffsetL + delayOffsetL8Samples, 0, samplerate - 1);\n\ncombL8Tap = delay_71.read(combL8DelayOffset, interp=\"linear\");\n\ncombL8TapScaled = combL8Tap * leftCombLeak;\ncombL8Mix = combL8TapScaled + combL8FeedbackScaled;\n\ncombL8Feedforward = combL8Mix * reflectCoef;\ncombL8Sum = hpfOutL + combL8Feedforward;\ncombL8Out = combL8Sum;\n\nnext_combStateL8 = fixdenorm(combL8Mix);\n// Suma normalizada del banco de combs (Left) → early reflections\ncombMixLeft = ((((((((((((((combL8Out + combL7Out)) + combL6Out)) + combL5Out)) + combL4Out)) + combL3Out)) + combL2Out)) + combL1Out)) * 0.125;\nearlyLeft = combMixLeft;\n\n// -----------------------------------------------------------------------------\n// ALLPASS DIFFUSER CHAIN (LEFT) — 4 STAGES\n// BLOQUE: Difusores allpass L\n// - Entradas: earlyLeft\n// - Salida: msInLeft (entrada a matriz M/S)\n\n// apL*Base definidos arriba (Constantes de diseño)\nsampleRateScaleAP_L = samplerate / 44100;\napScaleL = sampleRateScaleAP_L * sizeScaleEff;\napL1DelaySamples = apL1Base * apScaleL;\napL1DelayOffset = clip(apBaseL + apL1DelaySamples, 0, samplerate - 1);\napL1TapA = delay_73.read(apL1DelayOffset, interp=\"linear\");\napL1TapB = delay_74.read(apL1DelayOffset, interp=\"linear\");\n// apL1: usar alias de taps para claridad\napL1Sum = (earlyLeft * (apGainL * -1)) + (apL1TapA + apL1TapB * apGainL);\n// Allpass etapas (Left)\napL1 = apL1Sum;\n// sampleRateScaleAP_L y apScaleL reutilizados\napL2DelaySamples = apL2Base * apScaleL;\napL2DelayOffset = clip(apBaseL + apL2DelaySamples, 0, samplerate - 1);\napL2TapA = delay_75.read(apL2DelayOffset, interp=\"linear\");\napL2TapB = delay_76.read(apL2DelayOffset, interp=\"linear\");\napL2Sum = apL1 * (apGainL * -1) + (apL2TapA + apL2TapB * apGainL);\napL2 = apL2Sum;\n// sampleRateScaleAP_L y apScaleL reutilizados\napL3DelaySamples = apL3Base * apScaleL;\napL3DelayOffset = clip(apBaseL + apL3DelaySamples, 0, samplerate - 1);\napL3TapA = delay_77.read(apL3DelayOffset, interp=\"linear\");\napL3TapB = delay_78.read(apL3DelayOffset, interp=\"linear\");\napL3Sum = apL2 * (apGainL * -1) + (apL3TapA + apL3TapB * apGainL);\napL3 = apL3Sum;\n// sampleRateScaleAP_L y apScaleL reutilizados\napL4DelaySamples = apL4Base * apScaleL;\napL4DelayOffset = clip(apBaseL + apL4DelaySamples, 0, samplerate - 1);\napL4TapA = delay_79.read(apL4DelayOffset, interp=\"linear\");\napL4TapB = delay_80.read(apL4DelayOffset, interp=\"linear\");\napL4Sum = apL3 * (apGainL * -1) + (apL4TapA + apL4TapB * apGainL);\napL4 = apL4Sum;\n\n// Entrada a matriz M/S (L) desde el último allpass\nmsInLeft = apL4;\n\n// -----------------------------------------------------------------------------\n// M/S MATRIX + WIDTH (PRE EQ/COMP)\n// BLOQUE: Matriz Mid/Side y control de ancho\n// - Entradas: msInLeft/msInRight (desde allpass L/R), stereoSpreadMid/Side, widthScale\n// - Salidas: msLeft/msRight (húmedo antes de EQ/COMP POST)\n// Salida pre-filtros (R)\n// Coeficientes comunes comb (Right)\n// BLOQUE: COMB BANK (RIGHT)\n// - Entradas: hpfOutR, reflectCoef, rightCombPass/leak, delays combDelayR*Smoothed\n// - Salidas: combR1Out..combR8Out → combMixRight → earlyRight\nrightCombLeak = dampLeak;\nrightCombPass = dampPass;\n\n// Comb base delays at 44.1kHz (Right)\n// combBaseR* definidos arriba (Constantes de diseño)\nsampleRateScaleR = samplerate / 44100;\ncombScaleR = sampleRateScaleR * sizeScaleR;\ncombDelayR1Scaled = combBaseR1 * combScaleR;\ncombDelayR1Smoothed = (h_combDelayR1 * 0.999) + (combDelayR1Scaled * 0.001);\nnext_combDelayR1 = fixdenorm(combDelayR1Smoothed);\ncombDelayR2Scaled = combBaseR2 * combScaleR;\ncombDelayR2Smoothed = (h_combDelayR2 * 0.999) + (combDelayR2Scaled * 0.001);\nnext_combDelayR2 = fixdenorm(combDelayR2Smoothed);\ncombDelayR3Scaled = combBaseR3 * combScaleR;\ncombDelayR3Smoothed = (h_combDelayR3 * 0.999) + (combDelayR3Scaled * 0.001);\nnext_combDelayR3 = fixdenorm(combDelayR3Smoothed);\ncombDelayR4Scaled = combBaseR4 * combScaleR;\ncombDelayR4Smoothed = (h_combDelayR4 * 0.999) + (combDelayR4Scaled * 0.001);\nnext_combDelayR4 = fixdenorm(combDelayR4Smoothed);\ncombDelayR5Scaled = combBaseR5 * combScaleR;\ncombDelayR5Smoothed = (h_combDelayR5 * 0.999) + (combDelayR5Scaled * 0.001);\nnext_combDelayR5 = fixdenorm(combDelayR5Smoothed);\ncombDelayR6Scaled = combBaseR6 * combScaleR;\ncombDelayR6Smoothed = (h_combDelayR6 * 0.999) + (combDelayR6Scaled * 0.001);\nnext_combDelayR6 = fixdenorm(combDelayR6Smoothed);\ncombDelayR7Scaled = combBaseR7 * combScaleR;\ncombDelayR7Smoothed = (h_combDelayR7 * 0.999) + (combDelayR7Scaled * 0.001);\nnext_combDelayR7 = fixdenorm(combDelayR7Smoothed);\ncombDelayR8Scaled = combBaseR8 * combScaleR;\ncombDelayR8Smoothed = (h_combDelayR8 * 0.999) + (combDelayR8Scaled * 0.001);\nnext_combDelayR8 = fixdenorm(combDelayR8Smoothed);\n\n// -----------------------------------------------------------------------------\n// COMB BANK (RIGHT) — 8 LINES\n// 1 - leak (porción pasada) ya definido como rightCombPass\ncombR1FeedbackScaled = h_combStateR1 * rightCombPass;\n\ndelayOffsetR1Samples = combDelayR3Smoothed;\ncombR1DelayOffset = clip(baseOffsetR + delayOffsetR1Samples, 0, samplerate - 1);\n\ncombR1Tap = delay_89.read(combR1DelayOffset, interp=\"linear\");\n\ncombR1TapScaled = combR1Tap * rightCombLeak;\ncombR1Mix = combR1TapScaled + combR1FeedbackScaled;\n\ncombR1Feedforward = combR1Mix * reflectCoef;\ncombR1Sum = hpfOutR + combR1Feedforward;\ncombR1Out = combR1Sum;\n\nnext_combStateR1 = fixdenorm(combR1Mix);\n// --- Comb R2 (Right) ---\ncombR2FeedbackScaled = h_combStateR2 * rightCombPass;\n\ndelayOffsetR2Samples = combDelayR4Smoothed;\ncombR2DelayOffset = clip(baseOffsetR + delayOffsetR2Samples, 0, samplerate - 1);\n\ncombR2Tap = delay_91.read(combR2DelayOffset, interp=\"linear\");\n\ncombR2TapScaled = combR2Tap * rightCombLeak;\ncombR2Mix = combR2TapScaled + combR2FeedbackScaled;\n\ncombR2Feedforward = combR2Mix * reflectCoef;\ncombR2Sum = hpfOutR + combR2Feedforward;\ncombR2Out = combR2Sum;\n\nnext_combStateR2 = fixdenorm(combR2Mix);\n// --- Comb R3 (Right) ---\ncombR3FeedbackScaled = h_combStateR3 * rightCombPass;\n\ndelayOffsetR3Samples = combDelayR6Smoothed;\ncombR3DelayOffset = clip(baseOffsetR + delayOffsetR3Samples, 0, samplerate - 1);\n\ncombR3Tap = delay_93.read(combR3DelayOffset, interp=\"linear\");\n\ncombR3TapScaled = combR3Tap * rightCombLeak;\ncombR3Mix = combR3TapScaled + combR3FeedbackScaled;\n\ncombR3Feedforward = combR3Mix * reflectCoef;\ncombR3Sum = hpfOutR + combR3Feedforward;\ncombR3Out = combR3Sum;\n\nnext_combStateR3 = fixdenorm(combR3Mix);\n// --- Comb R4 (Right) ---\ncombR4FeedbackScaled = h_combStateR4 * rightCombPass;\n\ndelayOffsetR4Samples = combDelayR7Smoothed;\ncombR4DelayOffset = clip(baseOffsetR + delayOffsetR4Samples, 0, samplerate - 1);\n\ncombR4Tap = delay_95.read(combR4DelayOffset, interp=\"linear\");\n\ncombR4TapScaled = combR4Tap * rightCombLeak;\ncombR4Mix = combR4TapScaled + combR4FeedbackScaled;\n\ncombR4Feedforward = combR4Mix * reflectCoef;\ncombR4Sum = hpfOutR + combR4Feedforward;\ncombR4Out = combR4Sum;\n\nnext_combStateR4 = fixdenorm(combR4Mix);\n// --- Comb R5 (Right) ---\n// --- Comb R5 (Right) ---\ncombR5FeedbackScaled = h_combStateR5 * rightCombPass;\n\ndelayOffsetR5Samples = combDelayR1Smoothed;\ncombR5DelayOffset = clip(baseOffsetR + delayOffsetR5Samples, 0, samplerate - 1);\n\ncombR5Tap = delay_97.read(combR5DelayOffset, interp=\"linear\");\n\ncombR5TapScaled = combR5Tap * rightCombLeak;\ncombR5Mix = combR5TapScaled + combR5FeedbackScaled;\n\ncombR5Feedforward = combR5Mix * reflectCoef;\ncombR5Sum = hpfOutR + combR5Feedforward;\ncombR5Out = combR5Sum;\n\nnext_combStateR5 = fixdenorm(combR5Mix);\n// --- Comb R6 (Right) ---\n// --- Comb R6 (Right) ---\ncombR6FeedbackScaled = h_combStateR6 * rightCombPass;\n\ndelayOffsetR6Samples = combDelayR2Smoothed;\ncombR6DelayOffset = clip(baseOffsetR + delayOffsetR6Samples, 0, samplerate - 1);\n\ncombR6Tap = delay_99.read(combR6DelayOffset, interp=\"linear\");\n\ncombR6TapScaled = combR6Tap * rightCombLeak;\ncombR6Mix = combR6TapScaled + combR6FeedbackScaled;\n\ncombR6Feedforward = combR6Mix * reflectCoef;\ncombR6Sum = hpfOutR + combR6Feedforward;\ncombR6Out = combR6Sum;\n\nnext_combStateR6 = fixdenorm(combR6Mix);\n// --- Comb R7 (Right) ---\n// --- Comb R7 (Right) ---\ncombR7FeedbackScaled = h_combStateR7 * rightCombPass;\n\ndelayOffsetR7Samples = combDelayR5Smoothed;\ncombR7DelayOffset = clip(baseOffsetR + delayOffsetR7Samples, 0, samplerate - 1);\n\ncombR7Tap = delay_101.read(combR7DelayOffset, interp=\"linear\");\n\ncombR7TapScaled = combR7Tap * rightCombLeak;\ncombR7Mix = combR7TapScaled + combR7FeedbackScaled;\n\ncombR7Feedforward = combR7Mix * reflectCoef;\ncombR7Sum = hpfOutR + combR7Feedforward;\ncombR7Out = combR7Sum;\n\nnext_combStateR7 = fixdenorm(combR7Mix);\n// --- Comb R8 (Right) ---\n// --- Comb R8 (Right) ---\ncombR8FeedbackScaled = h_combStateR8 * rightCombPass;\n\ndelayOffsetR8Samples = combDelayR8Smoothed;\ncombR8DelayOffset = clip(baseOffsetR + delayOffsetR8Samples, 0, samplerate - 1);\n\ncombR8Tap = delay_103.read(combR8DelayOffset, interp=\"linear\");\n\ncombR8TapScaled = combR8Tap * rightCombLeak;\ncombR8Mix = combR8TapScaled + combR8FeedbackScaled;\n\ncombR8Feedforward = combR8Mix * reflectCoef;\ncombR8Sum = hpfOutR + combR8Feedforward;\ncombR8Out = combR8Sum;\n\nnext_combStateR8 = fixdenorm(combR8Mix);\n// Suma normalizada del banco de combs (Right) → early reflections\ncombMixRight = ((((((((((((((combR8Out + combR7Out)) + combR6Out)) + combR5Out)) + combR4Out)) + combR3Out)) + combR2Out)) + combR1Out)) * 0.125;\nearlyRight = combMixRight;\n\n// -----------------------------------------------------------------------------\n// ALLPASS DIFFUSER CHAIN (RIGHT) — 4 STAGES\n// Entradas: earlyRight\n// Salida: msInRight (entrada a matriz M/S)\n// apR*Base definidos arriba (Constantes de diseño)\nsampleRateScaleAP_R = samplerate / 44100;\napScaleR = sampleRateScaleAP_R * sizeScaleEff;\napR1DelaySamples = apR1Base * apScaleR;\napR1DelayOffset = apBaseR + apR1DelaySamples;\napR1TapA = delay_105.read(apR1DelayOffset, interp=\"linear\");\napR1TapB = delay_106.read(apR1DelayOffset, interp=\"linear\");\n// apR1: taps\napR1Sum = (earlyRight * (apGainR * -1)) + (apR1TapA + apR1TapB * apGainR);\n// Allpass etapas (Right)\napR1 = apR1Sum;\n\n// -----------------------------------------------------------------------------\n// ALLPASS DIFFUSER CHAIN (RIGHT) — 4 STAGES\n// BLOQUE: Difusores allpass R\n// - Entradas: earlyRight\n// - Salida: msInRight (entrada a matriz M/S)\n\n// sampleRateScaleAP_R y apScaleR reutilizados\napR2DelaySamples = apR2Base * apScaleR;\napR2DelayOffset = clip(apBaseR + apR2DelaySamples, 0, samplerate - 1);\napR2TapA = delay_107.read(apR2DelayOffset, interp=\"linear\");\napR2TapB = delay_108.read(apR2DelayOffset, interp=\"linear\");\napR2Sum = apR1 * (apGainR * -1) + (apR2TapA + apR2TapB * apGainR);\napR2 = apR2Sum;\n\n// sampleRateScaleAP_R y apScaleR reutilizados\napR3DelaySamples = apR3Base * apScaleR;\napR3DelayOffset = clip(apBaseR + apR3DelaySamples, 0, samplerate - 1);\napR3TapA = delay_109.read(apR3DelayOffset, interp=\"linear\");\napR3TapB = delay_110.read(apR3DelayOffset, interp=\"linear\");\napR3Sum = apR2 * (apGainR * -1) + (apR3TapA + apR3TapB * apGainR);\napR3 = apR3Sum;\n\n// sampleRateScaleAP_R y apScaleR reutilizados\napR4DelaySamples = apR4Base * apScaleR;\napR4DelayOffset = clip(apBaseR + apR4DelaySamples, 0, samplerate - 1);\napR4TapA = delay_111.read(apR4DelayOffset, interp=\"linear\");\napR4TapB = delay_112.read(apR4DelayOffset, interp=\"linear\");\napR4Sum = apR3 * (apGainR * -1) + (apR4TapA + apR4TapB * apGainR);\napR4 = apR4Sum;\nmsInRight = apR4;\nmsMidRaw = msInLeft + msInRight;               // suma L+R (mid)\nmsMid = msMidRaw * stereoSpreadMid;            // mid con spread\nmsSideRaw = msInLeft - msInRight;              // diferencia L-R (side)\nmsSide = msSideRaw * stereoSpreadSide;         // side con spread\nmsLeftPreWidth = msMid + msSide;               // L previo a width\nmsLeft = msLeftPreWidth * widthScale;          // aplicar width a L\nmsRightPreWidth = msMid - msSide;              // R previo a width\nmsRight = msRightPreWidth * widthScale;        // aplicar width a R\n\n// Alias entrada a matriz M/S (R) y húmedo antes de EQ/COMP\nwetPreLeft = msLeft;\nwetPreRight = msRight;\n\n// Allpass diffuser out (Right) antes de M/S — ya reflejado en msInRight\n// Late reverb (pre EQ/COMP POST)\nlateLeft = wetPreLeft;\nlateRight = wetPreRight;\n\n// Sección: EQ POST (3 bandas) con bypass eqEnabled\n// BLOQUE: Ecualización post reverb\n// - Entradas: wetPreLeft/wetPreRight (msLeft/msRight tras M/S+width)\n// - Salidas: postEqLeft/postEqRight (con bypass suave si PRE activo)\neqPostLeftRaw, eqPostRightRaw = eq3bandas(wetPreLeft, wetPreRight, lowFreqHz, peakFreqHz, hiFreqHz, lowGainDb, peakGainDb, hiGainDb, 1);\n\n// Si x_prepost=1 (PRE), anula la EQ POST (bypass EQ post)\npostEqLeft = mix(msLeft, eqPostLeftRaw, eqEnabled * (1 - prePostBinary));\npostEqRight = mix(msRight, eqPostRightRaw, eqEnabled * (1 - prePostBinary));\n\n// Sección: Compresor estéreo (RMS → ganancia → mezcla)\n// BLOQUE: Compresión post reverb\n// - Entradas: postEqLeft/postEqRight, threshold/ratio/A/R/makeup\n// - Salidas: postCOMP_L/postCOMP_R (bypass suave si PRE activo)\n// - Detector RMS por canal (~300 muestras) con slide A/R\n// - Threshold (s_thd), Ratio (t_ratio), Attack/Release (u_atk/v_rel)\n// - Makeup (w_makeup), on/off (r_onoffCOMP)\n\nmakeupGainLin = dbtoa(makeupDb);\nreleaseSamps = mstosamps(releaseMs);\nattackSamps = mstosamps(attackMs);\nrightWin = int(300);\nrightTap = delay_113.read(rightWin);\nrightEnergy = postEqRight * postEqRight;\nrightAccumPrev = h_postRightAccum;\nrightAccum = rightAccumPrev + rightEnergy;\nrightDiff = rightAccum - rightTap;\nrightAvg = rightDiff / rightWin;\nrightRms = sqrt(rightAvg);\nnext_postRightAccum = fixdenorm(rightDiff);\nrightDb = atodb(rightRms);\nrightLvlDb = max(rightDb, -96);\nrightOver = rightLvlDb > thresholdDb;\nrightOverFlagPrev = h_postRightOverFlag;\nrightOverSmoothed = (rightOverFlagPrev * 0.999) + (rightOver * 0.001);\nnext_postRightOverFlag = fixdenorm(rightOverSmoothed);\nrightGainDb = (thresholdDb - rightLvlDb) * (1 - (1 / ratio));\nrightGainLin = dbtoa(rightGainDb);\n// Objetivo de ganancia: 1 bajo umbral, gainLin sobre umbral (sin mezclar expansor)\nrightEnvTarget = mix(1, rightGainLin, rightOver);\nrightEnv = slide(rightEnvTarget, releaseSamps, attackSamps);\ncompRight = (postEqRight * rightEnv) * makeupGainLin;\n// comp outputs (Left then Right)\nleftWin = int(300);\nleftTap = delay_116.read(leftWin);\nleftEnergy = postEqLeft * postEqLeft;\nleftAccumPrev = h_postLeftAccum;\nleftAccum = leftAccumPrev + leftEnergy;\nleftDiff = leftAccum - leftTap;\nleftAvg = leftDiff / leftWin;\nleftRms = sqrt(leftAvg);\nnext_postLeftAccum = fixdenorm(leftDiff);\nleftDb = atodb(leftRms);\nleftLvlDb = max(leftDb, -96);\nleftOver = leftLvlDb > thresholdDb;\nleftOverFlagPrev = h_postLeftOverFlag;\nleftOverSmoothed = (leftOverFlagPrev * 0.999) + (leftOver * 0.001);\nnext_postLeftOverFlag = fixdenorm(leftOverSmoothed);\nleftGainDb = (thresholdDb - leftLvlDb) * (1 - (1 / ratio));\nleftGainLin = dbtoa(leftGainDb);\nleftEnvTarget = mix(1, leftGainLin, leftOver);\nleftEnv = slide(leftEnvTarget, releaseSamps, attackSamps);\ncompLeft = (postEqLeft * leftEnv) * makeupGainLin;\n\n// Si x_prepost=1 (PRE), anula el COMP POST\npostCOMP_L = mix(postEqLeft, compLeft, compEnableSmoothed * (1 - prePostBinary));\npostCOMP_R = mix(postEqRight, compRight, compEnableSmoothed * (1 - prePostBinary));\npostCompLeft = postCOMP_L;\npostCompRight = postCOMP_R;\nwetPostCompLeft = postCOMP_L;\nwetPostCompRight = postCOMP_R;\n\n// -----------------------------------------------------------------------------\n// SALIDA (DRY/WET + MONO COLLAPSE)\n// BLOQUE: Mezcla y salida final\n// - Entradas: dryL/dryR, wetPostCompLeft/wetPostCompRight, dryWet, outputTrimLin, isMonoOut\n// - Operaciones: trim + softclip (solo WET), mix dry/wet por canal, DC-block, mezcla mono si procede\n// - Salidas: out1/out2 (requeridos por Max/Gen)\nwetOutL = wetPostCompLeft * outputTrimLin;\nwetOutR = wetPostCompRight * outputTrimLin;\n// Softclip solo en la rama WET\nwetClipL = (2 / pi) * tanh(wetOutL);\nwetClipR = (2 / pi) * tanh(wetOutR);\nwetProcessedL = mix(wetOutL, wetClipL, softclipEnabled);\nwetProcessedR = mix(wetOutR, wetClipR, softclipEnabled);\ndryWetLeft = mix(dryL, wetProcessedL, dryWet);\ndcblockLeft = dcblock(dryWetLeft);\n// outMono/out mix computed after both channels are available\ndryWetRight = mix(dryR, wetProcessedR, dryWet);\ndcblockRight = dcblock(dryWetRight);\noutMono = (dcblockLeft + dcblockRight) * 0.5;\nout1 = mix(dcblockLeft, outMono, isMonoOut);\nout2 = mix(dcblockRight, outMono, isMonoOut);\n\n// -----------------------------------------------------------------------------\n// STATE UPDATES (History/Delay writes) — must follow outputs\n// -----------------------------------------------------------------------------\n// --- Estados PRE (si se usa x_prepost=1) ---\n// --- PRE COMP state updates ---\ndelay_preR.write(preRightEnergy);\npreR_accum = preR_accum_next;\npreR_flag = fixdenorm(preR_flag_s);\ndelay_preL.write(preLeftEnergy);\npreL_accum = preL_accum_next;\npreL_flag = fixdenorm(preL_flag_s);\n// Reverb drive RMS state updates\n// (Eliminadas escrituras de detectores RAW)\nh_outputTrim = next_outputTrim;\n// Post COMP detector state updates\nh_postLeftOverFlag = next_postLeftOverFlag;\nh_postLeftAccum = next_postLeftAccum;\ndelay_116.write(leftEnergy);\n// Right channel RMS + over flag updates\nh_postRightOverFlag = next_postRightOverFlag;\nh_postRightAccum = next_postRightAccum;\ndelay_113.write(rightEnergy);\n// --- ALLPASS R state updates ---\ndelay_106.write(apR1Sum);\ndelay_107.write(apR1);\ndelay_108.write(apR2Sum);\ndelay_109.write(apR2);\ndelay_110.write(apR3Sum);\ndelay_111.write(apR3);\ndelay_112.write(apR4Sum);\ndelay_105.write(earlyRight);\n// Right comb delay smoothing state updates\nh_combDelayR8 = next_combDelayR8;\nh_combDelayR7 = next_combDelayR7;\nh_combDelayR6 = next_combDelayR6;\nh_combDelayR5 = next_combDelayR5;\nh_combDelayR4 = next_combDelayR4;\nh_combDelayR3 = next_combDelayR3;\nh_combDelayR2 = next_combDelayR2;\n// --- COMB R state updates ---\ndelay_89.write(combR1Sum);\n// Right comb integrator state updates\nh_combStateR1 = next_combStateR1;\ndelay_91.write(combR2Sum);\nh_combStateR2 = next_combStateR2;\ndelay_93.write(combR3Sum);\nh_combStateR3 = next_combStateR3;\ndelay_95.write(combR4Sum);\nh_combStateR4 = next_combStateR4;\ndelay_97.write(combR5Sum);\nh_combStateR5 = next_combStateR5;\ndelay_99.write(combR6Sum);\nh_combStateR6 = next_combStateR6;\ndelay_101.write(combR7Sum);\nh_combStateR7 = next_combStateR7;\ndelay_103.write(combR8Sum);\nh_combStateR8 = next_combStateR8;\nh_combDelayR1 = next_combDelayR1;\n// --- ALLPASS L state updates ---\ndelay_74.write(apL1Sum);\ndelay_75.write(apL1);\ndelay_76.write(apL2Sum);\ndelay_77.write(apL2);\ndelay_78.write(apL3Sum);\ndelay_79.write(apL3);\ndelay_80.write(apL4Sum);\ndelay_73.write(earlyLeft);\n// Left comb delay smoothing state updates\nh_combDelayL8 = next_combDelayL8;\nh_combDelayL7 = next_combDelayL7;\nh_combDelayL6 = next_combDelayL6;\nh_combDelayL5 = next_combDelayL5;\nh_combDelayL4 = next_combDelayL4;\nh_combDelayL3 = next_combDelayL3;\nh_combDelayL2 = next_combDelayL2;\n// --- COMB L delay/history updates ---\ndelay_57.write(combL1Sum);\n// Left comb integrator state updates\nh_combStateL1 = next_combStateL1;\ndelay_59.write(combL2Sum);\nh_combStateL2 = next_combStateL2;\ndelay_61.write(combL3Sum);\nh_combStateL3 = next_combStateL3;\ndelay_63.write(combL4Sum);\nh_combStateL4 = next_combStateL4;\ndelay_65.write(combL5Sum);\nh_combStateL5 = next_combStateL5;\ndelay_67.write(combL6Sum);\nh_combStateL6 = next_combStateL6;\ndelay_69.write(combL7Sum);\nh_combStateL7 = next_combStateL7;\ndelay_71.write(combL8Sum);\nh_combStateL8 = next_combStateL8;\nh_combDelayL1 = next_combDelayL1;\nhistory_40 = nextLpfOutL;\nhistory_39 = nextLpfOutR;\nhistory_38 = nextPreInputR;\nhistory_37 = nextPreInputL;\nhistory_36 = history_36_next_355;\nhistory_35 = history_35_next_354;\nhistory_34 = history_34_next_353;\nhistory_41 = history_41_next_374;\nhistory_48 = history_48_next_381;\nhistory_47 = history_47_next_380;\nhistory_46 = history_46_next_379;\nhistory_45 = history_45_next_378;\nhistory_44 = history_44_next_377;\nhistory_43 = history_43_next_376;\nhistory_42 = history_42_next_375;\nhistory_33 = history_33_next_352;\nh_freezeGate = nextFreezeGate;\nh_reflectCoef = nextReflectCoef;\nh_hpfHz = nextHpfHz;\nh_lpfHz = nextLpfHz;\nh_sizeScale = nextSizeScale;\n// Smoothed parameter state updates\nh_inputTrim = next_inputTrim;\nh_hiGainDb = next_hiGainDb;\nh_peakGainDb = next_peakGainDb;\nh_lowGainDb = next_lowGainDb;\nh_hiFreqHz = next_hiFreqHz;\nh_peakFreqHz = next_peakFreqHz;\nh_lowFreqHz = next_lowFreqHz;\nh_stereoWidth = next_stereoWidth;\nh_freezeBlend = next_freezeBlend;\nh_eqEnabled = next_eqEnabled;\nh_dryWetStage2 = next_dryWetStage2;\nh_dryWetStage1 = next_dryWetStage1;\nh_makeupDb = next_makeupDb;\nh_releaseMs = next_releaseMs;\nh_attackMs = next_attackMs;\nh_ratio = next_ratio;\nh_thresholdDb = next_thresholdDb;\nh_compEnable = next_compEnable;\nh_outputTrim = next_outputTrim;\n// Softclip enable state update\nh_softclipEnable = next_softclipEnable;\n// Pre/Post gap env state\nh_prepostGap = next_prepostGap;\n// PRE/POST switch envelope update (legacy blend state)\nprePost_s = fixdenorm(prePostBlend);\n",
+									"id" : "obj-3",
+									"maxclass" : "newobj",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 712.0, 862.0, 35.0, 22.0 ],
+									"text" : "out 5"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-2",
+									"maxclass" : "newobj",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 551.75, 862.0, 35.0, 22.0 ],
+									"text" : "out 4"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"code" : "// VERSION TAG: readable-genexpr-initial (2025-08-30)\n// =============================================================================\n// JCBReverb GenExpr (readable)\n// Uso: pegar en Max/Gen Codebox. Conserva parámetros y funcionalidad.\n//\n// Guía de lectura rápida:\n// 1) Smoothing + I/O: trims (a_INPUT/m_OUTPUT), dry/wet, ruteo `y_IOMODE`.\n// 2) PRE (opcional): EQ/COMP antes de la reverb (suavizado `prePostBlend`).\n// 3) Pre‑filtros: LPF/HPF (RBJ) a entradas difusores.\n// 4) Difusores: Combs (8 por lado) → Allpass (4 por lado), offsets y escalas legibles.\n// 5) M/S + width: `msLeft/msRight` via mid/side + `f_ST`/`widthScale`.\n// 6) EQ/COMP POST: 3‑band EQ y compresor estéreo, bypass suave según PRE/POST.\n// 7) Mezcla Dry/Wet y salida: `out1/out2` (Max requiere estos nombres para outlets).\n//\n// Bloques:\n// - IO: ruteo según `y_IOMODE` (1=mono->mono, 2=mono->stereo, 3=stereo->stereo).\n// - Pre/Post: EQ 3 bandas + Comp pueden ir PRE o POST reverb con `x_PREPOST`.\n// - Pre-filtros: LPF/HPF RBJ sobre entrada a difusores (parámetros `k_LPF`/`l_HPF`).\n// - Difusión: 8 combs por lado (suma normalizada) + 4 allpass por lado.\n// - M/S: control de ancho estéreo `f_ST` con `msLeft/msRight` antes de EQ/COMP.\n// - Dry/Wet: `b_DRYWET`; trims en dB `a_INPUT` (previo) y `m_OUTPUT` (solo WET).\n//\n// Parámetros principales:\n// - `a_INPUT`/`m_OUTPUT` (dB), `b_DRYWET`, `c_REFLECT`, `d_DAMP`, `e_SIZE`, `f_ST`,\n//   `g_FREEZE`, `h_LOWGAIN`, `i_PEAKGAIN`, `j_HIGAIN`, `k_LPF`, `l_HPF`, `n_LOWFREQ`,\n//   `o_PEAKFREQ`, `p_HIFREQ`, `q_ONOFFEQ`, `r_ONOFFCOMP`, `s_THD`, `t_RATIO`,\n//   `u_ATK`, `v_REL`, `w_MAKEUP`, `x_PREPOST`, `y_IOMODE`.\n//\n// Seguridad de orden (Gen): mantener lecturas de delay antes de escrituras y\n// el orden de histories/feedback. Los cambios de nombres respetan cronología.\n// =============================================================================\n\n// =============================================================================\n// ÍNDICE DE BLOQUES (flujo y señales)\n// =============================================================================\n// 1) Smoothing/control mapping\n//    - In: Params UI (a_INPUT..y_IOMODE)\n//    - Out: prePostBlend, outputTrimLin, compEnableSmoothed, dryWet, eqEnabled,\n//           freezeBlend, stereoWidthParam, widthScale, EQ freqs/gains, inputTrimLin\n// 2) I/O + Dry path\n//    - In: in1/in2\n//    - Out: ioL/ioR (wet, con trim y mono route), ioL_raw/ioR_raw (dry), dryL/dryR\n// 3) PRE EQ/COMP (opcional)\n//    - In: preInputL_sel/preInputR_sel\n//    - Out: preL_proc/preR_proc (si prePostBlend activa PRE)\n// 4) Pre‑filtros (LPF/HPF)\n//    - In: preInputL_sel/preInputR_sel\n//    - Out: hpfOutL/hpfOutR (entradas a difusores)\n// 5) COMB BANK (L)\n//    - In: hpfOutL, reflectCoef, leftCombPass/leak, combDelayL*\n//    - Out: earlyLeft\n// 6) ALLPASS (L)\n//    - In: earlyLeft\n//    - Out: msInLeft\n// 7) COMB BANK (R)\n//    - In: hpfOutR, reflectCoef, rightCombPass/leak, combDelayR*\n//    - Out: earlyRight\n// 8) ALLPASS (R)\n//    - In: earlyRight\n//    - Out: msInRight\n// 9) M/S + width\n//    - In: msInLeft/msInRight, widthScale\n//    - Out: msLeft/msRight\n// 10) EQ POST (3 bandas)\n//    - In: wetPreLeft/wetPreRight\n//    - Out: postEqLeft/postEqRight\n// 11) COMP POST (estéreo)\n//    - In: postEqLeft/postEqRight, comp params\n//    - Out: postCOMP_L/postCOMP_R\n// 12) Mezcla + salida\n//    - In: dryL/dryR, postCOMP_L/R, dryWet, outputTrimLin, isMonoOut\n//    - Out: out1/out2\n\n// -----------------------------------------------------------------------------\n// SECCION: FUNCIONES (EQ 3 bandas, shelves, peak)\n// -----------------------------------------------------------------------------\neq3bandas(sigL, sigR, lf, pf, hf, lg, pg, hg, bw) {\n\t// Procesa L y R en paralelo manteniendo la salida R encadenada coherente\n\t// 1) Low-shelf → 2) Peak → 3) High-shelf\n\tlowL, lowR   = lowshelf(sigL, sigR, lf, lg);\n\tpeakL, peakR = peak(lowL, lowR, pf, pg, bw);\n\thighL, highR = hishelf(peakL, peakR, hf, hg);\n\treturn highL, highR;\n}\n\nlowshelf(sigL, sigR, freq, db) {\n    // RBJ-style low-shelf coefficients recalculated on parameter change\n    History shelfGain(0);\n    History cutoff(0);\n    History shelfTerm(0);\n    History w(0);\n    History a0(0);\n    History a1(0);\n    if ((change(freq) != 0) || (change(db) != 0)) {\n        shelfGain = pow(1.059253692627, db * 0.5);\n        cutoff = freq / shelfGain;\n        shelfTerm = (shelfGain * shelfGain) - 1;\n        w = tan((cutoff * pi) / samplerate);\n        a0 = 1 / (w + 1);\n        a1 = w - 1;\n    }\n    leftOut  = lowshelfCore(sigL, a0, a1, shelfTerm, w);\n    rightOut = lowshelfCore(sigR, a0, a1, shelfTerm, w);\n    return leftOut, rightOut;\n}\n\nhishelf(sigL, sigR, freq, db) {\n    // RBJ-style high-shelf coefficients recalculated on parameter change\n    History shelfGain(0);\n    History cutoff(0);\n    History shelfTerm(0);\n    History w(0);\n    History a0(0);\n    History a1(0);\n    if ((change(freq) != 0) || (change(db) != 0)) {\n        shelfGain = pow(1.059253692627, db * 0.25);\n        cutoff = min(freq * shelfGain, samplerate);\n        shelfTerm = (shelfGain * shelfGain) - 1;\n        w = tan((max(cutoff, 0) * pi) / samplerate);\n        a0 = 1 / (w + 1);\n        a1 = w - 1;\n    }\n    leftOut  = hishelfCore(sigL, a0, a1, shelfTerm);\n    rightOut = hishelfCore(sigR, a0, a1, shelfTerm);\n    return leftOut, rightOut;\n}\n\npeakCore(input, w, d2, a0, a1, a2) {\n    // Two-pole peaking core with simple state update\n    History z1(0);\n    History z2(0);\n    History z3(0);\n    History z4(0);\n    stage = (input - z2) * w;\n    z2 = z1;\n    z1 = input;\n    biquadOut = a0 * (stage - (a1 * z3) - (a2 * z4));\n    z4 = z3;\n    z3 = biquadOut;\n    out = input + (biquadOut * d2);\n    return out;\n}\n\nlowshelfCore(input, a0, a1, b1, w) {\n    History z1(0);\n    x = a0 * (input - (a1 * z1));\n    y = w * (x + z1);\n    z1 = x;\n    return (y * b1) + input;\n}\n\npeak(sigL, sigR, freq, db, bw) {\n    // RBJ-style peaking EQ core parameters recalculated on change\n    History w(0);\n    History b0(0);\n    History d0(0);\n    History d(0);\n    History d2(0);\n    History wq(0);\n    History w2(0);\n    History a0(0);\n    History a1(0);\n    History a2(0);\n    if (((change(freq) != 0) || (change(db) != 0)) || (change(bw) != 0)) {\n        w = tan((freq * pi) / samplerate);\n        b0 = pow(1.059253692627, db * 0.5);\n        b = (b0 * b0) - 1;\n        d0 = pow(1.4142135381699, bw);\n        d = clip(((d0 * d0) - 1) / (d0 * b0), 0.01, 100);\n        d2 = d * b;\n        wq = d * w;\n        w2 = w * w;\n        a0 = 1 / ((1 + w2) + wq);\n        a1 = (w2 - 1) * 2;\n        a2 = (1 + w2) - wq;\n    }\n    leftOut  = peakCore(sigL, w, d2, a0, a1, a2);\n    rightOut = peakCore(sigR, w, d2, a0, a1, a2);\n    return leftOut, rightOut;\n}\n\nhishelfCore(input, a0, a1, b1) {\n    History z1(0);\n    x = a0 * (input - (a1 * z1));\n    y = x - z1;\n    z1 = x;\n    out = (y * b1) + input;\n    return out;\n}\n\n// -----------------------------------------------------------------------------\n// PARÁMETROS\n// -----------------------------------------------------------------------------\nParam a_INPUT(0, min=-12, default=0, max=12); // Input trim in dB (-12..+12, 0dB default)\nParam b_DRYWET(0, min=0, default=0.33, max=1.);\nParam c_REFLECT(0, min=0.1, default=0.86, max=0.98);\nParam d_DAMP(0, min=0, default=0.8, max=0.9); // DAMP: 0 = sin filtro (no damping), 1 = máximo damping\nParam e_SIZE(0, min=0.1, default=1, max=4);\nParam f_ST(0, min=0, default=0.5, max=0.8);\nParam g_FREEZE(0, min=0, default=0, max=1);\nParam h_LOWGAIN(0, min=-30, default=0, max=30);\nParam i_PEAKGAIN(0, min=-30, default=0, max=30);\nParam j_HIGAIN(0, min=-30, default=0, max=30);\nParam k_LPF(0, min=100, default=20000, max=20000);\nParam l_HPF(0, min=20, default=20, max=5000);\nParam m_OUTPUT(0, min=-12, default=0, max=12); // Output trim in dB (-12..+12, 0dB default)\nParam n_LOWFREQ(0, min=20, default=500, max=800);\nParam o_PEAKFREQ(0, min=100, default=800, max=2500);\nParam p_HIFREQ(0, min=800, default=2000, max=15000);\nParam q_ONOFFEQ(0, min=0, default=0, max=1);\nParam r_ONOFFCOMP(0, min=0, default=0, max=1);\nParam s_THD(0, min=-36, default=-12, max=0);\nParam t_RATIO(0, min=1, default=2, max=20);\nParam u_ATK(0, min=0.1, default=10, max=500);\nParam v_REL(0, min=5, default=100, max=1000);\nParam w_MAKEUP(0, min=-6, default=0, max=6);\nParam x_PREPOST(0, min=0, default=0, max=1); // PRE/POST switch for EQ+COMP relative to reverb (0=post, 1=pre)\nParam y_IOMODE(0, min=1, default=3, max=3); // IO layout mode (1=mono->mono, 2=mono->stereo, 3=stereo->stereo)\nParam z_BYPASSS(0, min=0, default=0, max=1); // Internal smooth bypass (0=process, 1=bypass to DRY). Host-independent.\n\n//Param z_SOFTCLIP(0, min=0, default=0, max=1); // Softclip enable (0=off, 1=on) — afecta solo a rama WET\n\nParam aa_DUCK_ON(0, min=0, default=0, max=1);         // Duck enable (0=off, 1=on)\nParam ab_DUCK_DB(0, min=-60, default=-30, max=0);     // Duck depth in dB (negative values: 0 = no duck, -60 = full reduction)\nParam ac_DUCK_ATK(0, min=1, default=10, max=50);      // Duck attack (ms)\nParam ad_DUCK_REL(0, min=20, default=200, max=600);   // Duck release (ms)\n\nParam ae_WOBBLE_ON(0, min=0, default=0, max=1);        // Wobble estéreo ON/OFF (solo WET)\nParam af_WOBBLE_AMT(0, min=0, default=0.5, max=1);     // Profundidad (0..1 → 0..3 dB)\nParam ag_WOBBLE_RATE(0, min=0.1, default=1, max=100); // Velocidad de cambio (Hz)\n\n// -----------------------------------------------------------------------------\n// PARÁMETROS INTERNOS (constantes de diseño y escalas)\n// -----------------------------------------------------------------------------\n// Nota: Las constantes base de COMB/AP se declaran al inicio del procesamiento,\n// tras finalizar todos los History/Delay, para respetar el orden de Gen.\n\n// -----------------------------------------------------------------------------\n// HISTORIALES Y DELAYS\n// -----------------------------------------------------------------------------\nHistory h_outputTrim(0);\nHistory h_prepostGap(0);\nHistory h_softclipEnable(0);\nHistory h_bypass(0);\nHistory h_compEnable(0);\nHistory h_thresholdDb(0);\nHistory h_ratio(0);\nHistory h_attackMs(0);\nHistory h_releaseMs(0);\nHistory h_makeupDb(0);\nHistory h_dryWetStage1(0);\nHistory h_dryWetStage2(0);\nHistory h_eqEnabled(0);\nHistory h_freezeBlend(0);\nHistory h_stereoWidth(0);\nHistory h_lowFreqHz(0);\nHistory h_peakFreqHz(0);\nHistory h_hiFreqHz(0);\nHistory h_lowGainDb(0);\nHistory h_peakGainDb(0);\nHistory h_hiGainDb(0);\nHistory h_inputTrim(0);\nHistory h_sizeScale(0);\nHistory h_lpfHz(0);\nHistory h_hpfHz(0);\nHistory h_reflectCoef(0);\nHistory h_freezeGate(0);\nHistory history_33(0);\nHistory history_34(0);\nHistory history_35(0);\nHistory history_36(0);\nHistory history_37(0);\nHistory history_38(0);\nHistory history_39(0);\nHistory history_40(0);\nHistory history_41(0);\nHistory history_42(0);\nHistory history_43(0);\nHistory history_44(0);\nHistory history_45(0);\nHistory history_46(0);\nHistory history_47(0);\nHistory history_48(0);\nHistory h_combDelayL1(0);\nHistory h_combDelayL2(0);\nHistory h_combDelayL3(0);\nHistory h_combDelayL4(0);\nHistory h_combDelayL5(0);\nHistory h_combDelayL6(0);\nHistory h_combDelayL7(0);\nHistory h_combDelayL8(0);\nDelay delay_57(samplerate);\nHistory h_combStateL1(0);\nDelay delay_59(samplerate);\nHistory h_combStateL2(0);\nDelay delay_61(samplerate);\nHistory h_combStateL3(0);\nDelay delay_63(samplerate);\nHistory h_combStateL4(0);\nDelay delay_65(samplerate);\nHistory h_combStateL5(0);\nDelay delay_67(samplerate);\nHistory h_combStateL6(0);\nDelay delay_69(samplerate);\nHistory h_combStateL7(0);\nDelay delay_71(samplerate);\nHistory h_combStateL8(0);\nDelay delay_73(samplerate);\nDelay delay_74(samplerate);\nDelay delay_75(samplerate);\nDelay delay_76(samplerate);\nDelay delay_77(samplerate);\nDelay delay_78(samplerate);\nDelay delay_79(samplerate);\nDelay delay_80(samplerate);\nHistory h_combDelayR1(0);\nHistory h_combDelayR2(0);\nHistory h_combDelayR3(0);\nHistory h_combDelayR4(0);\nHistory h_combDelayR5(0);\nHistory h_combDelayR6(0);\nHistory h_combDelayR7(0);\nHistory h_combDelayR8(0);\nDelay delay_89(samplerate);\nHistory h_combStateR1(0);\nDelay delay_91(samplerate);\nHistory h_combStateR2(0);\nDelay delay_93(samplerate);\nHistory h_combStateR3(0);\nDelay delay_95(samplerate);\nHistory h_combStateR4(0);\nDelay delay_97(samplerate);\nHistory h_combStateR5(0);\nDelay delay_99(samplerate);\nHistory h_combStateR6(0);\nDelay delay_101(samplerate);\nHistory h_combStateR7(0);\nDelay delay_103(samplerate);\nHistory h_combStateR8(0);\nDelay delay_105(samplerate);\nDelay delay_106(samplerate);\nDelay delay_107(samplerate);\nDelay delay_108(samplerate);\nDelay delay_109(samplerate);\nDelay delay_110(samplerate);\nDelay delay_111(samplerate);\nDelay delay_112(samplerate);\nDelay delay_113(44100);\nHistory h_postRightAccum(0);\nHistory h_postRightOverFlag(0);\nDelay delay_116(44100);\nHistory h_postLeftAccum(0);\nHistory h_postLeftOverFlag(0);\n// States for optional PRE compressor RMS detectors\nDelay delay_preR(44100);\nHistory preR_accum(0);\nHistory preR_flag(0);\nDelay delay_preL(44100);\nHistory preL_accum(0);\nHistory preL_flag(0);\n// RAW drive RMS windows for pre/post crossfade normalization\n// (Eliminados detectores RAW para normalización: enfoque GAP no los usa)\n// Smoothed PRE/POST blend state\nHistory prePost_s(0);\n\nHistory h_wobblePhase(0);\nHistory h_wobbleTarget(0);\nHistory h_wobbleSeed(0.12345);\n\n// -----------------------------------------------------------------------------\n// PROCESAMIENTO PRINCIPAL\n// -----------------------------------------------------------------------------\n// Constantes base (44.1 kHz) de delays de COMB y ALLPASS (visibles arriba)\ncombBaseL1 = int(1491); combBaseL2 = int(1617); combBaseL3 = int(1188); combBaseL4 = int(1116);\ncombBaseL5 = int(1557); combBaseL6 = int(1356); combBaseL7 = int(1422); combBaseL8 = int(1277);\ncombBaseR1 = int(1422); combBaseR2 = int(1491); combBaseR3 = int(1116); combBaseR4 = int(1188);\ncombBaseR5 = int(1617); combBaseR6 = int(1356); combBaseR7 = int(1277); combBaseR8 = int(1557);\napL1Base = int(255); apL2Base = int(556); apL3Base = int(441); apL4Base = int(341);\napR1Base = int(255); apR2Base = int(556); apR3Base = int(441); apR4Base = int(341);\n\n// Sección: Smoothing de parámetros y mapeos\n// (Param aliases retirados: usar Param IDs directamente en el código)\n// BLOQUE: Smoothing/control mapping\n// - Entradas: parámetros UI en tiempo real (a_INPUT..y_IOMODE)\n// - Salidas: versiones suavizadas y escaladas para usar en DSP (p. ej., dryWet, prePostBlend, widthScale, freqs/gains EQ)\n\n// Smoothing de parámetros (factor común)\nsmoothFactor = 0.999;\noneMinusSmooth = 1 - smoothFactor;\n\n// Mezcla PRE/POST suavizada (para crossfade de ubicación de procesado)\nprePostBlend = prePost_s * smoothFactor + x_PREPOST * oneMinusSmooth;\n\n// Trim de salida (dB → lineal) suavizado\noutputTrimLin = h_outputTrim * smoothFactor + dbtoa(m_OUTPUT) * oneMinusSmooth;\nnext_outputTrim = fixdenorm(outputTrimLin);\n\n// Compresor: on/off suavizado\ncompEnableSmoothed = h_compEnable * smoothFactor + r_ONOFFCOMP * oneMinusSmooth;\nnext_compEnable = fixdenorm(compEnableSmoothed);\n\n// Softclip on/off suavizado\n//softclipEnabled = h_softclipEnable * smoothFactor + z_SOFTCLIP * oneMinusSmooth;\n//next_softclipEnable = fixdenorm(softclipEnabled);\n\n// Bypass interno inmediato (0=process, 1=bypass a DRY)\n// Rationale: smoothing aquí puede dejar la salida en estados intermedios tras reanudar\n// causando mutes transitorios si WET≈0. Hacemos la conmutación instantánea y el host\n// gestiona cualquier transición visual.\nbypassSmoothed = z_BYPASSS;\nnext_bypass = bypassSmoothed;\n\n// Threshold/ratio y tiempos del compresor (suavizados)\nthresholdDb = h_thresholdDb * smoothFactor + s_THD * oneMinusSmooth;\nnext_thresholdDb = fixdenorm(thresholdDb);\nratio = h_ratio * smoothFactor + t_RATIO * oneMinusSmooth;\nnext_ratio = fixdenorm(ratio);\nattackMs = h_attackMs * smoothFactor + u_ATK * oneMinusSmooth;\nnext_attackMs = fixdenorm(attackMs);\nreleaseMs = h_releaseMs * smoothFactor + v_REL * oneMinusSmooth;\nnext_releaseMs = fixdenorm(releaseMs);\nmakeupDb = h_makeupDb * smoothFactor + w_MAKEUP * oneMinusSmooth;\nnext_makeupDb = fixdenorm(makeupDb);\n\n// Dry/Wet suavizado (doble etapa)\ndryWet = h_dryWetStage1 * smoothFactor + b_DRYWET * oneMinusSmooth;\nnext_dryWetStage1 = fixdenorm(dryWet);\ndryWet = h_dryWetStage2 * smoothFactor + dryWet * oneMinusSmooth;\nnext_dryWetStage2 = fixdenorm(dryWet);\n\n// Constantes útiles\nzero = float(0.);\n\n// EQ on/off suavizado\neqEnabled = h_eqEnabled * smoothFactor + q_ONOFFEQ * oneMinusSmooth;\nnext_eqEnabled = fixdenorm(eqEnabled);\n\n// Freeze suavizado\nfreezeOn = g_FREEZE == 1;\nfreezeBlend = h_freezeBlend * smoothFactor + freezeOn * oneMinusSmooth;\nnext_freezeBlend = fixdenorm(freezeBlend);\n\n// Control de ancho estéreo y escala de width\nstereoWidthParam = h_stereoWidth * smoothFactor + f_ST * oneMinusSmooth;\nnext_stereoWidth = fixdenorm(stereoWidthParam);\nwidthScale = scale(stereoWidthParam, 0, 0.8, 0.707, 1., 1);\n\n// PRE/POST energy latch: only allow PRE/POST blend to move when drive RMS is low\n\n// EQ 3 bandas: freqs y gains suavizados\nlowFreqHz = h_lowFreqHz * smoothFactor + n_LOWFREQ * oneMinusSmooth;\nnext_lowFreqHz = fixdenorm(lowFreqHz);\npeakFreqHz = h_peakFreqHz * smoothFactor + o_PEAKFREQ * oneMinusSmooth;\nnext_peakFreqHz = fixdenorm(peakFreqHz);\nhiFreqHz = h_hiFreqHz * smoothFactor + p_HIFREQ * oneMinusSmooth;\nnext_hiFreqHz = fixdenorm(hiFreqHz);\nlowGainDb = h_lowGainDb * smoothFactor + h_LOWGAIN * oneMinusSmooth;\nnext_lowGainDb = fixdenorm(lowGainDb);\npeakGainDb = h_peakGainDb * smoothFactor + i_PEAKGAIN * oneMinusSmooth;\nnext_peakGainDb = fixdenorm(peakGainDb);\nhiGainDb = h_hiGainDb * smoothFactor + j_HIGAIN * oneMinusSmooth;\nnext_hiGainDb = fixdenorm(hiGainDb);\n\n// Input trim (dB → lineal) suavizado\ninputTrimLin = h_inputTrim * smoothFactor + dbtoa(a_INPUT) * oneMinusSmooth;\nnext_inputTrim = fixdenorm(inputTrimLin);\n\n// -----------------------------------------------------------------------------\n// Sección: I/O y trayecto seco (dry)\n// BLOQUE: Entradas y ruteo\n// - Entradas: in1/in2 del patcher\n// - Salidas: ioL/ioR (ruta WET con trim/mono route), ioL_raw/ioR_raw (ruta DRY sin trim), dryL/dryR (para mezcla final)\n// Entradas crudas y versiones con trim\n// DRY debe usar la señal de entrada sin trim; WET usa trimmed\nleftRaw = in1; rightRaw = in2;\nleftTrimmed = in1 * inputTrimLin;\nrightTrimmed = in2 * inputTrimLin;\n\n// Flags de I/O\nioMode = y_IOMODE;\nisMonoIn = ((ioMode == 1) || (ioMode == 2));\nisMonoOut = (ioMode == 1);\n\n// Ruteo mono para WET (trimmed)\ninMonoRoute = (leftTrimmed + rightTrimmed) * 0.5;\nioL = mix(leftTrimmed, inMonoRoute, isMonoIn);\nioR = mix(rightTrimmed, inMonoRoute, isMonoIn);\n\n// Ruteo mono para DRY (raw, sin trim)\ninMonoRouteRaw = (leftRaw + rightRaw) * 0.5;\nioL_raw = mix(leftRaw, inMonoRouteRaw, isMonoIn);\nioR_raw = mix(rightRaw, inMonoRouteRaw, isMonoIn);\n\n// Trayecto seco (usar raw, sin auto-detección): Left primero, luego Right\ndryLMix = mix(ioL_raw, zero, freezeBlend);\ndryRMix = mix(ioR_raw, zero, freezeBlend);\n\n// Aliases de salida Dry\ndryL = dryLMix;\ndryR = dryRMix;\nwidthComplement = 1 - stereoWidthParam;\n\n// Ganancias de spread estéreo (pre-M/S)\nstereoSpreadMid = sqrt(widthComplement);\nstereoSpreadSide = sqrt(stereoWidthParam);\napBaseL = int(0);\napGainL = float(0.5);\napBaseR = int(0);\napGainR = float(0.5);\n// Invertido: 0 = sin damping (pass=0, leak=1), 1 = máximo damping (pass=0.9, leak=0)\nclampedDamp = min(d_DAMP, 0.9);\ndampPass = clampedDamp;\ndampLeak = 1 - clampedDamp;\n\nlpfPrev = h_lpfHz * 0.999;\nlpfInputScaled = k_LPF * 0.001;\nlpfHzSmoothed = lpfInputScaled + lpfPrev;\nlpfHz = lpfHzSmoothed;\nnextLpfHz = fixdenorm(lpfHzSmoothed);\nhpfPrev = h_hpfHz * 0.999;\nhpfInputScaled = l_HPF * 0.001;\nhpfHzSmoothed = hpfInputScaled + hpfPrev;\nhpfHz = hpfHzSmoothed;\nnextHpfHz = fixdenorm(hpfHzSmoothed);\nunity = float(1.);\n\n// (aliases redundantes de amortiguación eliminados)\nsizeScalePrev = h_sizeScale * 0.999;\nsizeInputScaled = e_SIZE * 0.001;\nsizeScaleSmoothed = sizeInputScaled + sizeScalePrev;\nnextSizeScale = fixdenorm(sizeScaleSmoothed);\n\n// Tamaño efectivo: no tocar con FREEZE y sin clamp por debajo de 1\n// (mantenemos un techo de seguridad en 4.0 para evitar overflows)\nsizeScaleEff = min(sizeScaleSmoothed, 4.0);\nsizeScaleL = sizeScaleEff;\nsizeScaleR = sizeScaleEff;\n// Baselines\nleftBaselineSamples = int(0); // baseline samples for left\n// En FREEZE forzamos reflect a 1.0 de forma explícita y portable\nreflectBase = mix(c_REFLECT, 1, freezeOn);\nreflectPrev = h_reflectCoef * 0.999;\nreflectInputScaled = reflectBase * 0.001;\nreflectCoefSmoothed = reflectInputScaled + reflectPrev;\nnextReflectCoef = fixdenorm(reflectCoefSmoothed);\n\n// Alias de coeficiente de reflexión\nreflectCoef = reflectCoefSmoothed;\nbaseOffsetUnits = int(23);\n\n// (re-asignación redundante eliminada) sizeScaleR ya proviene de sizeScaleSmoothed\noffsetSamplesR = baseOffsetUnits * sizeScaleR;\n\n// Control de ancho según modo explícito (sin auto-detección)\n// - MONO OUT: ancho = 0; MONO->ST y ST-ST: ancho = stereoWidthParam\nwidthControl = mix(stereoWidthParam, zero, isMonoOut);\n\n// Symmetric base-offsets for diffuser chains\noffsetSamplesL = leftBaselineSamples;     // 0 samples (left baseline)\nbaseZeroL = zero;             // 0\nbaseZeroR = zero;             // 0\nbaseOffsetL = mix(baseZeroL, offsetSamplesL, widthControl);\nbaseOffsetR = mix(baseZeroR, offsetSamplesR, widthControl);\nfreezeComplement = 1 - (g_FREEZE == 1);\nfreezePrev = h_freezeGate * 0.999;\nfreezeInputScaled = freezeComplement * 0.001;\nfreezeGateSmoothed = freezeInputScaled + freezePrev;\nnextFreezeGate = fixdenorm(freezeGateSmoothed);\n// FREEZE: cortar entrada inmediatamente cuando está activo (sin smoothing)\npreInputR = ioR * (1 - freezeOn);\npreInputL = ioL * (1 - freezeOn);\n\n// -----------------------------------------------------------------------------\n// Sección: PRE (opcional) EQ + COMP antes de reverb\n// BLOQUE: Preprocesado\n// - Entradas: preInputL_sel/preInputR_sel (tras freeze/mono routing)\n// - Salidas: preL_proc/preR_proc (si prePostBlend activa PRE), o bypass a preInput*\n// - Nota: reutiliza los mismos controles que el POST (EQ/COMP), con crossfade por prePostBlend\npreEQ_L_raw, preEQ_R_raw = eq3bandas(preInputL, preInputR,\n    lowFreqHz, peakFreqHz, hiFreqHz, lowGainDb, peakGainDb, hiGainDb, 1);\npreEQ_L = mix(preInputL, preEQ_L_raw, eqEnabled);\npreEQ_R = mix(preInputR, preEQ_R_raw, eqEnabled);\n\n// Pre COMP (RMS window ~300 samples) con A/R, ratio y makeup\npre_relSamps = mstosamps(releaseMs);\npre_atkSamps = mstosamps(attackMs);\npre_win = int(300);\n\n// -----------------------------------------------------------------------------\n// (Eliminado bloque de normalización por RMS del drive RAW: no se usa en enfoque gap)\n\n// Detector RMS Left (PRE)\npreLeftTap = delay_preL.read(pre_win);\npreLeftEnergy = preEQ_L * preEQ_L;\npreLeftAccum = preL_accum + preLeftEnergy;\npreLeftDiff = preLeftAccum - preLeftTap;\npreLeftAvg = preLeftDiff / pre_win;\npreLeftRms = sqrt(preLeftAvg);\npreL_accum_next = fixdenorm(preLeftDiff);\npreLeftDb = atodb(preLeftRms);\npreLeftLvlDb = max(preLeftDb, -96);\npreLeftOver = preLeftLvlDb > thresholdDb;\npreLeftFlagSmoothed = (preL_flag * 0.999) + (preLeftOver * 0.001);\npreL_flag_s = preLeftFlagSmoothed;\npreLeftGainDb = (thresholdDb - preLeftLvlDb) * (1 - (1 / ratio));\npreLeftGainLin = dbtoa(preLeftGainDb);\npreLeftEnvTarget = mix(1, preLeftGainLin, preLeftOver);\npreLeftEnv = slide(preLeftEnvTarget, pre_relSamps, pre_atkSamps);\npreL_out = (preEQ_L * preLeftEnv) * dbtoa(makeupDb);\n\n// Detector RMS Right (PRE)\npreRightTap = delay_preR.read(pre_win);\npreRightEnergy = preEQ_R * preEQ_R;\npreRightAccum = preR_accum + preRightEnergy;\npreRightDiff = preRightAccum - preRightTap;\npreRightAvg = preRightDiff / pre_win;\npreRightRms = sqrt(preRightAvg);\npreR_accum_next = fixdenorm(preRightDiff);\npreRightDb = atodb(preRightRms);\npreRightLvlDb = max(preRightDb, -96);\npreRightOver = preRightLvlDb > thresholdDb;\npreRightFlagSmoothed = (preR_flag * 0.999) + (preRightOver * 0.001);\npreR_flag_s = preRightFlagSmoothed;\npreRightGainDb = (thresholdDb - preRightLvlDb) * (1 - (1 / ratio));\npreRightGainLin = dbtoa(preRightGainDb);\npreRightEnvTarget = mix(1, preRightGainLin, preRightOver);\npreRightEnv = slide(preRightEnvTarget, pre_relSamps, pre_atkSamps);\npreR_out = (preEQ_R * preRightEnv) * dbtoa(makeupDb);\n\n// Aplicar bypass de COMP (usa compEnableSmoothed) sobre el camino PRE\npreR_proc = mix(preEQ_R, preR_out, compEnableSmoothed);\npreL_proc = mix(preEQ_L, preL_out, compEnableSmoothed);\n\n// Selección de entrada a filtros de reverb (0=original, 1=pre-procesada)\n// Equal-power crossfade para entrada a reverb (reduce saltos de energía)\n// Enfoque GAP: procesadores siempre corren; conmutador binario + microgap de ~10ms (decay 0.98)\nprePostBinary = x_PREPOST > 0.5;\nprePostSwitch = change(x_PREPOST) != 0;\ngapEnv = max(h_prepostGap * 0.98, prePostSwitch);\nnext_prepostGap = fixdenorm(gapEnv);\nfeedGate = 1 - gapEnv;\npreInputR_sel = mix(preInputR, preR_proc, prePostBinary) * feedGate;\npreInputL_sel = mix(preInputL, preL_proc, prePostBinary) * feedGate;\n\n// -----------------------------------------------------------------------------\n// Sección: Pre‑filtros (LPF/HPF) a entradas de reverb\n// BLOQUE: Filtrado de entrada a difusores\n// - Entradas: preInputL_sel / preInputR_sel\n// - Procesado: LPF/HPF RBJ biquad por canal\n// - Salidas: hpfOutL / hpfOutR (alimentan bancos de combs L/R)\n// - Entradas legibles a pre‑filtros\npreFilterInR = preInputR_sel * freezeGateSmoothed;\npreFilterInL = preInputL_sel * freezeGateSmoothed;\n\n// Coeficientes LPF (biquad RBJ)\nomega = ((lpfHz * twopi)) / samplerate;\nsn = sin(omega);\ncs = cos(omega);\none_over_Q = 1 / unity;\nalpha = ((sn * 0.5)) * one_over_Q;\nb0 = 1 / ((1 + alpha));\na2 = ((((1 - cs)) * 0.5)) * b0;\na1 = ((1 - cs)) * b0;\nb1 = ((-2 * cs)) * b0;\nb2 = ((1 - alpha)) * b0;\n\n// Coeficientes LPF biquad (nombrados)\nlpfA2   = a2;  // feedforward a2\nlpfA1   = a1;  // feedforward a1\nlpfA2_b = a2;  // feedforward a2 (segundo término)\nlpfB1   = b1;  // feedback b1\nlpfB2   = b2;  // feedback b2\nomega_324 = ((hpfHz * twopi)) / samplerate;\nsn_325 = sin(omega_324);\ncs_326 = cos(omega_324);\nalpha_327 = ((sn_325 * 0.5)) / unity;\nb_328 = 1 / ((1 + alpha_327));\na_329 = ((((1 + cs_326)) * 0.5)) * b_328;\na_330 = (-(1 + cs_326)) * b_328;\nb_331 = ((-2 * cs_326)) * b_328;\nb_332 = ((1 - alpha_327)) * b_328;\n\n// Coeficientes HPF biquad (nombrados)\nhpfA2   = a_329; // feedforward a2\nhpfA1   = a_330; // feedforward a1\nhpfA2_b = a_329; // feedforward a2 (segundo término)\nhpfB1   = b_331; // feedback b1\nhpfB2   = b_332; // feedback b2\n\n// LPF biquad (L/R) — forma directa (coeficientes nombrados)\nlpfOutL = (preFilterInL * lpfA2) + (history_37 * lpfA1) + (history_34 * lpfA2_b)\n          - ((history_40 * lpfB1) + (history_36 * lpfB2));\nlpfOutR = (preFilterInR * lpfA2) + (history_38 * lpfA1) + (history_33 * lpfA2_b)\n          - ((history_39 * lpfB1) + (history_35 * lpfB2));\n          \nhistory_33_next_352 = fixdenorm(history_38);\nhistory_34_next_353 = fixdenorm(history_37);\nhistory_35_next_354 = fixdenorm(history_39);\nhistory_36_next_355 = fixdenorm(history_40);\nnextPreInputL = fixdenorm(preInputL_sel);\nnextPreInputR = fixdenorm(preInputR_sel);\nnextLpfOutR = fixdenorm(lpfOutR);\nnextLpfOutL = fixdenorm(lpfOutL);\n\n// -----------------------------------------------------------------------------\n// Sección: HPF biquad (L/R)\n// BLOQUE: Salida de pre‑filtros hacia COMB\n// - Entradas: lpfOutL/lpfOutR + coeficientes hpfA*/hpfB*\n// - Salidas: hpfOutL/hpfOutR (alimentan COMB L/R)\n\n// HPF Right\nhpfOutR = (lpfOutR * hpfA2) + (history_45 * hpfA1) + (history_44 * hpfA2_b)\n          - ((history_47 * hpfB1) + (history_41 * hpfB2));\n\n// HPF Left\nhpfOutL = (lpfOutL * hpfA2) + (history_46 * hpfA1) + (history_42 * hpfA2_b)\n          - ((history_48 * hpfB1) + (history_43 * hpfB2));\n\n// HPF state updates\nhistory_41_next_374 = fixdenorm(history_47);\nhistory_42_next_375 = fixdenorm(history_46);\nhistory_43_next_376 = fixdenorm(history_48);\nhistory_44_next_377 = fixdenorm(history_45);\nhistory_45_next_378 = fixdenorm(lpfOutR);\nhistory_46_next_379 = fixdenorm(lpfOutL);\nhistory_47_next_380 = fixdenorm(hpfOutR);\nhistory_48_next_381 = fixdenorm(hpfOutL);\n\n// -----------------------------------------------------------------------------\n// Entrada a COMB (L): usar hpfOutL directamente\n\n// Coeficientes comunes comb (Left)\n// BLOQUE: COMB BANK (LEFT)\n// - Entradas: hpfOutL, reflectCoef, leftCombPass/leak, delays combDelayL*Smoothed\n// - Salidas: combL1Out..combL8Out → combMixLeft → earlyLeft\n\nleftCombLeak = dampLeak;   // leak = d_DAMP\nleftCombPass = dampPass;   // pass = 1 - d_DAMP\n\n// Comb bank (Left) - 8 líneas\n// Comb base delays at 44.1kHz (Left)\ncombBaseL1 = int(1491);\ncombBaseL2 = int(1617);\n\n// combBaseL* definidos arriba (Constantes de diseño)\nsampleRateScaleL = samplerate / 44100;\ncombScaleL = sampleRateScaleL * sizeScaleL;\ncombDelayL1Scaled = combBaseL1 * combScaleL;\ncombDelayL1Smoothed = (h_combDelayL1 * 0.999) + (combDelayL1Scaled * 0.001);\nnext_combDelayL1 = fixdenorm(combDelayL1Smoothed);\ncombDelayL2Scaled = combBaseL2 * combScaleL;\ncombDelayL2Smoothed = (h_combDelayL2 * 0.999) + (combDelayL2Scaled * 0.001);\nnext_combDelayL2 = fixdenorm(combDelayL2Smoothed);\ncombDelayL3Scaled = combBaseL3 * combScaleL;\ncombDelayL3Smoothed = (h_combDelayL3 * 0.999) + (combDelayL3Scaled * 0.001);\nnext_combDelayL3 = fixdenorm(combDelayL3Smoothed);\ncombDelayL4Scaled = combBaseL4 * combScaleL;\ncombDelayL4Smoothed = (h_combDelayL4 * 0.999) + (combDelayL4Scaled * 0.001);\nnext_combDelayL4 = fixdenorm(combDelayL4Smoothed);\ncombDelayL5Scaled = combBaseL5 * combScaleL;\ncombDelayL5Smoothed = (h_combDelayL5 * 0.999) + (combDelayL5Scaled * 0.001);\nnext_combDelayL5 = fixdenorm(combDelayL5Smoothed);\ncombDelayL6Scaled = combBaseL6 * combScaleL;\ncombDelayL6Smoothed = (h_combDelayL6 * 0.999) + (combDelayL6Scaled * 0.001);\nnext_combDelayL6 = fixdenorm(combDelayL6Smoothed);\ncombDelayL7Scaled = combBaseL7 * combScaleL;\ncombDelayL7Smoothed = (h_combDelayL7 * 0.999) + (combDelayL7Scaled * 0.001);\nnext_combDelayL7 = fixdenorm(combDelayL7Smoothed);\ncombDelayL8Scaled = combBaseL8 * combScaleL;\ncombDelayL8Smoothed = (h_combDelayL8 * 0.999) + (combDelayL8Scaled * 0.001);\nnext_combDelayL8 = fixdenorm(combDelayL8Smoothed);\n\n// 1 - leak (porción pasada) ya definido como leftCombPass\n// --- Comb L1 (Left) ---\n// Inputs: combL1DelayOffset, leftCombLeak/leftCombPass, reflectCoef, hpfOutL\n// Output: combL1Out (feeds combMixLeft)\ncombL1FeedbackScaled = h_combStateL1 * leftCombPass;\n\ndelayOffsetL1Samples = combDelayL4Smoothed;\ncombL1DelayOffset = clip(baseOffsetL + delayOffsetL1Samples, 0, samplerate - 1);\n\ncombL1Tap = delay_57.read(combL1DelayOffset, interp=\"linear\");\n\ncombL1TapScaled = combL1Tap * leftCombLeak;\ncombL1Mix = combL1TapScaled + combL1FeedbackScaled;\n\ncombL1Feedforward = combL1Mix * reflectCoef;\ncombL1Sum = hpfOutL + combL1Feedforward;\ncombL1Out = combL1Sum;\n\nnext_combStateL1 = fixdenorm(combL1Mix);\n// --- Comb L2 (Left) ---\n// Inputs: combL2DelayOffset, leftCombLeak/leftCombPass, reflectCoef, hpfOutL\n// Output: combL2Out\n// --- Comb L2 (Left) ---\ncombL2FeedbackScaled = h_combStateL2 * leftCombPass;\n\ndelayOffsetL2Samples = combDelayL3Smoothed;\ncombL2DelayOffset = clip(baseOffsetL + delayOffsetL2Samples, 0, samplerate - 1);\n\ncombL2Tap = delay_59.read(combL2DelayOffset, interp=\"linear\");\n\ncombL2TapScaled = combL2Tap * leftCombLeak;\ncombL2Mix = combL2TapScaled + combL2FeedbackScaled;\n\ncombL2Feedforward = combL2Mix * reflectCoef;\ncombL2Sum = hpfOutL + combL2Feedforward;\ncombL2Out = combL2Sum;\n\nnext_combStateL2 = fixdenorm(combL2Mix);\n// --- Comb L3 (Left) ---\n// Inputs: combL3DelayOffset, leftCombLeak/leftCombPass, reflectCoef, hpfOutL\n// Output: combL3Out\n// --- Comb L3 (Left) ---\ncombL3FeedbackScaled = h_combStateL3 * leftCombPass;\n\ndelayOffsetL3Samples = combDelayL6Smoothed;\ncombL3DelayOffset = clip(baseOffsetL + delayOffsetL3Samples, 0, samplerate - 1);\n\ncombL3Tap = delay_61.read(combL3DelayOffset, interp=\"linear\");\n\ncombL3TapScaled = combL3Tap * leftCombLeak;\ncombL3Mix = combL3TapScaled + combL3FeedbackScaled;\n\ncombL3Feedforward = combL3Mix * reflectCoef;\ncombL3Sum = hpfOutL + combL3Feedforward;\ncombL3Out = combL3Sum;\n\nnext_combStateL3 = fixdenorm(combL3Mix);\n// --- Comb L4 (Left) ---\n// Inputs: combL4DelayOffset, leftCombLeak/leftCombPass, reflectCoef, hpfOutL\n// Output: combL4Out\n// --- Comb L4 (Left) ---\ncombL4FeedbackScaled = h_combStateL4 * leftCombPass;\n\ndelayOffsetL4Samples = combDelayL8Smoothed;\ncombL4DelayOffset = clip(baseOffsetL + delayOffsetL4Samples, 0, samplerate - 1);\n\ncombL4Tap = delay_63.read(combL4DelayOffset, interp=\"linear\");\n\ncombL4TapScaled = combL4Tap * leftCombLeak;\ncombL4Mix = combL4TapScaled + combL4FeedbackScaled;\n\ncombL4Feedforward = combL4Mix * reflectCoef;\ncombL4Sum = hpfOutL + combL4Feedforward;\ncombL4Out = combL4Sum;\n\nnext_combStateL4 = fixdenorm(combL4Mix);\n// --- Comb L5 (Left) ---\n// Inputs: combL5DelayOffset, leftCombLeak/leftCombPass, reflectCoef, hpfOutL\n// Output: combL5Out\n// --- Comb L5 (Left) ---\ncombL5FeedbackScaled = h_combStateL5 * leftCombPass;\n\ndelayOffsetL5Samples = combDelayL7Smoothed;\ncombL5DelayOffset = clip(baseOffsetL + delayOffsetL5Samples, 0, samplerate - 1);\n\ncombL5Tap = delay_65.read(combL5DelayOffset, interp=\"linear\");\n\ncombL5TapScaled = combL5Tap * leftCombLeak;\ncombL5Mix = combL5TapScaled + combL5FeedbackScaled;\n\ncombL5Feedforward = combL5Mix * reflectCoef;\ncombL5Sum = hpfOutL + combL5Feedforward;\ncombL5Out = combL5Sum;\n\nnext_combStateL5 = fixdenorm(combL5Mix);\n// --- Comb L6 (Left) ---\n// Inputs: combL6DelayOffset, leftCombLeak/leftCombPass, reflectCoef, hpfOutL\n// Output: combL6Out\n// --- Comb L6 (Left) ---\ncombL6FeedbackScaled = h_combStateL6 * leftCombPass;\n\ndelayOffsetL6Samples = combDelayL1Smoothed;\ncombL6DelayOffset = clip(baseOffsetL + delayOffsetL6Samples, 0, samplerate - 1);\n\ncombL6Tap = delay_67.read(combL6DelayOffset, interp=\"linear\");\n\ncombL6TapScaled = combL6Tap * leftCombLeak;\ncombL6Mix = combL6TapScaled + combL6FeedbackScaled;\n\ncombL6Feedforward = combL6Mix * reflectCoef;\ncombL6Sum = hpfOutL + combL6Feedforward;\ncombL6Out = combL6Sum;\n\nnext_combStateL6 = fixdenorm(combL6Mix);\n// --- Comb L7 (Left) ---\n// Inputs: combL7DelayOffset, leftCombLeak/leftCombPass, reflectCoef, hpfOutL\n// Output: combL7Out\n// --- Comb L7 (Left) ---\ncombL7FeedbackScaled = h_combStateL7 * leftCombPass;\n\ndelayOffsetL7Samples = combDelayL2Smoothed;\ncombL7DelayOffset = clip(baseOffsetL + delayOffsetL7Samples, 0, samplerate - 1);\n\ncombL7Tap = delay_69.read(combL7DelayOffset, interp=\"linear\");\n\ncombL7TapScaled = combL7Tap * leftCombLeak;\ncombL7Mix = combL7TapScaled + combL7FeedbackScaled;\n\ncombL7Feedforward = combL7Mix * reflectCoef;\ncombL7Sum = hpfOutL + combL7Feedforward;\ncombL7Out = combL7Sum;\n\nnext_combStateL7 = fixdenorm(combL7Mix);\n// --- Comb L8 (Left) ---\n// Inputs: combL8DelayOffset, leftCombLeak/leftCombPass, reflectCoef, hpfOutL\n// Output: combL8Out\n// --- Comb L8 (Left) ---\ncombL8FeedbackScaled = h_combStateL8 * leftCombPass;\n\ndelayOffsetL8Samples = combDelayL5Smoothed;\ncombL8DelayOffset = clip(baseOffsetL + delayOffsetL8Samples, 0, samplerate - 1);\n\ncombL8Tap = delay_71.read(combL8DelayOffset, interp=\"linear\");\n\ncombL8TapScaled = combL8Tap * leftCombLeak;\ncombL8Mix = combL8TapScaled + combL8FeedbackScaled;\n\ncombL8Feedforward = combL8Mix * reflectCoef;\ncombL8Sum = hpfOutL + combL8Feedforward;\ncombL8Out = combL8Sum;\n\nnext_combStateL8 = fixdenorm(combL8Mix);\n// Suma normalizada del banco de combs (Left) → early reflections\ncombMixLeft = ((((((((((((((combL8Out + combL7Out)) + combL6Out)) + combL5Out)) + combL4Out)) + combL3Out)) + combL2Out)) + combL1Out)) * 0.125;\nearlyLeft = combMixLeft;\n\n// -----------------------------------------------------------------------------\n// ALLPASS DIFFUSER CHAIN (LEFT) — 4 STAGES\n// BLOQUE: Difusores allpass L\n// - Entradas: earlyLeft\n// - Salida: msInLeft (entrada a matriz M/S)\n\n// apL*Base definidos arriba (Constantes de diseño)\nsampleRateScaleAP_L = samplerate / 44100;\napScaleL = sampleRateScaleAP_L * sizeScaleEff;\napL1DelaySamples = apL1Base * apScaleL;\napL1DelayOffset = clip(apBaseL + apL1DelaySamples, 0, samplerate - 1);\napL1TapA = delay_73.read(apL1DelayOffset, interp=\"linear\");\napL1TapB = delay_74.read(apL1DelayOffset, interp=\"linear\");\n// apL1: usar alias de taps para claridad\napL1Sum = (earlyLeft * (apGainL * -1)) + (apL1TapA + apL1TapB * apGainL);\n// Allpass etapas (Left)\napL1 = apL1Sum;\n// sampleRateScaleAP_L y apScaleL reutilizados\napL2DelaySamples = apL2Base * apScaleL;\napL2DelayOffset = clip(apBaseL + apL2DelaySamples, 0, samplerate - 1);\napL2TapA = delay_75.read(apL2DelayOffset, interp=\"linear\");\napL2TapB = delay_76.read(apL2DelayOffset, interp=\"linear\");\napL2Sum = apL1 * (apGainL * -1) + (apL2TapA + apL2TapB * apGainL);\napL2 = apL2Sum;\n// sampleRateScaleAP_L y apScaleL reutilizados\napL3DelaySamples = apL3Base * apScaleL;\napL3DelayOffset = clip(apBaseL + apL3DelaySamples, 0, samplerate - 1);\napL3TapA = delay_77.read(apL3DelayOffset, interp=\"linear\");\napL3TapB = delay_78.read(apL3DelayOffset, interp=\"linear\");\napL3Sum = apL2 * (apGainL * -1) + (apL3TapA + apL3TapB * apGainL);\napL3 = apL3Sum;\n// sampleRateScaleAP_L y apScaleL reutilizados\napL4DelaySamples = apL4Base * apScaleL;\napL4DelayOffset = clip(apBaseL + apL4DelaySamples, 0, samplerate - 1);\napL4TapA = delay_79.read(apL4DelayOffset, interp=\"linear\");\napL4TapB = delay_80.read(apL4DelayOffset, interp=\"linear\");\napL4Sum = apL3 * (apGainL * -1) + (apL4TapA + apL4TapB * apGainL);\napL4 = apL4Sum;\n\n// Entrada a matriz M/S (L) desde el último allpass\nmsInLeft = apL4;\n\n// -----------------------------------------------------------------------------\n// M/S MATRIX + WIDTH (PRE EQ/COMP)\n// BLOQUE: Matriz Mid/Side y control de ancho\n// - Entradas: msInLeft/msInRight (desde allpass L/R), stereoSpreadMid/Side, widthScale\n// - Salidas: msLeft/msRight (húmedo antes de EQ/COMP POST)\n// Salida pre-filtros (R)\n// Coeficientes comunes comb (Right)\n// BLOQUE: COMB BANK (RIGHT)\n// - Entradas: hpfOutR, reflectCoef, rightCombPass/leak, delays combDelayR*Smoothed\n// - Salidas: combR1Out..combR8Out → combMixRight → earlyRight\nrightCombLeak = dampLeak;\nrightCombPass = dampPass;\n\n// Comb base delays at 44.1kHz (Right)\n// combBaseR* definidos arriba (Constantes de diseño)\nsampleRateScaleR = samplerate / 44100;\ncombScaleR = sampleRateScaleR * sizeScaleR;\ncombDelayR1Scaled = combBaseR1 * combScaleR;\ncombDelayR1Smoothed = (h_combDelayR1 * 0.999) + (combDelayR1Scaled * 0.001);\nnext_combDelayR1 = fixdenorm(combDelayR1Smoothed);\ncombDelayR2Scaled = combBaseR2 * combScaleR;\ncombDelayR2Smoothed = (h_combDelayR2 * 0.999) + (combDelayR2Scaled * 0.001);\nnext_combDelayR2 = fixdenorm(combDelayR2Smoothed);\ncombDelayR3Scaled = combBaseR3 * combScaleR;\ncombDelayR3Smoothed = (h_combDelayR3 * 0.999) + (combDelayR3Scaled * 0.001);\nnext_combDelayR3 = fixdenorm(combDelayR3Smoothed);\ncombDelayR4Scaled = combBaseR4 * combScaleR;\ncombDelayR4Smoothed = (h_combDelayR4 * 0.999) + (combDelayR4Scaled * 0.001);\nnext_combDelayR4 = fixdenorm(combDelayR4Smoothed);\ncombDelayR5Scaled = combBaseR5 * combScaleR;\ncombDelayR5Smoothed = (h_combDelayR5 * 0.999) + (combDelayR5Scaled * 0.001);\nnext_combDelayR5 = fixdenorm(combDelayR5Smoothed);\ncombDelayR6Scaled = combBaseR6 * combScaleR;\ncombDelayR6Smoothed = (h_combDelayR6 * 0.999) + (combDelayR6Scaled * 0.001);\nnext_combDelayR6 = fixdenorm(combDelayR6Smoothed);\ncombDelayR7Scaled = combBaseR7 * combScaleR;\ncombDelayR7Smoothed = (h_combDelayR7 * 0.999) + (combDelayR7Scaled * 0.001);\nnext_combDelayR7 = fixdenorm(combDelayR7Smoothed);\ncombDelayR8Scaled = combBaseR8 * combScaleR;\ncombDelayR8Smoothed = (h_combDelayR8 * 0.999) + (combDelayR8Scaled * 0.001);\nnext_combDelayR8 = fixdenorm(combDelayR8Smoothed);\n\n// -----------------------------------------------------------------------------\n// COMB BANK (RIGHT) — 8 LINES\n// 1 - leak (porción pasada) ya definido como rightCombPass\ncombR1FeedbackScaled = h_combStateR1 * rightCombPass;\n\ndelayOffsetR1Samples = combDelayR3Smoothed;\ncombR1DelayOffset = clip(baseOffsetR + delayOffsetR1Samples, 0, samplerate - 1);\n\ncombR1Tap = delay_89.read(combR1DelayOffset, interp=\"linear\");\n\ncombR1TapScaled = combR1Tap * rightCombLeak;\ncombR1Mix = combR1TapScaled + combR1FeedbackScaled;\n\ncombR1Feedforward = combR1Mix * reflectCoef;\ncombR1Sum = hpfOutR + combR1Feedforward;\ncombR1Out = combR1Sum;\n\nnext_combStateR1 = fixdenorm(combR1Mix);\n// --- Comb R2 (Right) ---\ncombR2FeedbackScaled = h_combStateR2 * rightCombPass;\n\ndelayOffsetR2Samples = combDelayR4Smoothed;\ncombR2DelayOffset = clip(baseOffsetR + delayOffsetR2Samples, 0, samplerate - 1);\n\ncombR2Tap = delay_91.read(combR2DelayOffset, interp=\"linear\");\n\ncombR2TapScaled = combR2Tap * rightCombLeak;\ncombR2Mix = combR2TapScaled + combR2FeedbackScaled;\n\ncombR2Feedforward = combR2Mix * reflectCoef;\ncombR2Sum = hpfOutR + combR2Feedforward;\ncombR2Out = combR2Sum;\n\nnext_combStateR2 = fixdenorm(combR2Mix);\n// --- Comb R3 (Right) ---\ncombR3FeedbackScaled = h_combStateR3 * rightCombPass;\n\ndelayOffsetR3Samples = combDelayR6Smoothed;\ncombR3DelayOffset = clip(baseOffsetR + delayOffsetR3Samples, 0, samplerate - 1);\n\ncombR3Tap = delay_93.read(combR3DelayOffset, interp=\"linear\");\n\ncombR3TapScaled = combR3Tap * rightCombLeak;\ncombR3Mix = combR3TapScaled + combR3FeedbackScaled;\n\ncombR3Feedforward = combR3Mix * reflectCoef;\ncombR3Sum = hpfOutR + combR3Feedforward;\ncombR3Out = combR3Sum;\n\nnext_combStateR3 = fixdenorm(combR3Mix);\n// --- Comb R4 (Right) ---\ncombR4FeedbackScaled = h_combStateR4 * rightCombPass;\n\ndelayOffsetR4Samples = combDelayR7Smoothed;\ncombR4DelayOffset = clip(baseOffsetR + delayOffsetR4Samples, 0, samplerate - 1);\n\ncombR4Tap = delay_95.read(combR4DelayOffset, interp=\"linear\");\n\ncombR4TapScaled = combR4Tap * rightCombLeak;\ncombR4Mix = combR4TapScaled + combR4FeedbackScaled;\n\ncombR4Feedforward = combR4Mix * reflectCoef;\ncombR4Sum = hpfOutR + combR4Feedforward;\ncombR4Out = combR4Sum;\n\nnext_combStateR4 = fixdenorm(combR4Mix);\n// --- Comb R5 (Right) ---\n// --- Comb R5 (Right) ---\ncombR5FeedbackScaled = h_combStateR5 * rightCombPass;\n\ndelayOffsetR5Samples = combDelayR1Smoothed;\ncombR5DelayOffset = clip(baseOffsetR + delayOffsetR5Samples, 0, samplerate - 1);\n\ncombR5Tap = delay_97.read(combR5DelayOffset, interp=\"linear\");\n\ncombR5TapScaled = combR5Tap * rightCombLeak;\ncombR5Mix = combR5TapScaled + combR5FeedbackScaled;\n\ncombR5Feedforward = combR5Mix * reflectCoef;\ncombR5Sum = hpfOutR + combR5Feedforward;\ncombR5Out = combR5Sum;\n\nnext_combStateR5 = fixdenorm(combR5Mix);\n// --- Comb R6 (Right) ---\n// --- Comb R6 (Right) ---\ncombR6FeedbackScaled = h_combStateR6 * rightCombPass;\n\ndelayOffsetR6Samples = combDelayR2Smoothed;\ncombR6DelayOffset = clip(baseOffsetR + delayOffsetR6Samples, 0, samplerate - 1);\n\ncombR6Tap = delay_99.read(combR6DelayOffset, interp=\"linear\");\n\ncombR6TapScaled = combR6Tap * rightCombLeak;\ncombR6Mix = combR6TapScaled + combR6FeedbackScaled;\n\ncombR6Feedforward = combR6Mix * reflectCoef;\ncombR6Sum = hpfOutR + combR6Feedforward;\ncombR6Out = combR6Sum;\n\nnext_combStateR6 = fixdenorm(combR6Mix);\n// --- Comb R7 (Right) ---\n// --- Comb R7 (Right) ---\ncombR7FeedbackScaled = h_combStateR7 * rightCombPass;\n\ndelayOffsetR7Samples = combDelayR5Smoothed;\ncombR7DelayOffset = clip(baseOffsetR + delayOffsetR7Samples, 0, samplerate - 1);\n\ncombR7Tap = delay_101.read(combR7DelayOffset, interp=\"linear\");\n\ncombR7TapScaled = combR7Tap * rightCombLeak;\ncombR7Mix = combR7TapScaled + combR7FeedbackScaled;\n\ncombR7Feedforward = combR7Mix * reflectCoef;\ncombR7Sum = hpfOutR + combR7Feedforward;\ncombR7Out = combR7Sum;\n\nnext_combStateR7 = fixdenorm(combR7Mix);\n// --- Comb R8 (Right) ---\n// --- Comb R8 (Right) ---\ncombR8FeedbackScaled = h_combStateR8 * rightCombPass;\n\ndelayOffsetR8Samples = combDelayR8Smoothed;\ncombR8DelayOffset = clip(baseOffsetR + delayOffsetR8Samples, 0, samplerate - 1);\n\ncombR8Tap = delay_103.read(combR8DelayOffset, interp=\"linear\");\n\ncombR8TapScaled = combR8Tap * rightCombLeak;\ncombR8Mix = combR8TapScaled + combR8FeedbackScaled;\n\ncombR8Feedforward = combR8Mix * reflectCoef;\ncombR8Sum = hpfOutR + combR8Feedforward;\ncombR8Out = combR8Sum;\n\nnext_combStateR8 = fixdenorm(combR8Mix);\n// Suma normalizada del banco de combs (Right) → early reflections\ncombMixRight = ((((((((((((((combR8Out + combR7Out)) + combR6Out)) + combR5Out)) + combR4Out)) + combR3Out)) + combR2Out)) + combR1Out)) * 0.125;\nearlyRight = combMixRight;\n\n// -----------------------------------------------------------------------------\n// ALLPASS DIFFUSER CHAIN (RIGHT) — 4 STAGES\n// Entradas: earlyRight\n// Salida: msInRight (entrada a matriz M/S)\n// apR*Base definidos arriba (Constantes de diseño)\nsampleRateScaleAP_R = samplerate / 44100;\napScaleR = sampleRateScaleAP_R * sizeScaleEff;\napR1DelaySamples = apR1Base * apScaleR;\napR1DelayOffset = apBaseR + apR1DelaySamples;\napR1TapA = delay_105.read(apR1DelayOffset, interp=\"linear\");\napR1TapB = delay_106.read(apR1DelayOffset, interp=\"linear\");\n// apR1: taps\napR1Sum = (earlyRight * (apGainR * -1)) + (apR1TapA + apR1TapB * apGainR);\n// Allpass etapas (Right)\napR1 = apR1Sum;\n\n// -----------------------------------------------------------------------------\n// ALLPASS DIFFUSER CHAIN (RIGHT) — 4 STAGES\n// BLOQUE: Difusores allpass R\n// - Entradas: earlyRight\n// - Salida: msInRight (entrada a matriz M/S)\n\n// sampleRateScaleAP_R y apScaleR reutilizados\napR2DelaySamples = apR2Base * apScaleR;\napR2DelayOffset = clip(apBaseR + apR2DelaySamples, 0, samplerate - 1);\napR2TapA = delay_107.read(apR2DelayOffset, interp=\"linear\");\napR2TapB = delay_108.read(apR2DelayOffset, interp=\"linear\");\napR2Sum = apR1 * (apGainR * -1) + (apR2TapA + apR2TapB * apGainR);\napR2 = apR2Sum;\n\n// sampleRateScaleAP_R y apScaleR reutilizados\napR3DelaySamples = apR3Base * apScaleR;\napR3DelayOffset = clip(apBaseR + apR3DelaySamples, 0, samplerate - 1);\napR3TapA = delay_109.read(apR3DelayOffset, interp=\"linear\");\napR3TapB = delay_110.read(apR3DelayOffset, interp=\"linear\");\napR3Sum = apR2 * (apGainR * -1) + (apR3TapA + apR3TapB * apGainR);\napR3 = apR3Sum;\n\n// sampleRateScaleAP_R y apScaleR reutilizados\napR4DelaySamples = apR4Base * apScaleR;\napR4DelayOffset = clip(apBaseR + apR4DelaySamples, 0, samplerate - 1);\napR4TapA = delay_111.read(apR4DelayOffset, interp=\"linear\");\napR4TapB = delay_112.read(apR4DelayOffset, interp=\"linear\");\napR4Sum = apR3 * (apGainR * -1) + (apR4TapA + apR4TapB * apGainR);\napR4 = apR4Sum;\nmsInRight = apR4;\nmsMidRaw = msInLeft + msInRight;               // suma L+R (mid)\nmsMid = msMidRaw * stereoSpreadMid;            // mid con spread\nmsSideRaw = msInLeft - msInRight;              // diferencia L-R (side)\nmsSide = msSideRaw * stereoSpreadSide;         // side con spread\nmsLeftPreWidth = msMid + msSide;               // L previo a width\nmsLeft = msLeftPreWidth * widthScale;          // aplicar width a L\nmsRightPreWidth = msMid - msSide;              // R previo a width\nmsRight = msRightPreWidth * widthScale;        // aplicar width a R\n\n// Alias entrada a matriz M/S (R) y húmedo antes de EQ/COMP\nwetPreLeft = msLeft;\nwetPreRight = msRight;\n\n// Allpass diffuser out (Right) antes de M/S — ya reflejado en msInRight\n// Late reverb (pre EQ/COMP POST)\nlateLeft = wetPreLeft;\nlateRight = wetPreRight;\n\n// Sección: EQ POST (3 bandas) con bypass eqEnabled\n// BLOQUE: Ecualización post reverb\n// - Entradas: wetPreLeft/wetPreRight (msLeft/msRight tras M/S+width)\n// - Salidas: postEqLeft/postEqRight (con bypass suave si PRE activo)\neqPostLeftRaw, eqPostRightRaw = eq3bandas(wetPreLeft, wetPreRight, lowFreqHz, peakFreqHz, hiFreqHz, lowGainDb, peakGainDb, hiGainDb, 1);\n\n// Si x_prepost=1 (PRE), anula la EQ POST (bypass EQ post)\npostEqLeft = mix(msLeft, eqPostLeftRaw, eqEnabled * (1 - prePostBinary));\npostEqRight = mix(msRight, eqPostRightRaw, eqEnabled * (1 - prePostBinary));\n\n// Sección: Compresor estéreo (RMS → ganancia → mezcla)\n// BLOQUE: Compresión post reverb\n// - Entradas: postEqLeft/postEqRight, threshold/ratio/A/R/makeup\n// - Salidas: postCOMP_L/postCOMP_R (bypass suave si PRE activo)\n// - Detector RMS por canal (~300 muestras) con slide A/R\n// - Threshold (s_thd), Ratio (t_ratio), Attack/Release (u_atk/v_rel)\n// - Makeup (w_makeup), on/off (r_onoffCOMP)\n\nmakeupGainLin = dbtoa(makeupDb);\nreleaseSamps = mstosamps(releaseMs);\nattackSamps = mstosamps(attackMs);\nrightWin = int(300);\nrightTap = delay_113.read(rightWin);\nrightEnergy = postEqRight * postEqRight;\nrightAccumPrev = h_postRightAccum;\nrightAccum = rightAccumPrev + rightEnergy;\nrightDiff = rightAccum - rightTap;\nrightAvg = rightDiff / rightWin;\nrightRms = sqrt(rightAvg);\nnext_postRightAccum = fixdenorm(rightDiff);\nrightDb = atodb(rightRms);\nrightLvlDb = max(rightDb, -96);\nrightOver = rightLvlDb > thresholdDb;\nrightOverFlagPrev = h_postRightOverFlag;\nrightOverSmoothed = (rightOverFlagPrev * 0.999) + (rightOver * 0.001);\nnext_postRightOverFlag = fixdenorm(rightOverSmoothed);\nrightGainDb = (thresholdDb - rightLvlDb) * (1 - (1 / ratio));\nrightGainLin = dbtoa(rightGainDb);\n// Objetivo de ganancia: 1 bajo umbral, gainLin sobre umbral (sin mezclar expansor)\nrightEnvTarget = mix(1, rightGainLin, rightOver);\nrightEnv = slide(rightEnvTarget, releaseSamps, attackSamps);\ncompRight = (postEqRight * rightEnv) * makeupGainLin;\n// comp outputs (Left then Right)\nleftWin = int(300);\nleftTap = delay_116.read(leftWin);\nleftEnergy = postEqLeft * postEqLeft;\nleftAccumPrev = h_postLeftAccum;\nleftAccum = leftAccumPrev + leftEnergy;\nleftDiff = leftAccum - leftTap;\nleftAvg = leftDiff / leftWin;\nleftRms = sqrt(leftAvg);\nnext_postLeftAccum = fixdenorm(leftDiff);\nleftDb = atodb(leftRms);\nleftLvlDb = max(leftDb, -96);\nleftOver = leftLvlDb > thresholdDb;\nleftOverFlagPrev = h_postLeftOverFlag;\nleftOverSmoothed = (leftOverFlagPrev * 0.999) + (leftOver * 0.001);\nnext_postLeftOverFlag = fixdenorm(leftOverSmoothed);\nleftGainDb = (thresholdDb - leftLvlDb) * (1 - (1 / ratio));\nleftGainLin = dbtoa(leftGainDb);\nleftEnvTarget = mix(1, leftGainLin, leftOver);\nleftEnv = slide(leftEnvTarget, releaseSamps, attackSamps);\ncompLeft = (postEqLeft * leftEnv) * makeupGainLin;\n\n// Si x_prepost=1 (PRE), anula el COMP POST\npostCOMP_L = mix(postEqLeft, compLeft, compEnableSmoothed * (1 - prePostBinary));\npostCOMP_R = mix(postEqRight, compRight, compEnableSmoothed * (1 - prePostBinary));\npostCompLeft = postCOMP_L;\npostCompRight = postCOMP_R;\nwetPostCompLeft = postCOMP_L;\nwetPostCompRight = postCOMP_R;\n\n// -----------------------------------------------------------------------------\n// SALIDA (DRY/WET + MONO COLLAPSE)\n// BLOQUE: Mezcla y salida final\n// - Entradas: dryL/dryR, wetPostCompLeft/wetPostCompRight, dryWet, outputTrimLin, isMonoOut\n// - Operaciones: trim + softclip (solo WET), mix dry/wet por canal, DC-block, mezcla mono si procede\n// - Salidas: out1/out2 (requeridos por Max/Gen)\nwetOutL = wetPostCompLeft * outputTrimLin;\nwetOutR = wetPostCompRight * outputTrimLin;\n\n// --- WOBBLE ESTÉREO (aleatorio suavizado) justo ANTES del DUCK ---\n// Reloj de S&H para objetivo aleatorio\nphaseInc = ag_WOBBLE_RATE / samplerate;\nphaseNext = h_wobblePhase + phaseInc;\nwrapWob = phaseNext >= 1;\ncurrentPhase = wrapWob ? (phaseNext - 1) : phaseNext;\n\n// LCG simple para generar ruido determinista [-1,1]\nseedNext = fract(h_wobbleSeed * 1103515245.0 + 12345.0);\nnoiseRand = (seedNext * 2) - 1;\n\n// Sample & hold de objetivo\nwobbleTargetNext = wrapWob ? noiseRand : h_wobbleTarget;\n\n// Slew adaptativo según RATE (~20% del periodo), limitado entre 30 y 300 ms\nperiodMs = 1000 / max(ag_WOBBLE_RATE, 0.05);\nslewMs   = clip(periodMs * 0.2, 0.01, 300);\nwobbleSlewed = slide(wobbleTargetNext, mstosamps(slewMs), mstosamps(slewMs));\n\n// Profundidad en dB máx ≈ 6 dB, escalada por af_WOBBLE_AMT\nwobbleDepthDb = af_WOBBLE_AMT * 6;\nwobbleDepthLin = dbtoa(wobbleDepthDb);\n\n// Respetar el spread actual: escalar por stereoWidthParam\npanEff = wobbleSlewed * stereoWidthParam;\n\n// Ganancias antisimétricas y normalización suave de energía\ngL_wob = pow(wobbleDepthLin,  panEff);\ngR_wob = pow(wobbleDepthLin, -panEff);\nwobNorm = 1 / sqrt(((gL_wob * gL_wob) + (gR_wob * gR_wob)) * 0.5);\n\nwetWobL = wetOutL * gL_wob * wobNorm;\nwetWobR = wetOutR * gR_wob * wobNorm;\n\n// Aplicar solo si está activado\nwetPreDuckL = mix(wetOutL, wetWobL, ae_WOBBLE_ON);\nwetPreDuckR = mix(wetOutR, wetWobR, ae_WOBBLE_ON);\n\n// Ducking in dB based on dry RMS\n// Detector: dry input (ioL_raw/ioR_raw)\ndryEnergy = (ioL_raw * ioL_raw + ioR_raw * ioR_raw) * 0.5;\ndryEnv = slide(dryEnergy, mstosamps(ac_DUCK_ATK), mstosamps(ad_DUCK_REL)); // up=ATK, down=REL\n// Detector más agresivo (*4) para que dispare antes\ndryNorm = min(sqrt(dryEnv) * 4, 1);\n\n// Duck envelope en dB: ab_DUCK_DB ya es negativo (0..-60)\nduckReductionDb = ab_DUCK_DB * dryNorm;\nduckGain = dbtoa(duckReductionDb);\nduckEnv = mix(1, duckGain, aa_DUCK_ON);\n\nwetDuckedL = wetPreDuckL * duckEnv;\nwetDuckedR = wetPreDuckR * duckEnv;\n\n// Softclip solo en la rama WET\n// wetClipL = 0.6366342928 * tanh(wetOutL);\n// wetClipR = 0.6366342928 * tanh(wetOutR);\n// wetProcessedL = mix(wetOutL, wetClipL, 0); //softclipEnabled\n// wetProcessedR = mix(wetOutR, wetClipR, 0); //softclipEnabled\n\n// Mezcla Dry/Wet y bypass interno (suavizado)\nmixedLeft  = mix(dryL, wetDuckedL, dryWet);\nmixedRight = mix(dryR, wetDuckedR, dryWet);\n\nfinalLeftPre  = mix(mixedLeft, dryL, bypassSmoothed);\nfinalRightPre = mix(mixedRight, dryR, bypassSmoothed);\n\ndcblockLeft  = dcblock(finalLeftPre);\ndcblockRight = dcblock(finalRightPre);\n\n// outMono/out mix computed after both channels are available\noutMono = (dcblockLeft + dcblockRight) * 0.5;\nout1 = mix(dcblockLeft, outMono, isMonoOut);\nout2 = mix(dcblockRight, outMono, isMonoOut);\n\n// Salidas auxiliares para host (POST TRIM IN): out5 (L), out6 (R)\n// Nota: expone la entrada tras el trim de entrada (a_INPUT), antes de procesar reverb\n// Si prefieres tras el routing mono (ioL/ioR), cambia leftTrimmed/rightTrimmed por ioL/ioR\nout4 = leftTrimmed;\nout5 = rightTrimmed;\n\n// -----------------------------------------------------------------------------\n// STATE UPDATES (History/Delay writes) — must follow outputs\n// -----------------------------------------------------------------------------\n// --- Estados PRE (si se usa x_prepost=1) ---\n// --- PRE COMP state updates ---\ndelay_preR.write(preRightEnergy);\npreR_accum = preR_accum_next;\npreR_flag = fixdenorm(preR_flag_s);\ndelay_preL.write(preLeftEnergy);\npreL_accum = preL_accum_next;\npreL_flag = fixdenorm(preL_flag_s);\n// Reverb drive RMS state updates\n// (Eliminadas escrituras de detectores RAW)\nh_outputTrim = next_outputTrim;\n// Post COMP detector state updates\nh_postLeftOverFlag = next_postLeftOverFlag;\nh_postLeftAccum = next_postLeftAccum;\ndelay_116.write(leftEnergy);\n// Right channel RMS + over flag updates\nh_postRightOverFlag = next_postRightOverFlag;\nh_postRightAccum = next_postRightAccum;\ndelay_113.write(rightEnergy);\n// --- ALLPASS R state updates ---\ndelay_106.write(apR1Sum);\ndelay_107.write(apR1);\ndelay_108.write(apR2Sum);\ndelay_109.write(apR2);\ndelay_110.write(apR3Sum);\ndelay_111.write(apR3);\ndelay_112.write(apR4Sum);\ndelay_105.write(earlyRight);\n// Right comb delay smoothing state updates\nh_combDelayR8 = next_combDelayR8;\nh_combDelayR7 = next_combDelayR7;\nh_combDelayR6 = next_combDelayR6;\nh_combDelayR5 = next_combDelayR5;\nh_combDelayR4 = next_combDelayR4;\nh_combDelayR3 = next_combDelayR3;\nh_combDelayR2 = next_combDelayR2;\n// --- COMB R state updates ---\ndelay_89.write(combR1Sum);\n// Right comb integrator state updates\nh_combStateR1 = next_combStateR1;\ndelay_91.write(combR2Sum);\nh_combStateR2 = next_combStateR2;\ndelay_93.write(combR3Sum);\nh_combStateR3 = next_combStateR3;\ndelay_95.write(combR4Sum);\nh_combStateR4 = next_combStateR4;\ndelay_97.write(combR5Sum);\nh_combStateR5 = next_combStateR5;\ndelay_99.write(combR6Sum);\nh_combStateR6 = next_combStateR6;\ndelay_101.write(combR7Sum);\nh_combStateR7 = next_combStateR7;\ndelay_103.write(combR8Sum);\nh_combStateR8 = next_combStateR8;\nh_combDelayR1 = next_combDelayR1;\n// --- ALLPASS L state updates ---\ndelay_74.write(apL1Sum);\ndelay_75.write(apL1);\ndelay_76.write(apL2Sum);\ndelay_77.write(apL2);\ndelay_78.write(apL3Sum);\ndelay_79.write(apL3);\ndelay_80.write(apL4Sum);\ndelay_73.write(earlyLeft);\n// Left comb delay smoothing state updates\nh_combDelayL8 = next_combDelayL8;\nh_combDelayL7 = next_combDelayL7;\nh_combDelayL6 = next_combDelayL6;\nh_combDelayL5 = next_combDelayL5;\nh_combDelayL4 = next_combDelayL4;\nh_combDelayL3 = next_combDelayL3;\nh_combDelayL2 = next_combDelayL2;\n// --- COMB L delay/history updates ---\ndelay_57.write(combL1Sum);\n// Left comb integrator state updates\nh_combStateL1 = next_combStateL1;\ndelay_59.write(combL2Sum);\nh_combStateL2 = next_combStateL2;\ndelay_61.write(combL3Sum);\nh_combStateL3 = next_combStateL3;\ndelay_63.write(combL4Sum);\nh_combStateL4 = next_combStateL4;\ndelay_65.write(combL5Sum);\nh_combStateL5 = next_combStateL5;\ndelay_67.write(combL6Sum);\nh_combStateL6 = next_combStateL6;\ndelay_69.write(combL7Sum);\nh_combStateL7 = next_combStateL7;\ndelay_71.write(combL8Sum);\nh_combStateL8 = next_combStateL8;\nh_combDelayL1 = next_combDelayL1;\nhistory_40 = nextLpfOutL;\nhistory_39 = nextLpfOutR;\nhistory_38 = nextPreInputR;\nhistory_37 = nextPreInputL;\nhistory_36 = history_36_next_355;\nhistory_35 = history_35_next_354;\nhistory_34 = history_34_next_353;\nhistory_41 = history_41_next_374;\nhistory_48 = history_48_next_381;\nhistory_47 = history_47_next_380;\nhistory_46 = history_46_next_379;\nhistory_45 = history_45_next_378;\nhistory_44 = history_44_next_377;\nhistory_43 = history_43_next_376;\nhistory_42 = history_42_next_375;\nhistory_33 = history_33_next_352;\nh_freezeGate = nextFreezeGate;\nh_reflectCoef = nextReflectCoef;\nh_hpfHz = nextHpfHz;\nh_lpfHz = nextLpfHz;\nh_sizeScale = nextSizeScale;\n// Smoothed parameter state updates\nh_inputTrim = next_inputTrim;\nh_hiGainDb = next_hiGainDb;\nh_peakGainDb = next_peakGainDb;\nh_lowGainDb = next_lowGainDb;\nh_hiFreqHz = next_hiFreqHz;\nh_peakFreqHz = next_peakFreqHz;\nh_lowFreqHz = next_lowFreqHz;\nh_stereoWidth = next_stereoWidth;\nh_freezeBlend = next_freezeBlend;\nh_eqEnabled = next_eqEnabled;\nh_dryWetStage2 = next_dryWetStage2;\nh_dryWetStage1 = next_dryWetStage1;\nh_makeupDb = next_makeupDb;\nh_releaseMs = next_releaseMs;\nh_attackMs = next_attackMs;\nh_ratio = next_ratio;\nh_thresholdDb = next_thresholdDb;\nh_compEnable = next_compEnable;\nh_outputTrim = next_outputTrim;\n\n// Softclip enable state update\n//h_softclipEnable = next_softclipEnable;\n\n// Internal bypass state update\nh_bypass = next_bypass;\n// Pre/Post gap env state\nh_prepostGap = next_prepostGap;\n// PRE/POST switch envelope update (legacy blend state)\nprePost_s = fixdenorm(prePostBlend);\n\nh_wobblePhase = currentPhase;\nh_wobbleTarget = wobbleTargetNext;\nh_wobbleSeed = seedNext;\n",
 									"fontface" : 0,
 									"fontname" : "<Monospaced>",
 									"fontsize" : 12.0,
 									"id" : "obj-1",
 									"maxclass" : "codebox",
 									"numinlets" : 2,
-									"numoutlets" : 2,
-									"outlettype" : [ "", "" ],
-									"patching_rect" : [ 71.0, 55.0, 301.0, 785.0 ]
+									"numoutlets" : 5,
+									"outlettype" : [ "", "", "", "", "" ],
+									"patching_rect" : [ 71.0, 55.0, 660.0, 791.0 ]
 								}
 
 							}
@@ -80,7 +602,7 @@
 									"numinlets" : 0,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 353.0, 20.0, 28.0, 22.0 ],
+									"patching_rect" : [ 712.0, 20.0, 28.0, 22.0 ],
 									"text" : "in 2"
 								}
 
@@ -91,7 +613,7 @@
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 353.0, 857.0, 35.0, 22.0 ],
+									"patching_rect" : [ 231.25, 862.0, 35.0, 22.0 ],
 									"text" : "out 2"
 								}
 
@@ -122,6 +644,20 @@
  ],
 						"lines" : [ 							{
 								"patchline" : 								{
+									"destination" : [ "obj-2", 0 ],
+									"source" : [ "obj-1", 3 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-3", 0 ],
+									"source" : [ "obj-1", 4 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
 									"destination" : [ "obj-7", 0 ],
 									"source" : [ "obj-1", 0 ]
 								}
@@ -151,8 +687,7 @@
  ]
 					}
 ,
-					"patching_rect" : [ 92.0, 387.5, 250.0, 73.0 ],
-					"presentation_linecount" : 2,
+					"patching_rect" : [ 112.0, 413.0, 250.0, 73.0 ],
 					"saved_object_attributes" : 					{
 						"autoexport" : 0,
 						"exportfolder" : "Sequoia:/Users/jcb/JUCEProjects/JCBReverb/exported-code/",
@@ -170,7 +705,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 628.25, 73.0, 35.0, 22.0 ],
+					"patching_rect" : [ 648.0, 99.0, 35.0, 22.0 ],
 					"text" : "reset"
 				}
 
@@ -183,7 +718,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "int" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 1655.5, 604.0, 24.0, 24.0 ]
+					"patching_rect" : [ 1668.0, 582.0, 24.0, 24.0 ]
 				}
 
 			}
@@ -194,8 +729,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 1655.5, 639.0, 96.0, 22.0 ],
-					"presentation_linecount" : 2,
+					"patching_rect" : [ 1668.0, 617.0, 96.0, 22.0 ],
 					"text" : "z_SOFTCLIP $1"
 				}
 
@@ -217,7 +751,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 1020.0, 27.0, 29.5, 22.0 ],
+					"patching_rect" : [ 949.0, 59.0, 29.5, 22.0 ],
 					"text" : "12"
 				}
 
@@ -239,7 +773,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 1722.0, 32.0, 29.5, 22.0 ],
+					"patching_rect" : [ 1667.0, 100.0, 29.5, 22.0 ],
 					"text" : "0"
 				}
 
@@ -255,7 +789,7 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "", "bang" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 1009.5, 528.0, 50.0, 22.0 ]
+					"patching_rect" : [ 936.0, 595.0, 50.0, 22.0 ]
 				}
 
 			}
@@ -266,7 +800,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 1676.5, 504.0, 29.5, 22.0 ],
+					"patching_rect" : [ 1603.0, 571.0, 29.5, 22.0 ],
 					"text" : "3"
 				}
 
@@ -278,7 +812,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 1640.5, 504.0, 29.5, 22.0 ],
+					"patching_rect" : [ 1567.0, 571.0, 29.5, 22.0 ],
 					"text" : "2"
 				}
 
@@ -290,7 +824,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 1602.5, 504.0, 29.5, 22.0 ],
+					"patching_rect" : [ 1529.0, 571.0, 29.5, 22.0 ],
 					"text" : "1"
 				}
 
@@ -302,7 +836,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 1602.5, 550.0, 87.0, 22.0 ],
+					"patching_rect" : [ 1529.0, 617.0, 87.0, 22.0 ],
 					"text" : "y_IOMODE $1"
 				}
 
@@ -315,7 +849,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "int" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 1009.5, 497.0, 24.0, 24.0 ]
+					"patching_rect" : [ 936.0, 564.0, 24.0, 24.0 ]
 				}
 
 			}
@@ -326,7 +860,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 1009.5, 557.0, 95.0, 22.0 ],
+					"patching_rect" : [ 936.0, 624.0, 95.0, 22.0 ],
 					"text" : "x_PREPOST $1"
 				}
 
@@ -348,21 +882,8 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 1751.0, 32.0, 29.5, 22.0 ],
+					"patching_rect" : [ 1734.0, 100.0, 29.5, 22.0 ],
 					"text" : "12"
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"id" : "obj-92",
-					"maxclass" : "message",
-					"numinlets" : 2,
-					"numoutlets" : 1,
-					"outlettype" : [ "" ],
-					"patching_rect" : [ 1657.5, 22.0, 32.0, 22.0 ],
-					"presentation_linecount" : 2,
-					"text" : "0.85"
 				}
 
 			}
@@ -373,7 +894,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 1459.0, 95.0, 29.5, 22.0 ],
+					"patching_rect" : [ 1481.0, 59.0, 29.5, 22.0 ],
 					"text" : "4"
 				}
 
@@ -385,7 +906,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 1459.0, 61.0, 29.5, 22.0 ],
+					"patching_rect" : [ 1451.0, 59.0, 29.5, 22.0 ],
 					"text" : "3"
 				}
 
@@ -397,23 +918,8 @@
 					"numinlets" : 0,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 576.5, 73.0, 49.0, 22.0 ],
+					"patching_rect" : [ 596.0, 99.0, 49.0, 22.0 ],
 					"text" : "r toGen"
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"code" : "// VERSION TAG: readable-genexpr-initial (2025-08-30)\n// =============================================================================\n// JCBReverb GenExpr (readable)\n// Uso: pegar en Max/Gen Codebox. Conserva parámetros y funcionalidad.\n//\n// Guía de lectura rápida:\n// 1) Smoothing + I/O: trims (a_INPUT/m_OUTPUT), dry/wet, ruteo `y_IOMODE`.\n// 2) PRE (opcional): EQ/COMP antes de la reverb (suavizado `prePostBlend`).\n// 3) Pre‑filtros: LPF/HPF (RBJ) a entradas difusores.\n// 4) Difusores: Combs (8 por lado) → Allpass (4 por lado), offsets y escalas legibles.\n// 5) M/S + width: `msLeft/msRight` via mid/side + `f_ST`/`widthScale`.\n// 6) EQ/COMP POST: 3‑band EQ y compresor estéreo, bypass suave según PRE/POST.\n// 7) Mezcla Dry/Wet y salida: `out1/out2` (Max requiere estos nombres para outlets).\n//\n// Bloques:\n// - IO: ruteo según `y_IOMODE` (1=mono->mono, 2=mono->stereo, 3=stereo->stereo).\n// - Pre/Post: EQ 3 bandas + Comp pueden ir PRE o POST reverb con `x_PREPOST`.\n// - Pre-filtros: LPF/HPF RBJ sobre entrada a difusores (parámetros `k_LPF`/`l_HPF`).\n// - Difusión: 8 combs por lado (suma normalizada) + 4 allpass por lado.\n// - M/S: control de ancho estéreo `f_ST` con `msLeft/msRight` antes de EQ/COMP.\n// - Dry/Wet: `b_DRYWET`; trims en dB `a_INPUT` (previo) y `m_OUTPUT` (solo WET).\n//\n// Parámetros principales:\n// - `a_INPUT`/`m_OUTPUT` (dB), `b_DRYWET`, `c_REFLECT`, `d_DAMP`, `e_SIZE`, `f_ST`,\n//   `g_FREEZE`, `h_LOWGAIN`, `i_PEAKGAIN`, `j_HIGAIN`, `k_LPF`, `l_HPF`, `n_LOWFREQ`,\n//   `o_PEAKFREQ`, `p_HIFREQ`, `q_ONOFFEQ`, `r_ONOFFCOMP`, `s_THD`, `t_RATIO`,\n//   `u_ATK`, `v_REL`, `w_MAKEUP`, `x_PREPOST`, `y_IOMODE`.\n//\n// Seguridad de orden (Gen): mantener lecturas de delay antes de escrituras y\n// el orden de histories/feedback. Los cambios de nombres respetan cronología.\n// =============================================================================\n\n// =============================================================================\n// ÍNDICE DE BLOQUES (flujo y señales)\n// =============================================================================\n// 1) Smoothing/control mapping\n//    - In: Params UI (a_INPUT..y_IOMODE)\n//    - Out: prePostBlend, outputTrimLin, compEnableSmoothed, dryWet, eqEnabled,\n//           freezeBlend, stereoWidthParam, widthScale, EQ freqs/gains, inputTrimLin\n// 2) I/O + Dry path\n//    - In: in1/in2\n//    - Out: ioL/ioR (wet, con trim y mono route), ioL_raw/ioR_raw (dry), dryL/dryR\n// 3) PRE EQ/COMP (opcional)\n//    - In: preInputL_sel/preInputR_sel\n//    - Out: preL_proc/preR_proc (si prePostBlend activa PRE)\n// 4) Pre‑filtros (LPF/HPF)\n//    - In: preInputL_sel/preInputR_sel\n//    - Out: hpfOutL/hpfOutR (entradas a difusores)\n// 5) COMB BANK (L)\n//    - In: hpfOutL, reflectCoef, leftCombPass/leak, combDelayL*\n//    - Out: earlyLeft\n// 6) ALLPASS (L)\n//    - In: earlyLeft\n//    - Out: msInLeft\n// 7) COMB BANK (R)\n//    - In: hpfOutR, reflectCoef, rightCombPass/leak, combDelayR*\n//    - Out: earlyRight\n// 8) ALLPASS (R)\n//    - In: earlyRight\n//    - Out: msInRight\n// 9) M/S + width\n//    - In: msInLeft/msInRight, widthScale\n//    - Out: msLeft/msRight\n// 10) EQ POST (3 bandas)\n//    - In: wetPreLeft/wetPreRight\n//    - Out: postEqLeft/postEqRight\n// 11) COMP POST (estéreo)\n//    - In: postEqLeft/postEqRight, comp params\n//    - Out: postCOMP_L/postCOMP_R\n// 12) Mezcla + salida\n//    - In: dryL/dryR, postCOMP_L/R, dryWet, outputTrimLin, isMonoOut\n//    - Out: out1/out2\n\n// -----------------------------------------------------------------------------\n// SECCION: FUNCIONES (EQ 3 bandas, shelves, peak)\n// -----------------------------------------------------------------------------\neq3bandas(sigL, sigR, lf, pf, hf, lg, pg, hg, bw) {\n\t// Procesa L y R en paralelo manteniendo la salida R encadenada coherente\n\t// 1) Low-shelf → 2) Peak → 3) High-shelf\n\tlowL, lowR   = lowshelf(sigL, sigR, lf, lg);\n\tpeakL, peakR = peak(lowL, lowR, pf, pg, bw);\n\thighL, highR = hishelf(peakL, peakR, hf, hg);\n\treturn highL, highR;\n}\n\nlowshelf(sigL, sigR, freq, db) {\n    // RBJ-style low-shelf coefficients recalculated on parameter change\n    History shelfGain(0);\n    History cutoff(0);\n    History shelfTerm(0);\n    History w(0);\n    History a0(0);\n    History a1(0);\n    if ((change(freq) != 0) || (change(db) != 0)) {\n        shelfGain = pow(1.059253692627, db * 0.5);\n        cutoff = freq / shelfGain;\n        shelfTerm = (shelfGain * shelfGain) - 1;\n        w = tan((cutoff * pi) / samplerate);\n        a0 = 1 / (w + 1);\n        a1 = w - 1;\n    }\n    leftOut  = lowshelfCore(sigL, a0, a1, shelfTerm, w);\n    rightOut = lowshelfCore(sigR, a0, a1, shelfTerm, w);\n    return leftOut, rightOut;\n}\n\nhishelf(sigL, sigR, freq, db) {\n    // RBJ-style high-shelf coefficients recalculated on parameter change\n    History shelfGain(0);\n    History cutoff(0);\n    History shelfTerm(0);\n    History w(0);\n    History a0(0);\n    History a1(0);\n    if ((change(freq) != 0) || (change(db) != 0)) {\n        shelfGain = pow(1.059253692627, db * 0.25);\n        cutoff = min(freq * shelfGain, samplerate);\n        shelfTerm = (shelfGain * shelfGain) - 1;\n        w = tan((max(cutoff, 0) * pi) / samplerate);\n        a0 = 1 / (w + 1);\n        a1 = w - 1;\n    }\n    leftOut  = hishelfCore(sigL, a0, a1, shelfTerm);\n    rightOut = hishelfCore(sigR, a0, a1, shelfTerm);\n    return leftOut, rightOut;\n}\n\npeakCore(input, w, d2, a0, a1, a2) {\n    // Two-pole peaking core with simple state update\n    History z1(0);\n    History z2(0);\n    History z3(0);\n    History z4(0);\n    stage = (input - z2) * w;\n    z2 = z1;\n    z1 = input;\n    biquadOut = a0 * (stage - (a1 * z3) - (a2 * z4));\n    z4 = z3;\n    z3 = biquadOut;\n    out = input + (biquadOut * d2);\n    return out;\n}\n\nlowshelfCore(input, a0, a1, b1, w) {\n    History z1(0);\n    x = a0 * (input - (a1 * z1));\n    y = w * (x + z1);\n    z1 = x;\n    return (y * b1) + input;\n}\n\npeak(sigL, sigR, freq, db, bw) {\n    // RBJ-style peaking EQ core parameters recalculated on change\n    History w(0);\n    History b0(0);\n    History d0(0);\n    History d(0);\n    History d2(0);\n    History wq(0);\n    History w2(0);\n    History a0(0);\n    History a1(0);\n    History a2(0);\n    if (((change(freq) != 0) || (change(db) != 0)) || (change(bw) != 0)) {\n        w = tan((freq * pi) / samplerate);\n        b0 = pow(1.059253692627, db * 0.5);\n        b = (b0 * b0) - 1;\n        d0 = pow(1.4142135381699, bw);\n        d = clip(((d0 * d0) - 1) / (d0 * b0), 0.01, 100);\n        d2 = d * b;\n        wq = d * w;\n        w2 = w * w;\n        a0 = 1 / ((1 + w2) + wq);\n        a1 = (w2 - 1) * 2;\n        a2 = (1 + w2) - wq;\n    }\n    leftOut  = peakCore(sigL, w, d2, a0, a1, a2);\n    rightOut = peakCore(sigR, w, d2, a0, a1, a2);\n    return leftOut, rightOut;\n}\n\nhishelfCore(input, a0, a1, b1) {\n    History z1(0);\n    x = a0 * (input - (a1 * z1));\n    y = x - z1;\n    z1 = x;\n    out = (y * b1) + input;\n    return out;\n}\n\n// -----------------------------------------------------------------------------\n// PARÁMETROS\n// -----------------------------------------------------------------------------\nParam e_SIZE(0, min=0.1, default=1, max=4);\nParam q_ONOFFEQ(0, min=0, default=0, max=1);\nParam u_ATK(0, min=5, default=10, max=250);\nParam i_PEAKGAIN(0, min=-30, default=0, max=30);\nParam r_ONOFFCOMP(0, min=0, default=0, max=1);\nParam k_LPF(0, min=100, default=20000, max=20000);\nParam t_RATIO(0, min=1, default=2, max=20);\nParam n_LOWFREQ(0, min=20, default=500, max=800);\nParam g_FREEZE(0, min=0, default=0, max=1);\n// DAMP: 0 = sin amortiguamiento, 1 = máximo filtrado\nParam d_DAMP(0, min=0, default=0.8, max=1);\nParam f_ST(0, min=0, default=0.5, max=0.8);\nParam c_REFLECT(0, min=0.1, default=0.86, max=0.98);\n// Input trim in dB (-12..+12, 0dB default)\nParam a_INPUT(0, min=-12, default=0, max=12);\nParam b_DRYWET(0, min=0, default=0.33, max=1.);\nParam j_HIGAIN(0, min=-30, default=0, max=30);\nParam o_PEAKFREQ(0, min=100, default=800, max=2500);\nParam p_HIFREQ(0, min=800, default=2000, max=15000);\nParam w_MAKEUP(0, min=-6, default=0, max=6);\nParam l_HPF(0, min=20, default=20, max=5000);\nParam v_REL(0, min=5, default=100, max=500);\n// Output trim in dB (-12..+12, 0dB default)\nParam m_OUTPUT(0, min=-12, default=0, max=12);\nParam s_THD(0, min=-36, default=-12, max=0);\nParam h_LOWGAIN(0, min=-30, default=0, max=30);\n// PRE/POST switch for EQ+COMP relative to reverb (0=post, 1=pre)\nParam x_PREPOST(0, min=0, default=0, max=1);\n// IO layout mode (1=mono->mono, 2=mono->stereo, 3=stereo->stereo) — sin auto\nParam y_IOMODE(0, min=1, default=3, max=3);\n// Softclip enable (0=off, 1=on) — afecta solo a rama WET\nParam z_SOFTCLIP(0, min=0, default=0, max=1);\n\n// -----------------------------------------------------------------------------\n// PARÁMETROS INTERNOS (constantes de diseño y escalas)\n// -----------------------------------------------------------------------------\n// Nota: Las constantes base de COMB/AP se declaran al inicio del procesamiento,\n// tras finalizar todos los History/Delay, para respetar el orden de Gen.\n\n// -----------------------------------------------------------------------------\n// HISTORIALES Y DELAYS\n// -----------------------------------------------------------------------------\nHistory h_outputTrim(0);\nHistory h_prepostGap(0);\nHistory h_softclipEnable(0);\nHistory h_compEnable(0);\nHistory h_thresholdDb(0);\nHistory h_ratio(0);\nHistory h_attackMs(0);\nHistory h_releaseMs(0);\nHistory h_makeupDb(0);\nHistory h_dryWetStage1(0);\nHistory h_dryWetStage2(0);\nHistory h_eqEnabled(0);\nHistory h_freezeBlend(0);\nHistory h_stereoWidth(0);\nHistory h_lowFreqHz(0);\nHistory h_peakFreqHz(0);\nHistory h_hiFreqHz(0);\nHistory h_lowGainDb(0);\nHistory h_peakGainDb(0);\nHistory h_hiGainDb(0);\nHistory h_inputTrim(0);\nHistory h_sizeScale(0);\nHistory h_lpfHz(0);\nHistory h_hpfHz(0);\nHistory h_reflectCoef(0);\nHistory h_freezeGate(0);\nHistory history_33(0);\nHistory history_34(0);\nHistory history_35(0);\nHistory history_36(0);\nHistory history_37(0);\nHistory history_38(0);\nHistory history_39(0);\nHistory history_40(0);\nHistory history_41(0);\nHistory history_42(0);\nHistory history_43(0);\nHistory history_44(0);\nHistory history_45(0);\nHistory history_46(0);\nHistory history_47(0);\nHistory history_48(0);\nHistory h_combDelayL1(0);\nHistory h_combDelayL2(0);\nHistory h_combDelayL3(0);\nHistory h_combDelayL4(0);\nHistory h_combDelayL5(0);\nHistory h_combDelayL6(0);\nHistory h_combDelayL7(0);\nHistory h_combDelayL8(0);\nDelay delay_57(samplerate);\nHistory h_combStateL1(0);\nDelay delay_59(samplerate);\nHistory h_combStateL2(0);\nDelay delay_61(samplerate);\nHistory h_combStateL3(0);\nDelay delay_63(samplerate);\nHistory h_combStateL4(0);\nDelay delay_65(samplerate);\nHistory h_combStateL5(0);\nDelay delay_67(samplerate);\nHistory h_combStateL6(0);\nDelay delay_69(samplerate);\nHistory h_combStateL7(0);\nDelay delay_71(samplerate);\nHistory h_combStateL8(0);\nDelay delay_73(samplerate);\nDelay delay_74(samplerate);\nDelay delay_75(samplerate);\nDelay delay_76(samplerate);\nDelay delay_77(samplerate);\nDelay delay_78(samplerate);\nDelay delay_79(samplerate);\nDelay delay_80(samplerate);\nHistory h_combDelayR1(0);\nHistory h_combDelayR2(0);\nHistory h_combDelayR3(0);\nHistory h_combDelayR4(0);\nHistory h_combDelayR5(0);\nHistory h_combDelayR6(0);\nHistory h_combDelayR7(0);\nHistory h_combDelayR8(0);\nDelay delay_89(samplerate);\nHistory h_combStateR1(0);\nDelay delay_91(samplerate);\nHistory h_combStateR2(0);\nDelay delay_93(samplerate);\nHistory h_combStateR3(0);\nDelay delay_95(samplerate);\nHistory h_combStateR4(0);\nDelay delay_97(samplerate);\nHistory h_combStateR5(0);\nDelay delay_99(samplerate);\nHistory h_combStateR6(0);\nDelay delay_101(samplerate);\nHistory h_combStateR7(0);\nDelay delay_103(samplerate);\nHistory h_combStateR8(0);\nDelay delay_105(samplerate);\nDelay delay_106(samplerate);\nDelay delay_107(samplerate);\nDelay delay_108(samplerate);\nDelay delay_109(samplerate);\nDelay delay_110(samplerate);\nDelay delay_111(samplerate);\nDelay delay_112(samplerate);\nDelay delay_113(44100);\nHistory h_postRightAccum(0);\nHistory h_postRightOverFlag(0);\nDelay delay_116(44100);\nHistory h_postLeftAccum(0);\nHistory h_postLeftOverFlag(0);\n// States for optional PRE compressor RMS detectors\nDelay delay_preR(44100);\nHistory preR_accum(0);\nHistory preR_flag(0);\nDelay delay_preL(44100);\nHistory preL_accum(0);\nHistory preL_flag(0);\n// RAW drive RMS windows for pre/post crossfade normalization\n// (Eliminados detectores RAW para normalización: enfoque GAP no los usa)\n// Smoothed PRE/POST blend state\nHistory prePost_s(0);\n\n// -----------------------------------------------------------------------------\n// PROCESAMIENTO PRINCIPAL\n// -----------------------------------------------------------------------------\n// Constantes base (44.1 kHz) de delays de COMB y ALLPASS (visibles arriba)\ncombBaseL1 = int(1491); combBaseL2 = int(1617); combBaseL3 = int(1188); combBaseL4 = int(1116);\ncombBaseL5 = int(1557); combBaseL6 = int(1356); combBaseL7 = int(1422); combBaseL8 = int(1277);\ncombBaseR1 = int(1422); combBaseR2 = int(1491); combBaseR3 = int(1116); combBaseR4 = int(1188);\ncombBaseR5 = int(1617); combBaseR6 = int(1356); combBaseR7 = int(1277); combBaseR8 = int(1557);\napL1Base = int(255); apL2Base = int(556); apL3Base = int(441); apL4Base = int(341);\napR1Base = int(255); apR2Base = int(556); apR3Base = int(441); apR4Base = int(341);\n\n// Sección: Smoothing de parámetros y mapeos\n// (Param aliases retirados: usar Param IDs directamente en el código)\n// BLOQUE: Smoothing/control mapping\n// - Entradas: parámetros UI en tiempo real (a_INPUT..y_IOMODE)\n// - Salidas: versiones suavizadas y escaladas para usar en DSP (p. ej., dryWet, prePostBlend, widthScale, freqs/gains EQ)\n\n// Smoothing de parámetros (factor común)\nsmoothFactor = 0.999;\noneMinusSmooth = 1 - smoothFactor;\n\n// Mezcla PRE/POST suavizada (para crossfade de ubicación de procesado)\nprePostBlend = prePost_s * smoothFactor + x_PREPOST * oneMinusSmooth;\n\n// Trim de salida (dB → lineal) suavizado\noutputTrimLin = h_outputTrim * smoothFactor + dbtoa(m_OUTPUT) * oneMinusSmooth;\nnext_outputTrim = fixdenorm(outputTrimLin);\n\n// Compresor: on/off suavizado\ncompEnableSmoothed = h_compEnable * smoothFactor + r_ONOFFCOMP * oneMinusSmooth;\nnext_compEnable = fixdenorm(compEnableSmoothed);\n\n// Softclip on/off suavizado\nsoftclipEnabled = h_softclipEnable * smoothFactor + z_SOFTCLIP * oneMinusSmooth;\nnext_softclipEnable = fixdenorm(softclipEnabled);\n\n// Threshold/ratio y tiempos del compresor (suavizados)\nthresholdDb = h_thresholdDb * smoothFactor + s_THD * oneMinusSmooth;\nnext_thresholdDb = fixdenorm(thresholdDb);\nratio = h_ratio * smoothFactor + t_RATIO * oneMinusSmooth;\nnext_ratio = fixdenorm(ratio);\nattackMs = h_attackMs * smoothFactor + u_ATK * oneMinusSmooth;\nnext_attackMs = fixdenorm(attackMs);\nreleaseMs = h_releaseMs * smoothFactor + v_REL * oneMinusSmooth;\nnext_releaseMs = fixdenorm(releaseMs);\nmakeupDb = h_makeupDb * smoothFactor + w_MAKEUP * oneMinusSmooth;\nnext_makeupDb = fixdenorm(makeupDb);\n\n// Dry/Wet suavizado (doble etapa)\ndryWet = h_dryWetStage1 * smoothFactor + b_DRYWET * oneMinusSmooth;\nnext_dryWetStage1 = fixdenorm(dryWet);\ndryWet = h_dryWetStage2 * smoothFactor + dryWet * oneMinusSmooth;\nnext_dryWetStage2 = fixdenorm(dryWet);\n\n// Constantes útiles\nzero = float(0.);\n\n// EQ on/off suavizado\neqEnabled = h_eqEnabled * smoothFactor + q_ONOFFEQ * oneMinusSmooth;\nnext_eqEnabled = fixdenorm(eqEnabled);\n\n// Freeze suavizado\nfreezeOn = g_FREEZE == 1;\nfreezeBlend = h_freezeBlend * smoothFactor + freezeOn * oneMinusSmooth;\nnext_freezeBlend = fixdenorm(freezeBlend);\n\n// Control de ancho estéreo y escala de width\nstereoWidthParam = h_stereoWidth * smoothFactor + f_ST * oneMinusSmooth;\nnext_stereoWidth = fixdenorm(stereoWidthParam);\nwidthScale = scale(stereoWidthParam, 0, 0.8, 0.707, 1., 1);\n\n// PRE/POST energy latch: only allow PRE/POST blend to move when drive RMS is low\n\n// EQ 3 bandas: freqs y gains suavizados\nlowFreqHz = h_lowFreqHz * smoothFactor + n_LOWFREQ * oneMinusSmooth;\nnext_lowFreqHz = fixdenorm(lowFreqHz);\npeakFreqHz = h_peakFreqHz * smoothFactor + o_PEAKFREQ * oneMinusSmooth;\nnext_peakFreqHz = fixdenorm(peakFreqHz);\nhiFreqHz = h_hiFreqHz * smoothFactor + p_HIFREQ * oneMinusSmooth;\nnext_hiFreqHz = fixdenorm(hiFreqHz);\nlowGainDb = h_lowGainDb * smoothFactor + h_LOWGAIN * oneMinusSmooth;\nnext_lowGainDb = fixdenorm(lowGainDb);\npeakGainDb = h_peakGainDb * smoothFactor + i_PEAKGAIN * oneMinusSmooth;\nnext_peakGainDb = fixdenorm(peakGainDb);\nhiGainDb = h_hiGainDb * smoothFactor + j_HIGAIN * oneMinusSmooth;\nnext_hiGainDb = fixdenorm(hiGainDb);\n\n// Input trim (dB → lineal) suavizado\ninputTrimLin = h_inputTrim * smoothFactor + dbtoa(a_INPUT) * oneMinusSmooth;\nnext_inputTrim = fixdenorm(inputTrimLin);\n\n// -----------------------------------------------------------------------------\n// Sección: I/O y trayecto seco (dry)\n// BLOQUE: Entradas y ruteo\n// - Entradas: in1/in2 del patcher\n// - Salidas: ioL/ioR (ruta WET con trim/mono route), ioL_raw/ioR_raw (ruta DRY sin trim), dryL/dryR (para mezcla final)\n// Entradas crudas y versiones con trim\n// DRY debe usar la señal de entrada sin trim; WET usa trimmed\nleftRaw = in1; rightRaw = in2;\nleftTrimmed = in1 * inputTrimLin;\nrightTrimmed = in2 * inputTrimLin;\n\n// Flags de I/O\nioMode = y_IOMODE;\nisMonoIn = ((ioMode == 1) || (ioMode == 2));\nisMonoOut = (ioMode == 1);\n\n// Ruteo mono para WET (trimmed)\ninMonoRoute = (leftTrimmed + rightTrimmed) * 0.5;\nioL = mix(leftTrimmed, inMonoRoute, isMonoIn);\nioR = mix(rightTrimmed, inMonoRoute, isMonoIn);\n\n// Ruteo mono para DRY (raw, sin trim)\ninMonoRouteRaw = (leftRaw + rightRaw) * 0.5;\nioL_raw = mix(leftRaw, inMonoRouteRaw, isMonoIn);\nioR_raw = mix(rightRaw, inMonoRouteRaw, isMonoIn);\n\n// Trayecto seco (usar raw, sin auto-detección): Left primero, luego Right\ndryLMix = mix(ioL_raw, zero, freezeBlend);\ndryRMix = mix(ioR_raw, zero, freezeBlend);\n\n// Aliases de salida Dry\ndryL = dryLMix;\ndryR = dryRMix;\nwidthComplement = 1 - stereoWidthParam;\n\n// Ganancias de spread estéreo (pre-M/S)\nstereoSpreadMid = sqrt(widthComplement);\nstereoSpreadSide = sqrt(stereoWidthParam);\napBaseL = int(0);\napGainL = float(0.5);\napBaseR = int(0);\napGainR = float(0.5);\ndampPass = 1 - d_DAMP; // pass = 1 - d_DAMP (0 = damping máximo, 1 = sin damping)\ndampLeak = d_DAMP;     // leak = d_DAMP (0 = sin leak, 1 = leak máximo)\n\n// (aliases redundantes de amortiguación eliminados)\nsizeScalePrev = h_sizeScale * 0.999;\nsizeInputScaled = e_SIZE * 0.001;\nsizeScaleSmoothed = sizeInputScaled + sizeScalePrev;\nnextSizeScale = fixdenorm(sizeScaleSmoothed);\n\n// Aliases de tamaño/escalas con FREEZE: forzar a 0.999 sin exceder\nsizeScaleEff = mix(sizeScaleSmoothed, 0.999, freezeOn);\nsizeScaleEff = min(sizeScaleEff, 0.999);\nsizeScaleL = sizeScaleEff;\nsizeScaleR = sizeScaleEff;\nlpfPrev = h_lpfHz * 0.999;\nlpfInputScaled = k_LPF * 0.001;\nlpfHzSmoothed = lpfInputScaled + lpfPrev;\nlpfHz = lpfHzSmoothed;\nnextLpfHz = fixdenorm(lpfHzSmoothed);\nhpfPrev = h_hpfHz * 0.999;\nhpfInputScaled = l_HPF * 0.001;\nhpfHzSmoothed = hpfInputScaled + hpfPrev;\nhpfHz = hpfHzSmoothed;\nnextHpfHz = fixdenorm(hpfHzSmoothed);\nunity = float(1.);\n\n// Baselines\nleftBaselineSamples = int(0); // baseline samples for left\nreflectComplement = 1 - c_REFLECT;\nreflectGate = gate(freezeOn, reflectComplement, choices=1);\nreflectBase = c_REFLECT + reflectGate;\nreflectPrev = h_reflectCoef * 0.999;\nreflectInputScaled = reflectBase * 0.001;\nreflectCoefSmoothed = reflectInputScaled + reflectPrev;\nnextReflectCoef = fixdenorm(reflectCoefSmoothed);\n\n// Alias de coeficiente de reflexión\nreflectCoef = reflectCoefSmoothed;\nbaseOffsetUnits = int(23);\n\n// (re-asignación redundante eliminada) sizeScaleR ya proviene de sizeScaleSmoothed\noffsetSamplesR = baseOffsetUnits * sizeScaleR;\n\n// Control de ancho según modo explícito (sin auto-detección)\n// - MONO OUT: ancho = 0; MONO->ST y ST-ST: ancho = stereoWidthParam\nwidthControl = mix(stereoWidthParam, zero, isMonoOut);\n\n// Symmetric base-offsets for diffuser chains\noffsetSamplesL = leftBaselineSamples;     // 0 samples (left baseline)\nbaseZeroL = zero;             // 0\nbaseZeroR = zero;             // 0\nbaseOffsetL = mix(baseZeroL, offsetSamplesL, widthControl);\nbaseOffsetR = mix(baseZeroR, offsetSamplesR, widthControl);\nfreezeComplement = 1 - (g_FREEZE == 1);\nfreezePrev = h_freezeGate * 0.999;\nfreezeInputScaled = freezeComplement * 0.001;\nfreezeGateSmoothed = freezeInputScaled + freezePrev;\nnextFreezeGate = fixdenorm(freezeGateSmoothed);\n// FREEZE: cortar entrada inmediatamente cuando está activo (sin smoothing)\npreInputR = ioR * (1 - freezeOn);\npreInputL = ioL * (1 - freezeOn);\n\n// -----------------------------------------------------------------------------\n// Sección: PRE (opcional) EQ + COMP antes de reverb\n// BLOQUE: Preprocesado\n// - Entradas: preInputL_sel/preInputR_sel (tras freeze/mono routing)\n// - Salidas: preL_proc/preR_proc (si prePostBlend activa PRE), o bypass a preInput*\n// - Nota: reutiliza los mismos controles que el POST (EQ/COMP), con crossfade por prePostBlend\npreEQ_L_raw, preEQ_R_raw = eq3bandas(preInputL, preInputR,\n    lowFreqHz, peakFreqHz, hiFreqHz, lowGainDb, peakGainDb, hiGainDb, 1);\npreEQ_L = mix(preInputL, preEQ_L_raw, eqEnabled);\npreEQ_R = mix(preInputR, preEQ_R_raw, eqEnabled);\n\n// Pre COMP (RMS window ~300 samples) con A/R, ratio y makeup\npre_relSamps = mstosamps(releaseMs);\npre_atkSamps = mstosamps(attackMs);\npre_win = int(300);\n\n// -----------------------------------------------------------------------------\n// (Eliminado bloque de normalización por RMS del drive RAW: no se usa en enfoque gap)\n\n// Detector RMS Left (PRE)\npreLeftTap = delay_preL.read(pre_win);\npreLeftEnergy = preEQ_L * preEQ_L;\npreLeftAccum = preL_accum + preLeftEnergy;\npreLeftDiff = preLeftAccum - preLeftTap;\npreLeftAvg = preLeftDiff / pre_win;\npreLeftRms = sqrt(preLeftAvg);\npreL_accum_next = fixdenorm(preLeftDiff);\npreLeftDb = atodb(preLeftRms);\npreLeftLvlDb = max(preLeftDb, -96);\npreLeftOver = preLeftLvlDb > thresholdDb;\npreLeftFlagSmoothed = (preL_flag * 0.999) + (preLeftOver * 0.001);\npreL_flag_s = preLeftFlagSmoothed;\npreLeftGainDb = (thresholdDb - preLeftLvlDb) * (1 - (1 / ratio));\npreLeftGainLin = dbtoa(preLeftGainDb);\npreLeftEnvTarget = mix(1, preLeftGainLin, preLeftOver);\npreLeftEnv = slide(preLeftEnvTarget, pre_relSamps, pre_atkSamps);\npreL_out = (preEQ_L * preLeftEnv) * dbtoa(makeupDb);\n\n// Detector RMS Right (PRE)\npreRightTap = delay_preR.read(pre_win);\npreRightEnergy = preEQ_R * preEQ_R;\npreRightAccum = preR_accum + preRightEnergy;\npreRightDiff = preRightAccum - preRightTap;\npreRightAvg = preRightDiff / pre_win;\npreRightRms = sqrt(preRightAvg);\npreR_accum_next = fixdenorm(preRightDiff);\npreRightDb = atodb(preRightRms);\npreRightLvlDb = max(preRightDb, -96);\npreRightOver = preRightLvlDb > thresholdDb;\npreRightFlagSmoothed = (preR_flag * 0.999) + (preRightOver * 0.001);\npreR_flag_s = preRightFlagSmoothed;\npreRightGainDb = (thresholdDb - preRightLvlDb) * (1 - (1 / ratio));\npreRightGainLin = dbtoa(preRightGainDb);\npreRightEnvTarget = mix(1, preRightGainLin, preRightOver);\npreRightEnv = slide(preRightEnvTarget, pre_relSamps, pre_atkSamps);\npreR_out = (preEQ_R * preRightEnv) * dbtoa(makeupDb);\n\n// Aplicar bypass de COMP (usa compEnableSmoothed) sobre el camino PRE\npreR_proc = mix(preEQ_R, preR_out, compEnableSmoothed);\npreL_proc = mix(preEQ_L, preL_out, compEnableSmoothed);\n\n// Selección de entrada a filtros de reverb (0=original, 1=pre-procesada)\n// Equal-power crossfade para entrada a reverb (reduce saltos de energía)\n// Enfoque GAP: procesadores siempre corren; conmutador binario + microgap de ~10ms (decay 0.98)\nprePostBinary = x_PREPOST > 0.5;\nprePostSwitch = change(x_PREPOST) != 0;\ngapEnv = max(h_prepostGap * 0.98, prePostSwitch);\nnext_prepostGap = fixdenorm(gapEnv);\nfeedGate = 1 - gapEnv;\npreInputR_sel = mix(preInputR, preR_proc, prePostBinary) * feedGate;\npreInputL_sel = mix(preInputL, preL_proc, prePostBinary) * feedGate;\n\n// -----------------------------------------------------------------------------\n// Sección: Pre‑filtros (LPF/HPF) a entradas de reverb\n// BLOQUE: Filtrado de entrada a difusores\n// - Entradas: preInputL_sel / preInputR_sel\n// - Procesado: LPF/HPF RBJ biquad por canal\n// - Salidas: hpfOutL / hpfOutR (alimentan bancos de combs L/R)\n// - Entradas legibles a pre‑filtros\npreFilterInR = preInputR_sel;\npreFilterInL = preInputL_sel;\n\n// Coeficientes LPF (biquad RBJ)\nomega = ((lpfHz * twopi)) / samplerate;\nsn = sin(omega);\ncs = cos(omega);\none_over_Q = 1 / unity;\nalpha = ((sn * 0.5)) * one_over_Q;\nb0 = 1 / ((1 + alpha));\na2 = ((((1 - cs)) * 0.5)) * b0;\na1 = ((1 - cs)) * b0;\nb1 = ((-2 * cs)) * b0;\nb2 = ((1 - alpha)) * b0;\n\n// Coeficientes LPF biquad (nombrados)\nlpfA2   = a2;  // feedforward a2\nlpfA1   = a1;  // feedforward a1\nlpfA2_b = a2;  // feedforward a2 (segundo término)\nlpfB1   = b1;  // feedback b1\nlpfB2   = b2;  // feedback b2\nomega_324 = ((hpfHz * twopi)) / samplerate;\nsn_325 = sin(omega_324);\ncs_326 = cos(omega_324);\nalpha_327 = ((sn_325 * 0.5)) / unity;\nb_328 = 1 / ((1 + alpha_327));\na_329 = ((((1 + cs_326)) * 0.5)) * b_328;\na_330 = (-(1 + cs_326)) * b_328;\nb_331 = ((-2 * cs_326)) * b_328;\nb_332 = ((1 - alpha_327)) * b_328;\n\n// Coeficientes HPF biquad (nombrados)\nhpfA2   = a_329; // feedforward a2\nhpfA1   = a_330; // feedforward a1\nhpfA2_b = a_329; // feedforward a2 (segundo término)\nhpfB1   = b_331; // feedback b1\nhpfB2   = b_332; // feedback b2\n\n// LPF biquad (L/R) — forma directa (coeficientes nombrados)\nlpfOutL = (preFilterInL * lpfA2) + (history_37 * lpfA1) + (history_34 * lpfA2_b)\n          - ((history_40 * lpfB1) + (history_36 * lpfB2));\nlpfOutR = (preFilterInR * lpfA2) + (history_38 * lpfA1) + (history_33 * lpfA2_b)\n          - ((history_39 * lpfB1) + (history_35 * lpfB2));\n          \nhistory_33_next_352 = fixdenorm(history_38);\nhistory_34_next_353 = fixdenorm(history_37);\nhistory_35_next_354 = fixdenorm(history_39);\nhistory_36_next_355 = fixdenorm(history_40);\nnextPreInputL = fixdenorm(preInputL_sel);\nnextPreInputR = fixdenorm(preInputR_sel);\nnextLpfOutR = fixdenorm(lpfOutR);\nnextLpfOutL = fixdenorm(lpfOutL);\n\n// -----------------------------------------------------------------------------\n// Sección: HPF biquad (L/R)\n// BLOQUE: Salida de pre‑filtros hacia COMB\n// - Entradas: lpfOutL/lpfOutR + coeficientes hpfA*/hpfB*\n// - Salidas: hpfOutL/hpfOutR (alimentan COMB L/R)\n\n// HPF Right\nhpfOutR = (lpfOutR * hpfA2) + (history_45 * hpfA1) + (history_44 * hpfA2_b)\n          - ((history_47 * hpfB1) + (history_41 * hpfB2));\n\n// HPF Left\nhpfOutL = (lpfOutL * hpfA2) + (history_46 * hpfA1) + (history_42 * hpfA2_b)\n          - ((history_48 * hpfB1) + (history_43 * hpfB2));\n\n// HPF state updates\nhistory_41_next_374 = fixdenorm(history_47);\nhistory_42_next_375 = fixdenorm(history_46);\nhistory_43_next_376 = fixdenorm(history_48);\nhistory_44_next_377 = fixdenorm(history_45);\nhistory_45_next_378 = fixdenorm(lpfOutR);\nhistory_46_next_379 = fixdenorm(lpfOutL);\nhistory_47_next_380 = fixdenorm(hpfOutR);\nhistory_48_next_381 = fixdenorm(hpfOutL);\n\n// -----------------------------------------------------------------------------\n// Entrada a COMB (L): usar hpfOutL directamente\n\n// Coeficientes comunes comb (Left)\n// BLOQUE: COMB BANK (LEFT)\n// - Entradas: hpfOutL, reflectCoef, leftCombPass/leak, delays combDelayL*Smoothed\n// - Salidas: combL1Out..combL8Out → combMixLeft → earlyLeft\n\nleftCombLeak = dampLeak;   // leak = d_DAMP\nleftCombPass = dampPass;   // pass = 1 - d_DAMP\n\n// Comb bank (Left) - 8 líneas\n// Comb base delays at 44.1kHz (Left)\ncombBaseL1 = int(1491);\ncombBaseL2 = int(1617);\n\n// combBaseL* definidos arriba (Constantes de diseño)\nsampleRateScaleL = samplerate / 44100;\ncombScaleL = sampleRateScaleL * sizeScaleL;\ncombDelayL1Scaled = combBaseL1 * combScaleL;\ncombDelayL1Smoothed = (h_combDelayL1 * 0.999) + (combDelayL1Scaled * 0.001);\nnext_combDelayL1 = fixdenorm(combDelayL1Smoothed);\ncombDelayL2Scaled = combBaseL2 * combScaleL;\ncombDelayL2Smoothed = (h_combDelayL2 * 0.999) + (combDelayL2Scaled * 0.001);\nnext_combDelayL2 = fixdenorm(combDelayL2Smoothed);\ncombDelayL3Scaled = combBaseL3 * combScaleL;\ncombDelayL3Smoothed = (h_combDelayL3 * 0.999) + (combDelayL3Scaled * 0.001);\nnext_combDelayL3 = fixdenorm(combDelayL3Smoothed);\ncombDelayL4Scaled = combBaseL4 * combScaleL;\ncombDelayL4Smoothed = (h_combDelayL4 * 0.999) + (combDelayL4Scaled * 0.001);\nnext_combDelayL4 = fixdenorm(combDelayL4Smoothed);\ncombDelayL5Scaled = combBaseL5 * combScaleL;\ncombDelayL5Smoothed = (h_combDelayL5 * 0.999) + (combDelayL5Scaled * 0.001);\nnext_combDelayL5 = fixdenorm(combDelayL5Smoothed);\ncombDelayL6Scaled = combBaseL6 * combScaleL;\ncombDelayL6Smoothed = (h_combDelayL6 * 0.999) + (combDelayL6Scaled * 0.001);\nnext_combDelayL6 = fixdenorm(combDelayL6Smoothed);\ncombDelayL7Scaled = combBaseL7 * combScaleL;\ncombDelayL7Smoothed = (h_combDelayL7 * 0.999) + (combDelayL7Scaled * 0.001);\nnext_combDelayL7 = fixdenorm(combDelayL7Smoothed);\ncombDelayL8Scaled = combBaseL8 * combScaleL;\ncombDelayL8Smoothed = (h_combDelayL8 * 0.999) + (combDelayL8Scaled * 0.001);\nnext_combDelayL8 = fixdenorm(combDelayL8Smoothed);\n\n// 1 - leak (porción pasada) ya definido como leftCombPass\n// --- Comb L1 (Left) ---\n// Inputs: combL1DelayOffset, leftCombLeak/leftCombPass, reflectCoef, hpfOutL\n// Output: combL1Out (feeds combMixLeft)\ncombL1FeedbackScaled = h_combStateL1 * leftCombPass;\n\ndelayOffsetL1Samples = combDelayL4Smoothed;\ncombL1DelayOffset = clip(baseOffsetL + delayOffsetL1Samples, 0, samplerate - 1);\n\ncombL1Tap = delay_57.read(combL1DelayOffset, interp=\"linear\");\n\ncombL1TapScaled = combL1Tap * leftCombLeak;\ncombL1Mix = combL1TapScaled + combL1FeedbackScaled;\n\ncombL1Feedforward = combL1Mix * reflectCoef;\ncombL1Sum = hpfOutL + combL1Feedforward;\ncombL1Out = combL1Sum;\n\nnext_combStateL1 = fixdenorm(combL1Mix);\n// --- Comb L2 (Left) ---\n// Inputs: combL2DelayOffset, leftCombLeak/leftCombPass, reflectCoef, hpfOutL\n// Output: combL2Out\n// --- Comb L2 (Left) ---\ncombL2FeedbackScaled = h_combStateL2 * leftCombPass;\n\ndelayOffsetL2Samples = combDelayL3Smoothed;\ncombL2DelayOffset = clip(baseOffsetL + delayOffsetL2Samples, 0, samplerate - 1);\n\ncombL2Tap = delay_59.read(combL2DelayOffset, interp=\"linear\");\n\ncombL2TapScaled = combL2Tap * leftCombLeak;\ncombL2Mix = combL2TapScaled + combL2FeedbackScaled;\n\ncombL2Feedforward = combL2Mix * reflectCoef;\ncombL2Sum = hpfOutL + combL2Feedforward;\ncombL2Out = combL2Sum;\n\nnext_combStateL2 = fixdenorm(combL2Mix);\n// --- Comb L3 (Left) ---\n// Inputs: combL3DelayOffset, leftCombLeak/leftCombPass, reflectCoef, hpfOutL\n// Output: combL3Out\n// --- Comb L3 (Left) ---\ncombL3FeedbackScaled = h_combStateL3 * leftCombPass;\n\ndelayOffsetL3Samples = combDelayL6Smoothed;\ncombL3DelayOffset = clip(baseOffsetL + delayOffsetL3Samples, 0, samplerate - 1);\n\ncombL3Tap = delay_61.read(combL3DelayOffset, interp=\"linear\");\n\ncombL3TapScaled = combL3Tap * leftCombLeak;\ncombL3Mix = combL3TapScaled + combL3FeedbackScaled;\n\ncombL3Feedforward = combL3Mix * reflectCoef;\ncombL3Sum = hpfOutL + combL3Feedforward;\ncombL3Out = combL3Sum;\n\nnext_combStateL3 = fixdenorm(combL3Mix);\n// --- Comb L4 (Left) ---\n// Inputs: combL4DelayOffset, leftCombLeak/leftCombPass, reflectCoef, hpfOutL\n// Output: combL4Out\n// --- Comb L4 (Left) ---\ncombL4FeedbackScaled = h_combStateL4 * leftCombPass;\n\ndelayOffsetL4Samples = combDelayL8Smoothed;\ncombL4DelayOffset = clip(baseOffsetL + delayOffsetL4Samples, 0, samplerate - 1);\n\ncombL4Tap = delay_63.read(combL4DelayOffset, interp=\"linear\");\n\ncombL4TapScaled = combL4Tap * leftCombLeak;\ncombL4Mix = combL4TapScaled + combL4FeedbackScaled;\n\ncombL4Feedforward = combL4Mix * reflectCoef;\ncombL4Sum = hpfOutL + combL4Feedforward;\ncombL4Out = combL4Sum;\n\nnext_combStateL4 = fixdenorm(combL4Mix);\n// --- Comb L5 (Left) ---\n// Inputs: combL5DelayOffset, leftCombLeak/leftCombPass, reflectCoef, hpfOutL\n// Output: combL5Out\n// --- Comb L5 (Left) ---\ncombL5FeedbackScaled = h_combStateL5 * leftCombPass;\n\ndelayOffsetL5Samples = combDelayL7Smoothed;\ncombL5DelayOffset = clip(baseOffsetL + delayOffsetL5Samples, 0, samplerate - 1);\n\ncombL5Tap = delay_65.read(combL5DelayOffset, interp=\"linear\");\n\ncombL5TapScaled = combL5Tap * leftCombLeak;\ncombL5Mix = combL5TapScaled + combL5FeedbackScaled;\n\ncombL5Feedforward = combL5Mix * reflectCoef;\ncombL5Sum = hpfOutL + combL5Feedforward;\ncombL5Out = combL5Sum;\n\nnext_combStateL5 = fixdenorm(combL5Mix);\n// --- Comb L6 (Left) ---\n// Inputs: combL6DelayOffset, leftCombLeak/leftCombPass, reflectCoef, hpfOutL\n// Output: combL6Out\n// --- Comb L6 (Left) ---\ncombL6FeedbackScaled = h_combStateL6 * leftCombPass;\n\ndelayOffsetL6Samples = combDelayL1Smoothed;\ncombL6DelayOffset = clip(baseOffsetL + delayOffsetL6Samples, 0, samplerate - 1);\n\ncombL6Tap = delay_67.read(combL6DelayOffset, interp=\"linear\");\n\ncombL6TapScaled = combL6Tap * leftCombLeak;\ncombL6Mix = combL6TapScaled + combL6FeedbackScaled;\n\ncombL6Feedforward = combL6Mix * reflectCoef;\ncombL6Sum = hpfOutL + combL6Feedforward;\ncombL6Out = combL6Sum;\n\nnext_combStateL6 = fixdenorm(combL6Mix);\n// --- Comb L7 (Left) ---\n// Inputs: combL7DelayOffset, leftCombLeak/leftCombPass, reflectCoef, hpfOutL\n// Output: combL7Out\n// --- Comb L7 (Left) ---\ncombL7FeedbackScaled = h_combStateL7 * leftCombPass;\n\ndelayOffsetL7Samples = combDelayL2Smoothed;\ncombL7DelayOffset = clip(baseOffsetL + delayOffsetL7Samples, 0, samplerate - 1);\n\ncombL7Tap = delay_69.read(combL7DelayOffset, interp=\"linear\");\n\ncombL7TapScaled = combL7Tap * leftCombLeak;\ncombL7Mix = combL7TapScaled + combL7FeedbackScaled;\n\ncombL7Feedforward = combL7Mix * reflectCoef;\ncombL7Sum = hpfOutL + combL7Feedforward;\ncombL7Out = combL7Sum;\n\nnext_combStateL7 = fixdenorm(combL7Mix);\n// --- Comb L8 (Left) ---\n// Inputs: combL8DelayOffset, leftCombLeak/leftCombPass, reflectCoef, hpfOutL\n// Output: combL8Out\n// --- Comb L8 (Left) ---\ncombL8FeedbackScaled = h_combStateL8 * leftCombPass;\n\ndelayOffsetL8Samples = combDelayL5Smoothed;\ncombL8DelayOffset = clip(baseOffsetL + delayOffsetL8Samples, 0, samplerate - 1);\n\ncombL8Tap = delay_71.read(combL8DelayOffset, interp=\"linear\");\n\ncombL8TapScaled = combL8Tap * leftCombLeak;\ncombL8Mix = combL8TapScaled + combL8FeedbackScaled;\n\ncombL8Feedforward = combL8Mix * reflectCoef;\ncombL8Sum = hpfOutL + combL8Feedforward;\ncombL8Out = combL8Sum;\n\nnext_combStateL8 = fixdenorm(combL8Mix);\n// Suma normalizada del banco de combs (Left) → early reflections\ncombMixLeft = ((((((((((((((combL8Out + combL7Out)) + combL6Out)) + combL5Out)) + combL4Out)) + combL3Out)) + combL2Out)) + combL1Out)) * 0.125;\nearlyLeft = combMixLeft;\n\n// -----------------------------------------------------------------------------\n// ALLPASS DIFFUSER CHAIN (LEFT) — 4 STAGES\n// BLOQUE: Difusores allpass L\n// - Entradas: earlyLeft\n// - Salida: msInLeft (entrada a matriz M/S)\n\n// apL*Base definidos arriba (Constantes de diseño)\nsampleRateScaleAP_L = samplerate / 44100;\napScaleL = sampleRateScaleAP_L * sizeScaleEff;\napL1DelaySamples = apL1Base * apScaleL;\napL1DelayOffset = clip(apBaseL + apL1DelaySamples, 0, samplerate - 1);\napL1TapA = delay_73.read(apL1DelayOffset, interp=\"linear\");\napL1TapB = delay_74.read(apL1DelayOffset, interp=\"linear\");\n// apL1: usar alias de taps para claridad\napL1Sum = (earlyLeft * (apGainL * -1)) + (apL1TapA + apL1TapB * apGainL);\n// Allpass etapas (Left)\napL1 = apL1Sum;\n// sampleRateScaleAP_L y apScaleL reutilizados\napL2DelaySamples = apL2Base * apScaleL;\napL2DelayOffset = clip(apBaseL + apL2DelaySamples, 0, samplerate - 1);\napL2TapA = delay_75.read(apL2DelayOffset, interp=\"linear\");\napL2TapB = delay_76.read(apL2DelayOffset, interp=\"linear\");\napL2Sum = apL1 * (apGainL * -1) + (apL2TapA + apL2TapB * apGainL);\napL2 = apL2Sum;\n// sampleRateScaleAP_L y apScaleL reutilizados\napL3DelaySamples = apL3Base * apScaleL;\napL3DelayOffset = clip(apBaseL + apL3DelaySamples, 0, samplerate - 1);\napL3TapA = delay_77.read(apL3DelayOffset, interp=\"linear\");\napL3TapB = delay_78.read(apL3DelayOffset, interp=\"linear\");\napL3Sum = apL2 * (apGainL * -1) + (apL3TapA + apL3TapB * apGainL);\napL3 = apL3Sum;\n// sampleRateScaleAP_L y apScaleL reutilizados\napL4DelaySamples = apL4Base * apScaleL;\napL4DelayOffset = clip(apBaseL + apL4DelaySamples, 0, samplerate - 1);\napL4TapA = delay_79.read(apL4DelayOffset, interp=\"linear\");\napL4TapB = delay_80.read(apL4DelayOffset, interp=\"linear\");\napL4Sum = apL3 * (apGainL * -1) + (apL4TapA + apL4TapB * apGainL);\napL4 = apL4Sum;\n\n// Entrada a matriz M/S (L) desde el último allpass\nmsInLeft = apL4;\n\n// -----------------------------------------------------------------------------\n// M/S MATRIX + WIDTH (PRE EQ/COMP)\n// BLOQUE: Matriz Mid/Side y control de ancho\n// - Entradas: msInLeft/msInRight (desde allpass L/R), stereoSpreadMid/Side, widthScale\n// - Salidas: msLeft/msRight (húmedo antes de EQ/COMP POST)\n// Salida pre-filtros (R)\n// Coeficientes comunes comb (Right)\n// BLOQUE: COMB BANK (RIGHT)\n// - Entradas: hpfOutR, reflectCoef, rightCombPass/leak, delays combDelayR*Smoothed\n// - Salidas: combR1Out..combR8Out → combMixRight → earlyRight\nrightCombLeak = dampLeak;\nrightCombPass = dampPass;\n\n// Comb base delays at 44.1kHz (Right)\n// combBaseR* definidos arriba (Constantes de diseño)\nsampleRateScaleR = samplerate / 44100;\ncombScaleR = sampleRateScaleR * sizeScaleR;\ncombDelayR1Scaled = combBaseR1 * combScaleR;\ncombDelayR1Smoothed = (h_combDelayR1 * 0.999) + (combDelayR1Scaled * 0.001);\nnext_combDelayR1 = fixdenorm(combDelayR1Smoothed);\ncombDelayR2Scaled = combBaseR2 * combScaleR;\ncombDelayR2Smoothed = (h_combDelayR2 * 0.999) + (combDelayR2Scaled * 0.001);\nnext_combDelayR2 = fixdenorm(combDelayR2Smoothed);\ncombDelayR3Scaled = combBaseR3 * combScaleR;\ncombDelayR3Smoothed = (h_combDelayR3 * 0.999) + (combDelayR3Scaled * 0.001);\nnext_combDelayR3 = fixdenorm(combDelayR3Smoothed);\ncombDelayR4Scaled = combBaseR4 * combScaleR;\ncombDelayR4Smoothed = (h_combDelayR4 * 0.999) + (combDelayR4Scaled * 0.001);\nnext_combDelayR4 = fixdenorm(combDelayR4Smoothed);\ncombDelayR5Scaled = combBaseR5 * combScaleR;\ncombDelayR5Smoothed = (h_combDelayR5 * 0.999) + (combDelayR5Scaled * 0.001);\nnext_combDelayR5 = fixdenorm(combDelayR5Smoothed);\ncombDelayR6Scaled = combBaseR6 * combScaleR;\ncombDelayR6Smoothed = (h_combDelayR6 * 0.999) + (combDelayR6Scaled * 0.001);\nnext_combDelayR6 = fixdenorm(combDelayR6Smoothed);\ncombDelayR7Scaled = combBaseR7 * combScaleR;\ncombDelayR7Smoothed = (h_combDelayR7 * 0.999) + (combDelayR7Scaled * 0.001);\nnext_combDelayR7 = fixdenorm(combDelayR7Smoothed);\ncombDelayR8Scaled = combBaseR8 * combScaleR;\ncombDelayR8Smoothed = (h_combDelayR8 * 0.999) + (combDelayR8Scaled * 0.001);\nnext_combDelayR8 = fixdenorm(combDelayR8Smoothed);\n\n// -----------------------------------------------------------------------------\n// COMB BANK (RIGHT) — 8 LINES\n// 1 - leak (porción pasada) ya definido como rightCombPass\ncombR1FeedbackScaled = h_combStateR1 * rightCombPass;\n\ndelayOffsetR1Samples = combDelayR3Smoothed;\ncombR1DelayOffset = clip(baseOffsetR + delayOffsetR1Samples, 0, samplerate - 1);\n\ncombR1Tap = delay_89.read(combR1DelayOffset, interp=\"linear\");\n\ncombR1TapScaled = combR1Tap * rightCombLeak;\ncombR1Mix = combR1TapScaled + combR1FeedbackScaled;\n\ncombR1Feedforward = combR1Mix * reflectCoef;\ncombR1Sum = hpfOutR + combR1Feedforward;\ncombR1Out = combR1Sum;\n\nnext_combStateR1 = fixdenorm(combR1Mix);\n// --- Comb R2 (Right) ---\ncombR2FeedbackScaled = h_combStateR2 * rightCombPass;\n\ndelayOffsetR2Samples = combDelayR4Smoothed;\ncombR2DelayOffset = clip(baseOffsetR + delayOffsetR2Samples, 0, samplerate - 1);\n\ncombR2Tap = delay_91.read(combR2DelayOffset, interp=\"linear\");\n\ncombR2TapScaled = combR2Tap * rightCombLeak;\ncombR2Mix = combR2TapScaled + combR2FeedbackScaled;\n\ncombR2Feedforward = combR2Mix * reflectCoef;\ncombR2Sum = hpfOutR + combR2Feedforward;\ncombR2Out = combR2Sum;\n\nnext_combStateR2 = fixdenorm(combR2Mix);\n// --- Comb R3 (Right) ---\ncombR3FeedbackScaled = h_combStateR3 * rightCombPass;\n\ndelayOffsetR3Samples = combDelayR6Smoothed;\ncombR3DelayOffset = clip(baseOffsetR + delayOffsetR3Samples, 0, samplerate - 1);\n\ncombR3Tap = delay_93.read(combR3DelayOffset, interp=\"linear\");\n\ncombR3TapScaled = combR3Tap * rightCombLeak;\ncombR3Mix = combR3TapScaled + combR3FeedbackScaled;\n\ncombR3Feedforward = combR3Mix * reflectCoef;\ncombR3Sum = hpfOutR + combR3Feedforward;\ncombR3Out = combR3Sum;\n\nnext_combStateR3 = fixdenorm(combR3Mix);\n// --- Comb R4 (Right) ---\ncombR4FeedbackScaled = h_combStateR4 * rightCombPass;\n\ndelayOffsetR4Samples = combDelayR7Smoothed;\ncombR4DelayOffset = clip(baseOffsetR + delayOffsetR4Samples, 0, samplerate - 1);\n\ncombR4Tap = delay_95.read(combR4DelayOffset, interp=\"linear\");\n\ncombR4TapScaled = combR4Tap * rightCombLeak;\ncombR4Mix = combR4TapScaled + combR4FeedbackScaled;\n\ncombR4Feedforward = combR4Mix * reflectCoef;\ncombR4Sum = hpfOutR + combR4Feedforward;\ncombR4Out = combR4Sum;\n\nnext_combStateR4 = fixdenorm(combR4Mix);\n// --- Comb R5 (Right) ---\n// --- Comb R5 (Right) ---\ncombR5FeedbackScaled = h_combStateR5 * rightCombPass;\n\ndelayOffsetR5Samples = combDelayR1Smoothed;\ncombR5DelayOffset = clip(baseOffsetR + delayOffsetR5Samples, 0, samplerate - 1);\n\ncombR5Tap = delay_97.read(combR5DelayOffset, interp=\"linear\");\n\ncombR5TapScaled = combR5Tap * rightCombLeak;\ncombR5Mix = combR5TapScaled + combR5FeedbackScaled;\n\ncombR5Feedforward = combR5Mix * reflectCoef;\ncombR5Sum = hpfOutR + combR5Feedforward;\ncombR5Out = combR5Sum;\n\nnext_combStateR5 = fixdenorm(combR5Mix);\n// --- Comb R6 (Right) ---\n// --- Comb R6 (Right) ---\ncombR6FeedbackScaled = h_combStateR6 * rightCombPass;\n\ndelayOffsetR6Samples = combDelayR2Smoothed;\ncombR6DelayOffset = clip(baseOffsetR + delayOffsetR6Samples, 0, samplerate - 1);\n\ncombR6Tap = delay_99.read(combR6DelayOffset, interp=\"linear\");\n\ncombR6TapScaled = combR6Tap * rightCombLeak;\ncombR6Mix = combR6TapScaled + combR6FeedbackScaled;\n\ncombR6Feedforward = combR6Mix * reflectCoef;\ncombR6Sum = hpfOutR + combR6Feedforward;\ncombR6Out = combR6Sum;\n\nnext_combStateR6 = fixdenorm(combR6Mix);\n// --- Comb R7 (Right) ---\n// --- Comb R7 (Right) ---\ncombR7FeedbackScaled = h_combStateR7 * rightCombPass;\n\ndelayOffsetR7Samples = combDelayR5Smoothed;\ncombR7DelayOffset = clip(baseOffsetR + delayOffsetR7Samples, 0, samplerate - 1);\n\ncombR7Tap = delay_101.read(combR7DelayOffset, interp=\"linear\");\n\ncombR7TapScaled = combR7Tap * rightCombLeak;\ncombR7Mix = combR7TapScaled + combR7FeedbackScaled;\n\ncombR7Feedforward = combR7Mix * reflectCoef;\ncombR7Sum = hpfOutR + combR7Feedforward;\ncombR7Out = combR7Sum;\n\nnext_combStateR7 = fixdenorm(combR7Mix);\n// --- Comb R8 (Right) ---\n// --- Comb R8 (Right) ---\ncombR8FeedbackScaled = h_combStateR8 * rightCombPass;\n\ndelayOffsetR8Samples = combDelayR8Smoothed;\ncombR8DelayOffset = clip(baseOffsetR + delayOffsetR8Samples, 0, samplerate - 1);\n\ncombR8Tap = delay_103.read(combR8DelayOffset, interp=\"linear\");\n\ncombR8TapScaled = combR8Tap * rightCombLeak;\ncombR8Mix = combR8TapScaled + combR8FeedbackScaled;\n\ncombR8Feedforward = combR8Mix * reflectCoef;\ncombR8Sum = hpfOutR + combR8Feedforward;\ncombR8Out = combR8Sum;\n\nnext_combStateR8 = fixdenorm(combR8Mix);\n// Suma normalizada del banco de combs (Right) → early reflections\ncombMixRight = ((((((((((((((combR8Out + combR7Out)) + combR6Out)) + combR5Out)) + combR4Out)) + combR3Out)) + combR2Out)) + combR1Out)) * 0.125;\nearlyRight = combMixRight;\n\n// -----------------------------------------------------------------------------\n// ALLPASS DIFFUSER CHAIN (RIGHT) — 4 STAGES\n// Entradas: earlyRight\n// Salida: msInRight (entrada a matriz M/S)\n// apR*Base definidos arriba (Constantes de diseño)\nsampleRateScaleAP_R = samplerate / 44100;\napScaleR = sampleRateScaleAP_R * sizeScaleEff;\napR1DelaySamples = apR1Base * apScaleR;\napR1DelayOffset = apBaseR + apR1DelaySamples;\napR1TapA = delay_105.read(apR1DelayOffset, interp=\"linear\");\napR1TapB = delay_106.read(apR1DelayOffset, interp=\"linear\");\n// apR1: taps\napR1Sum = (earlyRight * (apGainR * -1)) + (apR1TapA + apR1TapB * apGainR);\n// Allpass etapas (Right)\napR1 = apR1Sum;\n\n// -----------------------------------------------------------------------------\n// ALLPASS DIFFUSER CHAIN (RIGHT) — 4 STAGES\n// BLOQUE: Difusores allpass R\n// - Entradas: earlyRight\n// - Salida: msInRight (entrada a matriz M/S)\n\n// sampleRateScaleAP_R y apScaleR reutilizados\napR2DelaySamples = apR2Base * apScaleR;\napR2DelayOffset = clip(apBaseR + apR2DelaySamples, 0, samplerate - 1);\napR2TapA = delay_107.read(apR2DelayOffset, interp=\"linear\");\napR2TapB = delay_108.read(apR2DelayOffset, interp=\"linear\");\napR2Sum = apR1 * (apGainR * -1) + (apR2TapA + apR2TapB * apGainR);\napR2 = apR2Sum;\n\n// sampleRateScaleAP_R y apScaleR reutilizados\napR3DelaySamples = apR3Base * apScaleR;\napR3DelayOffset = clip(apBaseR + apR3DelaySamples, 0, samplerate - 1);\napR3TapA = delay_109.read(apR3DelayOffset, interp=\"linear\");\napR3TapB = delay_110.read(apR3DelayOffset, interp=\"linear\");\napR3Sum = apR2 * (apGainR * -1) + (apR3TapA + apR3TapB * apGainR);\napR3 = apR3Sum;\n\n// sampleRateScaleAP_R y apScaleR reutilizados\napR4DelaySamples = apR4Base * apScaleR;\napR4DelayOffset = clip(apBaseR + apR4DelaySamples, 0, samplerate - 1);\napR4TapA = delay_111.read(apR4DelayOffset, interp=\"linear\");\napR4TapB = delay_112.read(apR4DelayOffset, interp=\"linear\");\napR4Sum = apR3 * (apGainR * -1) + (apR4TapA + apR4TapB * apGainR);\napR4 = apR4Sum;\nmsInRight = apR4;\nmsMidRaw = msInLeft + msInRight;               // suma L+R (mid)\nmsMid = msMidRaw * stereoSpreadMid;            // mid con spread\nmsSideRaw = msInLeft - msInRight;              // diferencia L-R (side)\nmsSide = msSideRaw * stereoSpreadSide;         // side con spread\nmsLeftPreWidth = msMid + msSide;               // L previo a width\nmsLeft = msLeftPreWidth * widthScale;          // aplicar width a L\nmsRightPreWidth = msMid - msSide;              // R previo a width\nmsRight = msRightPreWidth * widthScale;        // aplicar width a R\n\n// Alias entrada a matriz M/S (R) y húmedo antes de EQ/COMP\nwetPreLeft = msLeft;\nwetPreRight = msRight;\n\n// Allpass diffuser out (Right) antes de M/S — ya reflejado en msInRight\n// Late reverb (pre EQ/COMP POST)\nlateLeft = wetPreLeft;\nlateRight = wetPreRight;\n\n// Sección: EQ POST (3 bandas) con bypass eqEnabled\n// BLOQUE: Ecualización post reverb\n// - Entradas: wetPreLeft/wetPreRight (msLeft/msRight tras M/S+width)\n// - Salidas: postEqLeft/postEqRight (con bypass suave si PRE activo)\neqPostLeftRaw, eqPostRightRaw = eq3bandas(wetPreLeft, wetPreRight, lowFreqHz, peakFreqHz, hiFreqHz, lowGainDb, peakGainDb, hiGainDb, 1);\n\n// Si x_prepost=1 (PRE), anula la EQ POST (bypass EQ post)\npostEqLeft = mix(msLeft, eqPostLeftRaw, eqEnabled * (1 - prePostBinary));\npostEqRight = mix(msRight, eqPostRightRaw, eqEnabled * (1 - prePostBinary));\n\n// Sección: Compresor estéreo (RMS → ganancia → mezcla)\n// BLOQUE: Compresión post reverb\n// - Entradas: postEqLeft/postEqRight, threshold/ratio/A/R/makeup\n// - Salidas: postCOMP_L/postCOMP_R (bypass suave si PRE activo)\n// - Detector RMS por canal (~300 muestras) con slide A/R\n// - Threshold (s_thd), Ratio (t_ratio), Attack/Release (u_atk/v_rel)\n// - Makeup (w_makeup), on/off (r_onoffCOMP)\n\nmakeupGainLin = dbtoa(makeupDb);\nreleaseSamps = mstosamps(releaseMs);\nattackSamps = mstosamps(attackMs);\nrightWin = int(300);\nrightTap = delay_113.read(rightWin);\nrightEnergy = postEqRight * postEqRight;\nrightAccumPrev = h_postRightAccum;\nrightAccum = rightAccumPrev + rightEnergy;\nrightDiff = rightAccum - rightTap;\nrightAvg = rightDiff / rightWin;\nrightRms = sqrt(rightAvg);\nnext_postRightAccum = fixdenorm(rightDiff);\nrightDb = atodb(rightRms);\nrightLvlDb = max(rightDb, -96);\nrightOver = rightLvlDb > thresholdDb;\nrightOverFlagPrev = h_postRightOverFlag;\nrightOverSmoothed = (rightOverFlagPrev * 0.999) + (rightOver * 0.001);\nnext_postRightOverFlag = fixdenorm(rightOverSmoothed);\nrightGainDb = (thresholdDb - rightLvlDb) * (1 - (1 / ratio));\nrightGainLin = dbtoa(rightGainDb);\n// Objetivo de ganancia: 1 bajo umbral, gainLin sobre umbral (sin mezclar expansor)\nrightEnvTarget = mix(1, rightGainLin, rightOver);\nrightEnv = slide(rightEnvTarget, releaseSamps, attackSamps);\ncompRight = (postEqRight * rightEnv) * makeupGainLin;\n// comp outputs (Left then Right)\nleftWin = int(300);\nleftTap = delay_116.read(leftWin);\nleftEnergy = postEqLeft * postEqLeft;\nleftAccumPrev = h_postLeftAccum;\nleftAccum = leftAccumPrev + leftEnergy;\nleftDiff = leftAccum - leftTap;\nleftAvg = leftDiff / leftWin;\nleftRms = sqrt(leftAvg);\nnext_postLeftAccum = fixdenorm(leftDiff);\nleftDb = atodb(leftRms);\nleftLvlDb = max(leftDb, -96);\nleftOver = leftLvlDb > thresholdDb;\nleftOverFlagPrev = h_postLeftOverFlag;\nleftOverSmoothed = (leftOverFlagPrev * 0.999) + (leftOver * 0.001);\nnext_postLeftOverFlag = fixdenorm(leftOverSmoothed);\nleftGainDb = (thresholdDb - leftLvlDb) * (1 - (1 / ratio));\nleftGainLin = dbtoa(leftGainDb);\nleftEnvTarget = mix(1, leftGainLin, leftOver);\nleftEnv = slide(leftEnvTarget, releaseSamps, attackSamps);\ncompLeft = (postEqLeft * leftEnv) * makeupGainLin;\n\n// Si x_prepost=1 (PRE), anula el COMP POST\npostCOMP_L = mix(postEqLeft, compLeft, compEnableSmoothed * (1 - prePostBinary));\npostCOMP_R = mix(postEqRight, compRight, compEnableSmoothed * (1 - prePostBinary));\npostCompLeft = postCOMP_L;\npostCompRight = postCOMP_R;\nwetPostCompLeft = postCOMP_L;\nwetPostCompRight = postCOMP_R;\n\n// -----------------------------------------------------------------------------\n// SALIDA (DRY/WET + MONO COLLAPSE)\n// BLOQUE: Mezcla y salida final\n// - Entradas: dryL/dryR, wetPostCompLeft/wetPostCompRight, dryWet, outputTrimLin, isMonoOut\n// - Operaciones: trim + softclip (solo WET), mix dry/wet por canal, DC-block, mezcla mono si procede\n// - Salidas: out1/out2 (requeridos por Max/Gen)\nwetOutL = wetPostCompLeft * outputTrimLin;\nwetOutR = wetPostCompRight * outputTrimLin;\n// Softclip solo en la rama WET\nwetClipL = (2 / pi) * tanh(wetOutL);\nwetClipR = (2 / pi) * tanh(wetOutR);\nwetProcessedL = mix(wetOutL, wetClipL, softclipEnabled);\nwetProcessedR = mix(wetOutR, wetClipR, softclipEnabled);\ndryWetLeft = mix(dryL, wetProcessedL, dryWet);\ndcblockLeft = dcblock(dryWetLeft);\n// outMono/out mix computed after both channels are available\ndryWetRight = mix(dryR, wetProcessedR, dryWet);\ndcblockRight = dcblock(dryWetRight);\noutMono = (dcblockLeft + dcblockRight) * 0.5;\nout1 = mix(dcblockLeft, outMono, isMonoOut);\nout2 = mix(dcblockRight, outMono, isMonoOut);\n\n// -----------------------------------------------------------------------------\n// STATE UPDATES (History/Delay writes) — must follow outputs\n// -----------------------------------------------------------------------------\n// --- Estados PRE (si se usa x_prepost=1) ---\n// --- PRE COMP state updates ---\ndelay_preR.write(preRightEnergy);\npreR_accum = preR_accum_next;\npreR_flag = fixdenorm(preR_flag_s);\ndelay_preL.write(preLeftEnergy);\npreL_accum = preL_accum_next;\npreL_flag = fixdenorm(preL_flag_s);\n// Reverb drive RMS state updates\n// (Eliminadas escrituras de detectores RAW)\nh_outputTrim = next_outputTrim;\n// Post COMP detector state updates\nh_postLeftOverFlag = next_postLeftOverFlag;\nh_postLeftAccum = next_postLeftAccum;\ndelay_116.write(leftEnergy);\n// Right channel RMS + over flag updates\nh_postRightOverFlag = next_postRightOverFlag;\nh_postRightAccum = next_postRightAccum;\ndelay_113.write(rightEnergy);\n// --- ALLPASS R state updates ---\ndelay_106.write(apR1Sum);\ndelay_107.write(apR1);\ndelay_108.write(apR2Sum);\ndelay_109.write(apR2);\ndelay_110.write(apR3Sum);\ndelay_111.write(apR3);\ndelay_112.write(apR4Sum);\ndelay_105.write(earlyRight);\n// Right comb delay smoothing state updates\nh_combDelayR8 = next_combDelayR8;\nh_combDelayR7 = next_combDelayR7;\nh_combDelayR6 = next_combDelayR6;\nh_combDelayR5 = next_combDelayR5;\nh_combDelayR4 = next_combDelayR4;\nh_combDelayR3 = next_combDelayR3;\nh_combDelayR2 = next_combDelayR2;\n// --- COMB R state updates ---\ndelay_89.write(combR1Sum);\n// Right comb integrator state updates\nh_combStateR1 = next_combStateR1;\ndelay_91.write(combR2Sum);\nh_combStateR2 = next_combStateR2;\ndelay_93.write(combR3Sum);\nh_combStateR3 = next_combStateR3;\ndelay_95.write(combR4Sum);\nh_combStateR4 = next_combStateR4;\ndelay_97.write(combR5Sum);\nh_combStateR5 = next_combStateR5;\ndelay_99.write(combR6Sum);\nh_combStateR6 = next_combStateR6;\ndelay_101.write(combR7Sum);\nh_combStateR7 = next_combStateR7;\ndelay_103.write(combR8Sum);\nh_combStateR8 = next_combStateR8;\nh_combDelayR1 = next_combDelayR1;\n// --- ALLPASS L state updates ---\ndelay_74.write(apL1Sum);\ndelay_75.write(apL1);\ndelay_76.write(apL2Sum);\ndelay_77.write(apL2);\ndelay_78.write(apL3Sum);\ndelay_79.write(apL3);\ndelay_80.write(apL4Sum);\ndelay_73.write(earlyLeft);\n// Left comb delay smoothing state updates\nh_combDelayL8 = next_combDelayL8;\nh_combDelayL7 = next_combDelayL7;\nh_combDelayL6 = next_combDelayL6;\nh_combDelayL5 = next_combDelayL5;\nh_combDelayL4 = next_combDelayL4;\nh_combDelayL3 = next_combDelayL3;\nh_combDelayL2 = next_combDelayL2;\n// --- COMB L delay/history updates ---\ndelay_57.write(combL1Sum);\n// Left comb integrator state updates\nh_combStateL1 = next_combStateL1;\ndelay_59.write(combL2Sum);\nh_combStateL2 = next_combStateL2;\ndelay_61.write(combL3Sum);\nh_combStateL3 = next_combStateL3;\ndelay_63.write(combL4Sum);\nh_combStateL4 = next_combStateL4;\ndelay_65.write(combL5Sum);\nh_combStateL5 = next_combStateL5;\ndelay_67.write(combL6Sum);\nh_combStateL6 = next_combStateL6;\ndelay_69.write(combL7Sum);\nh_combStateL7 = next_combStateL7;\ndelay_71.write(combL8Sum);\nh_combStateL8 = next_combStateL8;\nh_combDelayL1 = next_combDelayL1;\nhistory_40 = nextLpfOutL;\nhistory_39 = nextLpfOutR;\nhistory_38 = nextPreInputR;\nhistory_37 = nextPreInputL;\nhistory_36 = history_36_next_355;\nhistory_35 = history_35_next_354;\nhistory_34 = history_34_next_353;\nhistory_41 = history_41_next_374;\nhistory_48 = history_48_next_381;\nhistory_47 = history_47_next_380;\nhistory_46 = history_46_next_379;\nhistory_45 = history_45_next_378;\nhistory_44 = history_44_next_377;\nhistory_43 = history_43_next_376;\nhistory_42 = history_42_next_375;\nhistory_33 = history_33_next_352;\nh_freezeGate = nextFreezeGate;\nh_reflectCoef = nextReflectCoef;\nh_hpfHz = nextHpfHz;\nh_lpfHz = nextLpfHz;\nh_sizeScale = nextSizeScale;\n// Smoothed parameter state updates\nh_inputTrim = next_inputTrim;\nh_hiGainDb = next_hiGainDb;\nh_peakGainDb = next_peakGainDb;\nh_lowGainDb = next_lowGainDb;\nh_hiFreqHz = next_hiFreqHz;\nh_peakFreqHz = next_peakFreqHz;\nh_lowFreqHz = next_lowFreqHz;\nh_stereoWidth = next_stereoWidth;\nh_freezeBlend = next_freezeBlend;\nh_eqEnabled = next_eqEnabled;\nh_dryWetStage2 = next_dryWetStage2;\nh_dryWetStage1 = next_dryWetStage1;\nh_makeupDb = next_makeupDb;\nh_releaseMs = next_releaseMs;\nh_attackMs = next_attackMs;\nh_ratio = next_ratio;\nh_thresholdDb = next_thresholdDb;\nh_compEnable = next_compEnable;\nh_outputTrim = next_outputTrim;\n// Softclip enable state update\nh_softclipEnable = next_softclipEnable;\n// Pre/Post gap env state\nh_prepostGap = next_prepostGap;\n// PRE/POST switch envelope update (legacy blend state)\nprePost_s = fixdenorm(prePostBlend);\n",
-					"fontface" : 0,
-					"fontname" : "<Monospaced>",
-					"fontsize" : 12.0,
-					"id" : "obj-93",
-					"maxclass" : "gen.codebox~",
-					"numinlets" : 2,
-					"numoutlets" : 2,
-					"outlettype" : [ "signal", "signal" ],
-					"patching_rect" : [ 447.0, 161.0, 512.0, 613.0 ]
 				}
 
 			}
@@ -424,7 +930,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 231.0, 28.0, 29.5, 22.0 ],
+					"patching_rect" : [ 251.0, 34.0, 29.5, 22.0 ],
 					"text" : "0"
 				}
 
@@ -435,7 +941,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 305.0, 17.0, 285.0, 20.0 ],
+					"patching_rect" : [ 325.0, 43.0, 285.0, 20.0 ],
 					"text" : "/Users/jcb/JUCEProjects/JCBReverb/exported-code"
 				}
 
@@ -446,7 +952,7 @@
 					"maxclass" : "newobj",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 1020.0, 172.0, 51.0, 22.0 ],
+					"patching_rect" : [ 948.0, 310.0, 51.0, 22.0 ],
 					"text" : "s toGen"
 				}
 
@@ -457,7 +963,7 @@
 					"maxclass" : "newobj",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 1491.0, 441.0, 51.0, 22.0 ],
+					"patching_rect" : [ 1482.0, 513.0, 51.0, 22.0 ],
 					"text" : "s toGen"
 				}
 
@@ -468,7 +974,7 @@
 					"maxclass" : "newobj",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 1309.0, 697.0, 51.0, 22.0 ],
+					"patching_rect" : [ 1224.0, 717.0, 51.0, 22.0 ],
 					"text" : "s toGen"
 				}
 
@@ -484,7 +990,7 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "", "bang" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 1495.0, 501.0, 50.0, 22.0 ]
+					"patching_rect" : [ 1421.0, 568.0, 50.0, 22.0 ]
 				}
 
 			}
@@ -495,7 +1001,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 1495.0, 550.0, 98.0, 22.0 ],
+					"patching_rect" : [ 1421.0, 617.0, 98.0, 22.0 ],
 					"text" : "w_MAKEUP $1"
 				}
 
@@ -517,7 +1023,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 1693.0, 32.0, 29.5, 22.0 ],
+					"patching_rect" : [ 1637.0, 100.0, 29.5, 22.0 ],
 					"text" : "-12"
 				}
 
@@ -527,13 +1033,13 @@
 					"format" : 6,
 					"id" : "obj-16",
 					"maxclass" : "flonum",
-					"maximum" : 1000.0,
-					"minimum" : 0.0,
+					"maximum" : 500.0,
+					"minimum" : 0.1,
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "bang" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 1369.0, 501.0, 50.0, 22.0 ]
+					"patching_rect" : [ 1295.0, 568.0, 50.0, 22.0 ]
 				}
 
 			}
@@ -543,12 +1049,12 @@
 					"id" : "obj-24",
 					"maxclass" : "flonum",
 					"maximum" : 1000.0,
-					"minimum" : 0.0,
+					"minimum" : 5.0,
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "bang" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 1432.0, 501.0, 50.0, 22.0 ]
+					"patching_rect" : [ 1358.0, 568.0, 50.0, 22.0 ]
 				}
 
 			}
@@ -559,7 +1065,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 1432.0, 550.0, 61.0, 22.0 ],
+					"patching_rect" : [ 1358.0, 617.0, 61.0, 22.0 ],
 					"text" : "v_REL $1"
 				}
 
@@ -571,7 +1077,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 1369.0, 550.0, 61.0, 22.0 ],
+					"patching_rect" : [ 1295.0, 617.0, 61.0, 22.0 ],
 					"text" : "u_ATK $1"
 				}
 
@@ -587,7 +1093,7 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "", "bang" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 1299.0, 501.0, 50.0, 22.0 ]
+					"patching_rect" : [ 1225.0, 568.0, 50.0, 22.0 ]
 				}
 
 			}
@@ -598,7 +1104,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 1299.0, 550.0, 71.0, 22.0 ],
+					"patching_rect" : [ 1225.0, 617.0, 71.0, 22.0 ],
 					"text" : "t_RATIO $1"
 				}
 
@@ -608,11 +1114,13 @@
 					"format" : 6,
 					"id" : "obj-70",
 					"maxclass" : "flonum",
+					"maximum" : 0.0,
+					"minimum" : -60.0,
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "bang" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 1234.0, 501.0, 50.0, 22.0 ]
+					"patching_rect" : [ 1160.0, 568.0, 50.0, 22.0 ]
 				}
 
 			}
@@ -623,7 +1131,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 1234.0, 550.0, 63.0, 22.0 ],
+					"patching_rect" : [ 1160.0, 617.0, 63.0, 22.0 ],
 					"text" : "s_THD $1"
 				}
 
@@ -636,7 +1144,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "int" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 1115.0, 500.0, 24.0, 24.0 ]
+					"patching_rect" : [ 1041.0, 567.0, 24.0, 24.0 ]
 				}
 
 			}
@@ -647,7 +1155,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 1115.0, 550.0, 114.0, 22.0 ],
+					"patching_rect" : [ 1041.0, 617.0, 114.0, 22.0 ],
 					"text" : "r_ONOFFCOMP $1"
 				}
 
@@ -660,7 +1168,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "int" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 1417.0, 329.0, 24.0, 24.0 ]
+					"patching_rect" : [ 1389.0, 313.0, 24.0, 24.0 ]
 				}
 
 			}
@@ -671,7 +1179,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 1417.0, 360.0, 98.0, 22.0 ],
+					"patching_rect" : [ 1389.0, 344.0, 98.0, 22.0 ],
 					"text" : "q_ONOFFEQ $1"
 				}
 
@@ -687,7 +1195,7 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "", "bang" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 1323.0, 329.0, 86.0, 22.0 ]
+					"patching_rect" : [ 1291.0, 408.0, 86.0, 22.0 ]
 				}
 
 			}
@@ -702,7 +1210,7 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "", "bang" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 1214.0, 330.0, 50.0, 22.0 ]
+					"patching_rect" : [ 1182.0, 409.0, 50.0, 22.0 ]
 				}
 
 			}
@@ -717,7 +1225,7 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "", "bang" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 1113.0, 330.0, 50.0, 22.0 ]
+					"patching_rect" : [ 1081.0, 409.0, 50.0, 22.0 ]
 				}
 
 			}
@@ -728,7 +1236,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 1323.0, 360.0, 84.0, 22.0 ],
+					"patching_rect" : [ 1291.0, 439.0, 84.0, 22.0 ],
 					"text" : "p_HIFREQ $1"
 				}
 
@@ -740,7 +1248,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 1214.0, 361.0, 104.0, 22.0 ],
+					"patching_rect" : [ 1182.0, 440.0, 104.0, 22.0 ],
 					"text" : "o_PEAKFREQ $1"
 				}
 
@@ -752,7 +1260,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 1113.0, 361.0, 99.0, 22.0 ],
+					"patching_rect" : [ 1081.0, 440.0, 99.0, 22.0 ],
 					"text" : "n_LOWFREQ $1"
 				}
 
@@ -768,7 +1276,7 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "", "bang" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 1428.0, 248.0, 50.0, 22.0 ]
+					"patching_rect" : [ 1555.0, 310.0, 50.0, 22.0 ]
 				}
 
 			}
@@ -783,7 +1291,7 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "", "bang" ],
 					"parameter_enable" : 1,
-					"patching_rect" : [ 1489.0, 248.0, 68.0, 22.0 ],
+					"patching_rect" : [ 1616.0, 310.0, 68.0, 22.0 ],
 					"saved_attribute_attributes" : 					{
 						"valueof" : 						{
 							"parameter_initial" : [ 20000.0 ],
@@ -819,7 +1327,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 1397.0, 25.0, 29.5, 22.0 ],
+					"patching_rect" : [ 1356.0, 59.0, 29.5, 22.0 ],
 					"text" : "1"
 				}
 
@@ -841,7 +1349,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 1362.0, 25.0, 32.0, 22.0 ],
+					"patching_rect" : [ 1322.0, 59.0, 32.0, 22.0 ],
 					"text" : "0.75"
 				}
 
@@ -853,7 +1361,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 1459.0, 25.0, 29.5, 22.0 ],
+					"patching_rect" : [ 1419.0, 59.0, 29.5, 22.0 ],
 					"text" : "2"
 				}
 
@@ -865,8 +1373,8 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 1330.0, 25.0, 29.5, 22.0 ],
-					"text" : "0.5"
+					"patching_rect" : [ 1258.0, 59.0, 29.5, 22.0 ],
+					"text" : "0.1"
 				}
 
 			}
@@ -887,7 +1395,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 1428.0, 25.0, 29.5, 22.0 ],
+					"patching_rect" : [ 1389.0, 59.0, 29.5, 22.0 ],
 					"text" : "1.5"
 				}
 
@@ -903,7 +1411,7 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "", "bang" ],
 					"parameter_enable" : 1,
-					"patching_rect" : [ 1362.0, 61.0, 50.0, 22.0 ],
+					"patching_rect" : [ 1291.0, 190.0, 50.0, 22.0 ],
 					"saved_attribute_attributes" : 					{
 						"valueof" : 						{
 							"parameter_initial" : [ 1.0 ],
@@ -929,7 +1437,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 1362.0, 104.0, 65.0, 22.0 ],
+					"patching_rect" : [ 1291.0, 220.0, 65.0, 22.0 ],
 					"text" : "e_SIZE $1"
 				}
 
@@ -941,7 +1449,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 1133.0, 27.0, 29.5, 22.0 ],
+					"patching_rect" : [ 1099.0, 59.0, 29.5, 22.0 ],
 					"text" : "0.5"
 				}
 
@@ -953,7 +1461,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 352.0, 115.0, 35.0, 22.0 ],
+					"patching_rect" : [ 372.0, 141.0, 35.0, 22.0 ],
 					"text" : "reset"
 				}
 
@@ -969,7 +1477,7 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "", "bang" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 1693.0, 64.0, 50.0, 22.0 ]
+					"patching_rect" : [ 1637.0, 190.0, 50.0, 22.0 ]
 				}
 
 			}
@@ -980,7 +1488,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 1693.0, 100.0, 91.0, 22.0 ],
+					"patching_rect" : [ 1637.0, 220.0, 91.0, 22.0 ],
 					"text" : "m_OUTPUT $1"
 				}
 
@@ -992,7 +1500,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 1489.0, 282.0, 60.0, 22.0 ],
+					"patching_rect" : [ 1616.0, 344.0, 60.0, 22.0 ],
 					"text" : "k_LPF $1"
 				}
 
@@ -1004,7 +1512,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 1428.0, 282.0, 59.0, 22.0 ],
+					"patching_rect" : [ 1555.0, 344.0, 59.0, 22.0 ],
 					"text" : "l_HPF $1"
 				}
 
@@ -1020,7 +1528,7 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "", "bang" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 1307.0, 248.0, 50.0, 22.0 ]
+					"patching_rect" : [ 1291.0, 310.0, 50.0, 22.0 ]
 				}
 
 			}
@@ -1031,7 +1539,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 1307.0, 282.0, 76.0, 22.0 ],
+					"patching_rect" : [ 1291.0, 344.0, 76.0, 22.0 ],
 					"text" : "j_HIGAIN $1"
 				}
 
@@ -1047,7 +1555,7 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "", "bang" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 1210.0, 248.0, 50.0, 22.0 ]
+					"patching_rect" : [ 1186.0, 310.0, 50.0, 22.0 ]
 				}
 
 			}
@@ -1062,7 +1570,7 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "", "bang" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 1115.0, 248.0, 50.0, 22.0 ]
+					"patching_rect" : [ 1084.0, 310.0, 50.0, 22.0 ]
 				}
 
 			}
@@ -1073,7 +1581,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 1210.0, 282.0, 96.0, 22.0 ],
+					"patching_rect" : [ 1186.0, 344.0, 96.0, 22.0 ],
 					"text" : "i_PEAKGAIN $1"
 				}
 
@@ -1085,7 +1593,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 1115.0, 282.0, 95.0, 22.0 ],
+					"patching_rect" : [ 1084.0, 344.0, 95.0, 22.0 ],
 					"text" : "h_LOWGAIN $1"
 				}
 
@@ -1097,48 +1605,8 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 1626.0, 22.0, 29.5, 22.0 ],
-					"text" : "0.8"
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"id" : "obj-66",
-					"maxclass" : "comment",
-					"numinlets" : 1,
-					"numoutlets" : 0,
-					"patching_rect" : [ 509.25, 414.0, 87.0, 20.0 ],
-					"text" : "es mono?",
-					"textcolor" : [ 1.0, 0.0, 0.0, 1.0 ]
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"id" : "obj-65",
-					"maxclass" : "comment",
-					"numinlets" : 1,
-					"numoutlets" : 0,
-					"patching_rect" : [ 602.25, 414.0, 87.0, 20.0 ],
-					"text" : "es multimono?",
-					"textcolor" : [ 1.0, 0.0, 0.0, 1.0 ]
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"fontface" : 0,
-					"fontname" : "Arial",
-					"fontsize" : 12.0,
-					"id" : "obj-46",
-					"maxclass" : "number~",
-					"mode" : 2,
-					"numinlets" : 2,
-					"numoutlets" : 2,
-					"outlettype" : [ "signal", "float" ],
-					"patching_rect" : [ 691.75, 414.0, 56.0, 22.0 ],
-					"sig" : 0.0
+					"patching_rect" : [ 1555.0, 148.0, 32.0, 22.0 ],
+					"text" : "0.75"
 				}
 
 			}
@@ -1149,7 +1617,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 1585.0, 22.0, 39.0, 22.0 ],
+					"patching_rect" : [ 1514.0, 148.0, 39.0, 22.0 ],
 					"text" : "0.707"
 				}
 
@@ -1161,7 +1629,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 198.0, 28.0, 29.5, 22.0 ],
+					"patching_rect" : [ 218.0, 34.0, 29.5, 22.0 ],
 					"text" : "1"
 				}
 
@@ -1173,7 +1641,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 1164.0, 27.0, 29.5, 22.0 ],
+					"patching_rect" : [ 1164.0, 59.0, 29.5, 22.0 ],
 					"text" : "1"
 				}
 
@@ -1185,7 +1653,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 1062.0, 27.0, 29.5, 22.0 ],
+					"patching_rect" : [ 993.0, 59.0, 29.5, 22.0 ],
 					"text" : "0."
 				}
 
@@ -1197,7 +1665,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 1519.0, 22.0, 32.0, 22.0 ],
+					"patching_rect" : [ 1448.0, 148.0, 32.0, 22.0 ],
 					"text" : "0.25"
 				}
 
@@ -1219,7 +1687,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 1553.0, 22.0, 29.5, 22.0 ],
+					"patching_rect" : [ 1482.0, 148.0, 29.5, 22.0 ],
 					"text" : "0.5"
 				}
 
@@ -1231,7 +1699,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 1499.0, 22.0, 20.5, 22.0 ],
+					"patching_rect" : [ 1428.0, 148.0, 20.5, 22.0 ],
 					"text" : "0"
 				}
 
@@ -1245,29 +1713,7 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "", "bang" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 198.0, 59.0, 50.0, 22.0 ]
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"bgcolor" : [ 1.0, 0.0, 0.0, 1.0 ],
-					"bgcolor2" : [ 0.2, 0.2, 0.2, 1.0 ],
-					"bgfillcolor_angle" : 270.0,
-					"bgfillcolor_autogradient" : 0.0,
-					"bgfillcolor_color" : [ 1.0, 0.0, 0.0, 1.0 ],
-					"bgfillcolor_color1" : [ 1.0, 0.0, 0.0, 1.0 ],
-					"bgfillcolor_color2" : [ 0.2, 0.2, 0.2, 1.0 ],
-					"bgfillcolor_proportion" : 0.5,
-					"bgfillcolor_type" : "gradient",
-					"gradient" : 1,
-					"id" : "obj-38",
-					"maxclass" : "message",
-					"numinlets" : 2,
-					"numoutlets" : 1,
-					"outlettype" : [ "" ],
-					"patching_rect" : [ 1288.5, 27.0, 32.0, 22.0 ],
-					"text" : "0.8"
+					"patching_rect" : [ 218.0, 65.0, 50.0, 22.0 ]
 				}
 
 			}
@@ -1288,7 +1734,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 1194.0, 27.0, 32.0, 22.0 ],
+					"patching_rect" : [ 1123.0, 157.0, 32.0, 22.0 ],
 					"text" : "0.86"
 				}
 
@@ -1310,7 +1756,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 986.0, 27.0, 29.5, 22.0 ],
+					"patching_rect" : [ 879.0, 59.0, 29.5, 22.0 ],
 					"text" : "-12"
 				}
 
@@ -1332,7 +1778,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 1099.0, 27.0, 32.0, 22.0 ],
+					"patching_rect" : [ 1066.0, 59.0, 32.0, 22.0 ],
 					"text" : "0.33"
 				}
 
@@ -1344,7 +1790,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 325.0, 78.0, 68.0, 22.0 ],
+					"patching_rect" : [ 345.0, 104.0, 68.0, 22.0 ],
 					"text" : "exportcode"
 				}
 
@@ -1357,7 +1803,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "int" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 62.0, 59.0, 24.0, 24.0 ]
+					"patching_rect" : [ 83.0, 34.0, 24.0, 24.0 ]
 				}
 
 			}
@@ -1369,7 +1815,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "int" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 1591.0, 66.0, 24.0, 24.0 ]
+					"patching_rect" : [ 1520.0, 190.0, 24.0, 24.0 ]
 				}
 
 			}
@@ -1384,7 +1830,7 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "", "bang" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 1499.0, 61.0, 50.0, 22.0 ]
+					"patching_rect" : [ 1428.0, 190.0, 50.0, 22.0 ]
 				}
 
 			}
@@ -1393,13 +1839,13 @@
 					"format" : 6,
 					"id" : "obj-23",
 					"maxclass" : "flonum",
-					"maximum" : 1.0,
+					"maximum" : 0.9,
 					"minimum" : 0.0,
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "bang" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 1288.5, 61.0, 50.0, 22.0 ]
+					"patching_rect" : [ 1218.0, 190.0, 50.0, 22.0 ]
 				}
 
 			}
@@ -1414,7 +1860,7 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "", "bang" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 1194.0, 62.0, 50.0, 22.0 ]
+					"patching_rect" : [ 1123.0, 190.0, 58.0, 22.0 ]
 				}
 
 			}
@@ -1429,7 +1875,7 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "", "bang" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 1099.0, 62.0, 50.0, 22.0 ]
+					"patching_rect" : [ 1028.0, 190.0, 50.0, 22.0 ]
 				}
 
 			}
@@ -1444,7 +1890,7 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "", "bang" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 1020.0, 61.0, 50.0, 22.0 ]
+					"patching_rect" : [ 949.0, 190.0, 50.0, 22.0 ]
 				}
 
 			}
@@ -1455,7 +1901,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 1591.0, 100.0, 86.0, 22.0 ],
+					"patching_rect" : [ 1520.0, 220.0, 86.0, 22.0 ],
 					"text" : "g_FREEZE $1"
 				}
 
@@ -1467,7 +1913,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 1499.0, 104.0, 60.0, 22.0 ],
+					"patching_rect" : [ 1428.0, 220.0, 60.0, 22.0 ],
 					"text" : "f_ST $1"
 				}
 
@@ -1479,7 +1925,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 1288.5, 104.0, 73.0, 22.0 ],
+					"patching_rect" : [ 1218.0, 220.0, 73.0, 22.0 ],
 					"text" : "d_DAMP $1"
 				}
 
@@ -1491,7 +1937,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 1194.0, 104.0, 92.0, 22.0 ],
+					"patching_rect" : [ 1123.0, 220.0, 92.0, 22.0 ],
 					"text" : "c_REFLECT $1"
 				}
 
@@ -1503,7 +1949,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 1099.0, 104.0, 90.0, 22.0 ],
+					"patching_rect" : [ 1028.0, 220.0, 90.0, 22.0 ],
 					"text" : "b_DRYWET $1"
 				}
 
@@ -1515,7 +1961,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 1020.0, 104.0, 74.0, 22.0 ],
+					"patching_rect" : [ 949.0, 220.0, 74.0, 22.0 ],
 					"text" : "a_INPUT $1"
 				}
 
@@ -1526,7 +1972,7 @@
 					"maxclass" : "ezdac~",
 					"numinlets" : 2,
 					"numoutlets" : 0,
-					"patching_rect" : [ 172.0, 528.0, 45.0, 45.0 ]
+					"patching_rect" : [ 112.0, 543.0, 77.0, 77.0 ]
 				}
 
 			}
@@ -1537,7 +1983,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 92.0, 59.0, 88.0, 22.0 ],
+					"patching_rect" : [ 112.0, 65.0, 88.0, 22.0 ],
 					"text" : "open, loop 1, 1"
 				}
 
@@ -1549,7 +1995,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 3,
 					"outlettype" : [ "signal", "signal", "bang" ],
-					"patching_rect" : [ 92.0, 98.0, 125.0, 22.0 ],
+					"patching_rect" : [ 112.0, 124.0, 125.0, 22.0 ],
 					"text" : "sfplay~ 2"
 				}
 
@@ -1558,7 +2004,6 @@
 				"box" : 				{
 					"fontsize" : 29.0,
 					"id" : "obj-14",
-					"linecount" : 2,
 					"maxclass" : "newobj",
 					"numinlets" : 2,
 					"numoutlets" : 2,
@@ -1574,7 +2019,7 @@
 						}
 ,
 						"classnamespace" : "dsp.gen",
-						"rect" : [ 34.0, 87.0, 1209.0, 907.0 ],
+						"rect" : [ 34.0, 87.0, 1209.0, 906.0 ],
 						"gridsize" : [ 15.0, 15.0 ],
 						"boxes" : [ 							{
 								"box" : 								{
@@ -28020,62 +28465,8 @@
  ]
 					}
 ,
-					"patching_rect" : [ 98.0, 697.0, 250.0, 73.0 ],
-					"saved_object_attributes" : 					{
-						"autoexport" : 0,
-						"exportfolder" : "Sequoia:/Users/jcb/JUCEProjects/JCBReverb/exported-code/",
-						"exportname" : "JCBReverb"
-					}
-,
-					"text" : "gen~ @title JCBReverb"
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"angle" : 270.0,
-					"bgcolor" : [ 1.0, 1.0, 1.0, 0.23 ],
-					"border" : 1,
-					"bordercolor" : [ 0.0, 0.0, 0.0, 1.0 ],
-					"id" : "obj-78",
-					"maxclass" : "panel",
-					"mode" : 0,
-					"numinlets" : 1,
-					"numoutlets" : 0,
-					"patching_rect" : [ 1110.0, 217.0, 470.0, 256.0 ],
-					"proportion" : 0.5
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"angle" : 270.0,
-					"bgcolor" : [ 1.0, 1.0, 1.0, 0.23 ],
-					"border" : 1,
-					"bordercolor" : [ 0.0, 0.0, 0.0, 1.0 ],
-					"id" : "obj-112",
-					"maxclass" : "panel",
-					"mode" : 0,
-					"numinlets" : 1,
-					"numoutlets" : 0,
-					"patching_rect" : [ 975.0, 480.0, 797.0, 252.0 ],
-					"proportion" : 0.5
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"angle" : 270.0,
-					"bgcolor" : [ 1.0, 1.0, 1.0, 0.23 ],
-					"border" : 1,
-					"bordercolor" : [ 0.0, 0.0, 0.0, 1.0 ],
-					"id" : "obj-114",
-					"maxclass" : "panel",
-					"mode" : 0,
-					"numinlets" : 1,
-					"numoutlets" : 0,
-					"patching_rect" : [ 1001.0, 17.0, 785.0, 191.0 ],
-					"proportion" : 0.5
+					"patching_rect" : [ 110.0, 805.0, 462.0, 41.0 ],
+					"text" : "gen~ @title JCBReverbEspaguetti"
 				}
 
 			}
@@ -28088,7 +28479,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 305.0, 39.0, 641.0, 22.0 ],
+					"patching_rect" : [ 325.0, 65.0, 500.0, 22.0 ],
 					"text_width" : 148.0
 				}
 
@@ -28102,7 +28493,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 421.0, 73.0, 150.0, 22.0 ]
+					"patching_rect" : [ 441.0, 99.0, 150.0, 22.0 ]
 				}
 
 			}
@@ -28110,7 +28501,7 @@
 		"lines" : [ 			{
 				"patchline" : 				{
 					"destination" : [ "obj-129", 1 ],
-					"midpoints" : [ 154.5, 253.75, 332.5, 253.75 ],
+					"midpoints" : [ 174.5, 279.75, 352.5, 279.75 ],
 					"source" : [ "obj-1", 1 ]
 				}
 
@@ -28118,7 +28509,7 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-129", 0 ],
-					"midpoints" : [ 101.5, 253.75, 101.5, 253.75 ],
+					"midpoints" : [ 121.5, 279.75, 121.5, 279.75 ],
 					"source" : [ "obj-1", 0 ]
 				}
 
@@ -28126,8 +28517,23 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-111", 0 ],
-					"midpoints" : [ 1219.5, 319.5, 1500.5, 319.5 ],
+					"midpoints" : [ 1195.5, 381.5, 1491.5, 381.5 ],
 					"source" : [ "obj-10", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-87", 0 ],
+					"midpoints" : [ 1601.5, 822.0, 1601.5, 822.0 ],
+					"source" : [ "obj-100", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-100", 0 ],
+					"source" : [ "obj-102", 0 ]
 				}
 
 			}
@@ -28140,8 +28546,23 @@
 			}
 , 			{
 				"patchline" : 				{
+					"destination" : [ "obj-87", 0 ],
+					"midpoints" : [ 1714.5, 822.0, 1601.5, 822.0 ],
+					"source" : [ "obj-104", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-104", 0 ],
+					"source" : [ "obj-105", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
 					"destination" : [ "obj-109", 0 ],
-					"midpoints" : [ 1504.5, 604.5, 1318.5, 604.5 ],
+					"midpoints" : [ 1430.5, 691.5, 1233.5, 691.5 ],
 					"source" : [ "obj-106", 0 ]
 				}
 
@@ -28149,7 +28570,7 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-109", 0 ],
-					"midpoints" : [ 1612.0, 684.0, 1318.5, 684.0 ],
+					"midpoints" : [ 1538.5, 691.5, 1233.5, 691.5 ],
 					"source" : [ "obj-107", 0 ]
 				}
 
@@ -28164,15 +28585,37 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-113", 0 ],
-					"midpoints" : [ 1029.5, 151.5, 1029.5, 151.5 ],
+					"midpoints" : [ 958.5, 326.0, 957.5, 326.0 ],
 					"source" : [ "obj-11", 0 ]
 				}
 
 			}
 , 			{
 				"patchline" : 				{
+					"destination" : [ "obj-112", 0 ],
+					"midpoints" : [ 809.5, 820.14453125, 935.5, 820.14453125 ],
+					"source" : [ "obj-110", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-110", 0 ],
+					"source" : [ "obj-115", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-112", 0 ],
+					"source" : [ "obj-116", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
 					"destination" : [ "obj-107", 0 ],
-					"midpoints" : [ 1612.0, 540.0, 1612.0, 540.0 ],
+					"midpoints" : [ 1538.5, 607.0, 1538.5, 607.0 ],
 					"source" : [ "obj-117", 0 ]
 				}
 
@@ -28180,7 +28623,7 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-107", 0 ],
-					"midpoints" : [ 1650.0, 540.0, 1612.0, 540.0 ],
+					"midpoints" : [ 1576.5, 607.0, 1538.5, 607.0 ],
 					"source" : [ "obj-118", 0 ]
 				}
 
@@ -28188,7 +28631,7 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-107", 0 ],
-					"midpoints" : [ 1686.0, 540.0, 1612.0, 540.0 ],
+					"midpoints" : [ 1612.5, 607.0, 1538.5, 607.0 ],
 					"source" : [ "obj-119", 0 ]
 				}
 
@@ -28196,7 +28639,7 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-113", 0 ],
-					"midpoints" : [ 1108.5, 151.5, 1029.5, 151.5 ],
+					"midpoints" : [ 1037.5, 275.0, 957.5, 275.0 ],
 					"source" : [ "obj-12", 0 ]
 				}
 
@@ -28211,6 +28654,7 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-56", 0 ],
+					"midpoints" : [ 1676.5, 158.0, 1646.5, 158.0 ],
 					"source" : [ "obj-123", 0 ]
 				}
 
@@ -28218,15 +28662,8 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-20", 0 ],
+					"midpoints" : [ 958.5, 155.5, 958.5, 155.5 ],
 					"source" : [ "obj-124", 0 ]
-				}
-
-			}
-, 			{
-				"patchline" : 				{
-					"destination" : [ "obj-109", 0 ],
-					"midpoints" : [ 1665.0, 684.0, 1318.5, 684.0 ],
-					"source" : [ "obj-125", 0 ]
 				}
 
 			}
@@ -28239,16 +28676,22 @@
 			}
 , 			{
 				"patchline" : 				{
-					"destination" : [ "obj-93", 0 ],
-					"midpoints" : [ 637.75, 128.0, 456.5, 128.0 ],
-					"source" : [ "obj-128", 0 ]
+					"destination" : [ "obj-132", 0 ],
+					"source" : [ "obj-129", 3 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-133", 0 ],
+					"source" : [ "obj-129", 4 ]
 				}
 
 			}
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-6", 1 ],
-					"midpoints" : [ 332.5, 494.25, 207.5, 494.25 ],
+					"midpoints" : [ 179.25, 520.25, 179.5, 520.25 ],
 					"source" : [ "obj-129", 1 ]
 				}
 
@@ -28256,7 +28699,7 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-6", 0 ],
-					"midpoints" : [ 101.5, 494.25, 181.5, 494.25 ],
+					"midpoints" : [ 121.5, 520.25, 121.5, 520.25 ],
 					"source" : [ "obj-129", 0 ]
 				}
 
@@ -28264,15 +28707,14 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-113", 0 ],
-					"midpoints" : [ 1203.5, 151.5, 1029.5, 151.5 ],
+					"midpoints" : [ 1132.5, 275.0, 957.5, 275.0 ],
 					"source" : [ "obj-13", 0 ]
 				}
 
 			}
 , 			{
 				"patchline" : 				{
-					"destination" : [ "obj-129", 0 ],
-					"midpoints" : [ 222.0, 314.75, 101.5, 314.75 ],
+					"destination" : [ "obj-116", 0 ],
 					"source" : [ "obj-130", 0 ]
 				}
 
@@ -28280,15 +28722,53 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-129", 0 ],
-					"midpoints" : [ 208.0, 302.25, 101.5, 302.25 ],
+					"midpoints" : [ 255.5, 328.25, 121.5, 328.25 ],
 					"source" : [ "obj-131", 0 ]
 				}
 
 			}
 , 			{
 				"patchline" : 				{
+					"destination" : [ "obj-112", 0 ],
+					"midpoints" : [ 1066.5, 819.5, 935.5, 819.5 ],
+					"source" : [ "obj-134", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-129", 0 ],
+					"midpoints" : [ 666.5, 402.640625, 121.5, 402.640625 ],
+					"source" : [ "obj-135", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-135", 0 ],
+					"source" : [ "obj-137", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-134", 0 ],
+					"source" : [ "obj-138", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-56", 0 ],
+					"midpoints" : [ 1710.5, 158.97265625, 1646.5, 158.97265625 ],
+					"source" : [ "obj-139", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
 					"destination" : [ "obj-113", 0 ],
-					"midpoints" : [ 1298.0, 151.5, 1029.5, 151.5 ],
+					"midpoints" : [ 1227.5, 275.0, 957.5, 275.0 ],
 					"source" : [ "obj-15", 0 ]
 				}
 
@@ -28303,7 +28783,7 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-113", 0 ],
-					"midpoints" : [ 1508.5, 151.5, 1029.5, 151.5 ],
+					"midpoints" : [ 1437.5, 275.0, 957.5, 275.0 ],
 					"source" : [ "obj-17", 0 ]
 				}
 
@@ -28311,7 +28791,7 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-113", 0 ],
-					"midpoints" : [ 1600.5, 151.5, 1029.5, 151.5 ],
+					"midpoints" : [ 1529.5, 275.0, 957.5, 275.0 ],
 					"source" : [ "obj-18", 0 ]
 				}
 
@@ -28319,7 +28799,7 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-129", 0 ],
-					"midpoints" : [ 334.5, 280.5, 101.5, 280.5 ],
+					"midpoints" : [ 354.5, 306.5, 121.5, 306.5 ],
 					"source" : [ "obj-19", 0 ]
 				}
 
@@ -28327,7 +28807,7 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-111", 0 ],
-					"midpoints" : [ 1437.5, 319.5, 1500.5, 319.5 ],
+					"midpoints" : [ 1564.5, 381.5, 1491.5, 381.5 ],
 					"source" : [ "obj-2", 0 ]
 				}
 
@@ -28376,6 +28856,20 @@
 			}
 , 			{
 				"patchline" : 				{
+					"destination" : [ "obj-21", 0 ],
+					"source" : [ "obj-26", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-67", 0 ],
+					"source" : [ "obj-27", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
 					"destination" : [ "obj-18", 0 ],
 					"source" : [ "obj-28", 0 ]
 				}
@@ -28384,7 +28878,7 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-111", 0 ],
-					"midpoints" : [ 1498.5, 317.5, 1500.5, 317.5 ],
+					"midpoints" : [ 1625.5, 381.78125, 1491.5, 381.78125 ],
 					"source" : [ "obj-29", 0 ]
 				}
 
@@ -28392,7 +28886,7 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-1", 0 ],
-					"midpoints" : [ 101.5, 89.0, 101.5, 89.0 ],
+					"midpoints" : [ 121.5, 115.0, 121.5, 115.0 ],
 					"source" : [ "obj-3", 0 ]
 				}
 
@@ -28400,7 +28894,7 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-25", 0 ],
-					"midpoints" : [ 1635.5, 52.0, 1508.5, 52.0 ],
+					"midpoints" : [ 1564.5, 177.5, 1437.5, 177.5 ],
 					"source" : [ "obj-30", 0 ]
 				}
 
@@ -28422,7 +28916,7 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-111", 0 ],
-					"midpoints" : [ 1316.5, 319.5, 1500.5, 319.5 ],
+					"midpoints" : [ 1300.5, 381.5, 1491.5, 381.5 ],
 					"source" : [ "obj-33", 0 ]
 				}
 
@@ -28437,6 +28931,7 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-21", 0 ],
+					"midpoints" : [ 1075.5, 135.5, 1037.5, 135.5 ],
 					"source" : [ "obj-35", 0 ]
 				}
 
@@ -28444,6 +28939,7 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-20", 0 ],
+					"midpoints" : [ 888.5, 155.5, 958.5, 155.5 ],
 					"source" : [ "obj-36", 0 ]
 				}
 
@@ -28451,21 +28947,31 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-22", 0 ],
+					"midpoints" : [ 1132.5, 184.5, 1132.5, 184.5 ],
 					"source" : [ "obj-37", 0 ]
 				}
 
 			}
 , 			{
 				"patchline" : 				{
-					"destination" : [ "obj-23", 0 ],
+					"destination" : [ "obj-87", 0 ],
+					"midpoints" : [ 1391.5, 822.0, 1601.5, 822.0 ],
 					"source" : [ "obj-38", 0 ]
 				}
 
 			}
 , 			{
 				"patchline" : 				{
+					"destination" : [ "obj-20", 0 ],
+					"midpoints" : [ 923.5, 155.5, 958.5, 155.5 ],
+					"source" : [ "obj-4", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
 					"destination" : [ "obj-109", 0 ],
-					"midpoints" : [ 1441.5, 604.5, 1318.5, 604.5 ],
+					"midpoints" : [ 1367.5, 691.5, 1233.5, 691.5 ],
 					"source" : [ "obj-40", 0 ]
 				}
 
@@ -28473,7 +28979,7 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-109", 0 ],
-					"midpoints" : [ 1378.5, 604.5, 1318.5, 604.5 ],
+					"midpoints" : [ 1304.5, 691.5, 1233.5, 691.5 ],
 					"source" : [ "obj-41", 0 ]
 				}
 
@@ -28481,7 +28987,7 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-111", 0 ],
-					"midpoints" : [ 1122.5, 425.75, 1500.5, 425.75 ],
+					"midpoints" : [ 1090.5, 487.75, 1491.5, 487.75 ],
 					"source" : [ "obj-42", 0 ]
 				}
 
@@ -28489,7 +28995,7 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-111", 0 ],
-					"midpoints" : [ 1223.5, 425.75, 1500.5, 425.75 ],
+					"midpoints" : [ 1191.5, 487.75, 1491.5, 487.75 ],
 					"source" : [ "obj-43", 0 ]
 				}
 
@@ -28504,15 +29010,22 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-1", 0 ],
-					"midpoints" : [ 71.5, 90.0, 101.5, 90.0 ],
+					"midpoints" : [ 92.5, 116.0, 121.5, 116.0 ],
 					"source" : [ "obj-45", 0 ]
 				}
 
 			}
 , 			{
 				"patchline" : 				{
+					"destination" : [ "obj-38", 0 ],
+					"source" : [ "obj-46", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
 					"destination" : [ "obj-25", 0 ],
-					"midpoints" : [ 1508.5, 52.0, 1508.5, 52.0 ],
+					"midpoints" : [ 1437.5, 177.5, 1437.5, 177.5 ],
 					"source" : [ "obj-47", 0 ]
 				}
 
@@ -28520,7 +29033,7 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-25", 0 ],
-					"midpoints" : [ 1562.5, 52.0, 1508.5, 52.0 ],
+					"midpoints" : [ 1491.5, 177.5, 1437.5, 177.5 ],
 					"source" : [ "obj-48", 0 ]
 				}
 
@@ -28528,7 +29041,7 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-25", 0 ],
-					"midpoints" : [ 1528.5, 52.0, 1508.5, 52.0 ],
+					"midpoints" : [ 1457.5, 177.5, 1437.5, 177.5 ],
 					"source" : [ "obj-49", 0 ]
 				}
 
@@ -28536,7 +29049,7 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-21", 0 ],
-					"midpoints" : [ 1071.5, 55.0, 1108.5, 55.0 ],
+					"midpoints" : [ 1002.5, 135.5, 1037.5, 135.5 ],
 					"source" : [ "obj-50", 0 ]
 				}
 
@@ -28544,7 +29057,7 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-21", 0 ],
-					"midpoints" : [ 1173.5, 55.0, 1108.5, 55.0 ],
+					"midpoints" : [ 1173.5, 135.5, 1037.5, 135.5 ],
 					"source" : [ "obj-51", 0 ]
 				}
 
@@ -28552,7 +29065,7 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-113", 0 ],
-					"midpoints" : [ 1702.5, 152.5, 1029.5, 152.5 ],
+					"midpoints" : [ 1646.5, 275.0, 957.5, 275.0 ],
 					"source" : [ "obj-52", 0 ]
 				}
 
@@ -28560,7 +29073,7 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-111", 0 ],
-					"midpoints" : [ 1332.5, 425.75, 1500.5, 425.75 ],
+					"midpoints" : [ 1300.5, 487.75, 1491.5, 487.75 ],
 					"source" : [ "obj-53", 0 ]
 				}
 
@@ -28575,7 +29088,7 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-25", 0 ],
-					"midpoints" : [ 1594.5, 52.0, 1508.5, 52.0 ],
+					"midpoints" : [ 1523.5, 177.5, 1437.5, 177.5 ],
 					"source" : [ "obj-55", 0 ]
 				}
 
@@ -28597,7 +29110,7 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-129", 0 ],
-					"midpoints" : [ 361.5, 280.5, 101.5, 280.5 ],
+					"midpoints" : [ 381.5, 306.5, 121.5, 306.5 ],
 					"source" : [ "obj-58", 0 ]
 				}
 
@@ -28605,15 +29118,23 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-21", 0 ],
-					"midpoints" : [ 1142.5, 55.0, 1108.5, 55.0 ],
+					"midpoints" : [ 1108.5, 135.5, 1037.5, 135.5 ],
 					"source" : [ "obj-59", 0 ]
 				}
 
 			}
 , 			{
 				"patchline" : 				{
+					"destination" : [ "obj-87", 0 ],
+					"midpoints" : [ 1496.5, 822.0, 1601.5, 822.0 ],
+					"source" : [ "obj-60", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
 					"destination" : [ "obj-113", 0 ],
-					"midpoints" : [ 1371.5, 151.5, 1029.5, 151.5 ],
+					"midpoints" : [ 1300.5, 275.0, 957.5, 275.0 ],
 					"source" : [ "obj-61", 0 ]
 				}
 
@@ -28621,7 +29142,7 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-109", 0 ],
-					"midpoints" : [ 1308.5, 604.5, 1318.5, 604.5 ],
+					"midpoints" : [ 1234.5, 691.5, 1233.5, 691.5 ],
 					"source" : [ "obj-62", 0 ]
 				}
 
@@ -28664,7 +29185,7 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-129", 0 ],
-					"midpoints" : [ 314.5, 375.0, 101.5, 375.0 ],
+					"midpoints" : [ 334.5, 401.0, 121.5, 401.0 ],
 					"source" : [ "obj-71", 0 ]
 				}
 
@@ -28672,7 +29193,7 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-67", 0 ],
-					"midpoints" : [ 1339.5, 53.5, 1371.5, 53.5 ],
+					"midpoints" : [ 1267.5, 135.5, 1300.5, 135.5 ],
 					"source" : [ "obj-72", 0 ]
 				}
 
@@ -28680,23 +29201,15 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-67", 0 ],
-					"midpoints" : [ 1437.5, 53.5, 1371.5, 53.5 ],
+					"midpoints" : [ 1398.5, 135.5, 1300.5, 135.5 ],
 					"source" : [ "obj-73", 0 ]
 				}
 
 			}
 , 			{
 				"patchline" : 				{
-					"destination" : [ "obj-93", 0 ],
-					"midpoints" : [ 586.0, 128.0, 456.5, 128.0 ],
-					"source" : [ "obj-74", 0 ]
-				}
-
-			}
-, 			{
-				"patchline" : 				{
 					"destination" : [ "obj-67", 0 ],
-					"midpoints" : [ 1468.5, 53.5, 1371.5, 53.5 ],
+					"midpoints" : [ 1428.5, 135.5, 1300.5, 135.5 ],
 					"source" : [ "obj-75", 0 ]
 				}
 
@@ -28704,7 +29217,7 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-67", 0 ],
-					"midpoints" : [ 1371.5, 53.5, 1371.5, 53.5 ],
+					"midpoints" : [ 1331.5, 135.5, 1300.5, 135.5 ],
 					"source" : [ "obj-76", 0 ]
 				}
 
@@ -28712,14 +29225,30 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-109", 0 ],
-					"midpoints" : [ 1243.5, 604.5, 1318.5, 604.5 ],
+					"midpoints" : [ 1169.5, 691.5, 1233.5, 691.5 ],
 					"source" : [ "obj-77", 0 ]
 				}
 
 			}
 , 			{
 				"patchline" : 				{
+					"destination" : [ "obj-60", 0 ],
+					"source" : [ "obj-78", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-21", 0 ],
+					"midpoints" : [ 1139.5, 135.5, 1037.5, 135.5 ],
+					"source" : [ "obj-8", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
 					"destination" : [ "obj-67", 0 ],
+					"midpoints" : [ 1365.5, 135.5, 1300.5, 135.5 ],
 					"source" : [ "obj-80", 0 ]
 				}
 
@@ -28741,7 +29270,7 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-111", 0 ],
-					"midpoints" : [ 1426.5, 425.75, 1500.5, 425.75 ],
+					"midpoints" : [ 1398.5, 487.75, 1491.5, 487.75 ],
 					"source" : [ "obj-83", 0 ]
 				}
 
@@ -28763,7 +29292,7 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-109", 0 ],
-					"midpoints" : [ 1124.5, 604.5, 1318.5, 604.5 ],
+					"midpoints" : [ 1050.5, 691.5, 1233.5, 691.5 ],
 					"source" : [ "obj-86", 0 ]
 				}
 
@@ -28771,6 +29300,7 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-56", 0 ],
+					"midpoints" : [ 1646.5, 158.0, 1646.5, 158.0 ],
 					"source" : [ "obj-88", 0 ]
 				}
 
@@ -28785,7 +29315,7 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-111", 0 ],
-					"midpoints" : [ 1124.5, 318.5, 1500.5, 318.5 ],
+					"midpoints" : [ 1093.5, 380.5, 1491.5, 380.5 ],
 					"source" : [ "obj-9", 0 ]
 				}
 
@@ -28793,7 +29323,7 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-67", 0 ],
-					"midpoints" : [ 1468.5, 84.0, 1422.0, 84.0, 1422.0, 57.0, 1371.5, 57.0 ],
+					"midpoints" : [ 1460.5, 135.5, 1300.5, 135.5 ],
 					"source" : [ "obj-90", 0 ]
 				}
 
@@ -28801,33 +29331,29 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-67", 0 ],
-					"midpoints" : [ 1468.5, 120.0, 1437.0, 120.0, 1437.0, 57.0, 1371.5, 57.0 ],
+					"midpoints" : [ 1490.5, 135.5, 1300.5, 135.5 ],
 					"source" : [ "obj-91", 0 ]
 				}
 
 			}
 , 			{
 				"patchline" : 				{
-					"destination" : [ "obj-25", 0 ],
-					"midpoints" : [ 1667.0, 57.0, 1508.5, 57.0 ],
-					"source" : [ "obj-92", 0 ]
+					"destination" : [ "obj-92", 0 ],
+					"source" : [ "obj-93", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-96", 0 ],
+					"source" : [ "obj-93", 1 ]
 				}
 
 			}
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-129", 0 ],
-					"midpoints" : [ 430.5, 345.109375, 101.5, 345.109375 ],
-					"order" : 1,
-					"source" : [ "obj-94", 0 ]
-				}
-
-			}
-, 			{
-				"patchline" : 				{
-					"destination" : [ "obj-93", 0 ],
-					"midpoints" : [ 430.5, 128.0, 456.5, 128.0 ],
-					"order" : 0,
+					"midpoints" : [ 450.5, 371.109375, 121.5, 371.109375 ],
 					"source" : [ "obj-94", 0 ]
 				}
 
@@ -28835,21 +29361,43 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-56", 0 ],
+					"midpoints" : [ 1743.5, 158.0, 1646.5, 158.0 ],
 					"source" : [ "obj-95", 0 ]
 				}
 
 			}
 , 			{
 				"patchline" : 				{
+					"destination" : [ "obj-1", 0 ],
+					"midpoints" : [ 40.5, 116.0, 121.5, 116.0 ],
+					"source" : [ "obj-97", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
 					"destination" : [ "obj-109", 0 ],
-					"midpoints" : [ 1019.0, 684.0, 1318.5, 684.0 ],
+					"midpoints" : [ 945.5, 692.87890625, 1233.5, 692.87890625 ],
 					"source" : [ "obj-98", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-1", 0 ],
+					"midpoints" : [ 25.5, 77.0, 26.0, 77.0, 26.0, 119.0, 121.5, 119.0 ],
+					"source" : [ "obj-99", 0 ]
 				}
 
 			}
  ],
 		"parameters" : 		{
+			"obj-102" : [ "number[4]", "number[4]", 0 ],
+			"obj-105" : [ "number[3]", "number[3]", 0 ],
+			"obj-130" : [ "number[5]", "number[5]", 0 ],
+			"obj-138" : [ "number[6]", "number[6]", 0 ],
 			"obj-67" : [ "number", "number", 0 ],
+			"obj-78" : [ "number[2]", "number[2]", 0 ],
 			"obj-81" : [ "number[1]", "number[1]", 0 ],
 			"parameterbanks" : 			{
 

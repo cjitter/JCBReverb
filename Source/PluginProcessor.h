@@ -21,6 +21,7 @@
 #include <array>
 #include <atomic>
 #include <functional>
+#include <cmath>
 
 // Archivos del proyecto
 #include "JCBReverb.h"
@@ -33,7 +34,8 @@ using namespace juce;
 //==============================================================================
 class JCBReverbAudioProcessor : public juce::AudioProcessor,
                                     public juce::AudioProcessorValueTreeState::Listener,
-                                    private juce::Timer
+                                    private juce::Timer,
+                                    private juce::AsyncUpdater
 {
 public:
     //==============================================================================
@@ -190,6 +192,40 @@ private:
     void fillGenInputBuffers(const juce::AudioBuffer<float>& buffer);
     void processGenAudio(int numSamples);
     void fillOutputBuffers(juce::AudioBuffer<float>& buffer);
+
+    // Safety: sanitize audio to avoid NaN/Inf blasts (hard limiter + finite check)
+    // COMMENTED OUT - Gen~ issue fixed, no longer needed
+    /*
+    inline void sanitizeStereo(float* left, float* right, int numSamples) noexcept
+    {
+        // Replace non‑finite with 0; clamp to safe headroom just below 0 dBFS
+        constexpr float absKillThreshold = 8.0f;  // anything above is likely runaway -> kill to 0.0f
+        constexpr float hardLimit = 0.99f;        // final hard ceiling to prevent host blast
+        for (int i = 0; i < numSamples; ++i)
+        {
+            float l = left[i];
+            float r = right ? right[i] : l;
+
+            // Non‑finite -> mute sample
+            if (!std::isfinite(l)) l = 0.0f;
+            if (!std::isfinite(r)) r = 0.0f;
+
+            // Kill outrageous spikes (likely unstable state)
+            if (std::abs(l) > absKillThreshold) l = 0.0f;
+            if (std::abs(r) > absKillThreshold) r = 0.0f;
+
+            // Final hard ceiling
+            if (l > hardLimit) l = hardLimit;
+            else if (l < -hardLimit) l = -hardLimit;
+
+            if (r > hardLimit) r = hardLimit;
+            else if (r < -hardLimit) r = -hardLimit;
+
+            left[i] = l;
+            if (right) right[i] = r;
+        }
+    }
+    */
     
     // Actualizaciones de medidores
     void updateInputMeters(const juce::AudioBuffer<float>& buffer);
@@ -197,7 +233,7 @@ private:
     // DISTORTION: updateGainReductionMeter eliminada - no hay gain reduction
     // MAXIMIZER: updateSidechainMeters eliminada - no hay sidechain
     void captureInputWaveformData(const juce::AudioBuffer<float>& inputBuffer, int numSamples);
-    void captureOutputWaveformData(int numSamples);
+    void captureOutputWaveformData(const juce::AudioBuffer<float>& outputBuffer, int numSamples);
     
     // Detección de clipping
     void updateClipDetection(const juce::AudioBuffer<float>& inputBuffer, const juce::AudioBuffer<float>& outputBuffer);
@@ -321,6 +357,18 @@ private:
     // --- Control y sincronización ---
     std::atomic<bool> hostBypassMirror { false };     // Espejo atómico del estado de bypass del host
     bool lastWantsBypass { false };                   // Estado anterior para detección de flancos
+    int consecutiveWetSilent { 0 };                   // Contador de bloques con WET ~0 y entrada con señal
+    bool lastHostIsPlaying { false };                 // Estado previo del transporte
+    int playStartWarmupBlocks { 0 };                  // Ventana breve tras start
+
+    // Diagnóstico: contadores de failsafe y resets
+    std::atomic<int> diagFailsafeCount { 0 };
+    std::atomic<int> diagGenResets { 0 };
+
+public:
+    int getDiagFailsafeCount() const noexcept { return diagFailsafeCount.load(std::memory_order_relaxed); }
+    int getDiagGenResets() const noexcept { return diagGenResets.load(std::memory_order_relaxed); }
+    void resetDiagnostics() noexcept { diagFailsafeCount.store(0); diagGenResets.store(0); }
     
     // Helper para leer el parámetro de bypass del host
     inline bool isHostBypassed() const noexcept
@@ -334,9 +382,17 @@ private:
     void processBlockCommon(juce::AudioBuffer<float>& buffer, bool hostWantsBypass);
     void processBlockBypassed(juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
 
+    // Override de AsyncUpdater para actualizaciones thread-safe
+    void handleAsyncUpdate() override;
+    
+    // Sistema de latencia (aunque reverb normalmente no tiene)
+    std::atomic<int> pendingLatency { 0 };
+    int currentLatency = 0;
+
     // Cachear índices de gen (evitar bubles por nombre)
-    int genIdxLookahead { -1 };
-    int genIdxBypass   { -1 }; // si lo usas en el compresor/expansor
+    int genIdxIoMode   { -1 }; // y_IOMODE index in Gen
+    int genIdxZBypass  { -1 }; // z_BYPASSS index in Gen (internal)
+    int genIdxDryWet   { -1 }; // b_DRYWET index in Gen (debug force wet)
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(JCBReverbAudioProcessor)
 };
