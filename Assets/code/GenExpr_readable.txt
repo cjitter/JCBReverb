@@ -1311,6 +1311,7 @@ wobbleTargetNext = wrapWob ? noiseRand : h_wobbleTarget;
 periodMs = 1000 / max(ag_WOBBLE_RATE, 0.05);
 slewMs   = clip(periodMs * 0.2, 0.01, 300);
 wobbleSlewed = slide(wobbleTargetNext, mstosamps(slewMs), mstosamps(slewMs));
+wobbleSlewed = fixdenorm(wobbleSlewed);
 
 // Profundidad en dB máx ≈ 6 dB, escalada por af_WOBBLE_AMT
 wobbleDepthDb = af_WOBBLE_AMT * 6;
@@ -1335,6 +1336,7 @@ wetPreDuckR = mix(wetOutR, wetWobR, ae_WOBBLE_ON);
 // Detector: dry input (ioL_raw/ioR_raw)
 dryEnergy = (ioL_raw * ioL_raw + ioR_raw * ioR_raw) * 0.5;
 dryEnv = slide(dryEnergy, mstosamps(ac_DUCK_ATK), mstosamps(ad_DUCK_REL)); // up=ATK, down=REL
+dryEnv = fixdenorm(dryEnv);
 // Detector más agresivo (*4) para que dispare antes
 dryNorm = min(sqrt(dryEnv) * 4, 1);
 
@@ -1519,6 +1521,6 @@ h_prepostGap = next_prepostGap;
 // PRE/POST switch envelope update (legacy blend state)
 prePost_s = fixdenorm(prePostBlend);
 
-h_wobblePhase = currentPhase;
-h_wobbleTarget = wobbleTargetNext;
-h_wobbleSeed = seedNext;
+h_wobblePhase = fixdenorm(currentPhase);
+h_wobbleTarget = fixdenorm(wobbleTargetNext);
+h_wobbleSeed = fixdenorm(seedNext);

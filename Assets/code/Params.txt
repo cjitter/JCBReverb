@@ -24,10 +24,15 @@ Param w_MAKEUP(0, min=-6, default=0, max=6);
 Param x_PREPOST(0, min=0, default=0, max=1);
 Param y_IOMODE(0, min=1, default=3, max=3);
 Param z_BYPASSS(0, min=0, default=0, max=1);
+
+
+
+// NO AÑADIDOS
 Param aa_DUCK_ON(0, min=0, default=0, max=1);
 Param ab_DUCK_DB(0, min=-60, default=-30, max=0);
 Param ac_DUCK_ATK(0, min=1, default=10, max=50);
 Param ad_DUCK_REL(0, min=20, default=200, max=600);
+
 Param ae_WOBBLE_ON(0, min=0, default=0, max=1);
 Param af_WOBBLE_AMT(0, min=0, default=0.5, max=1);
 Param ag_WOBBLE_RATE(0, min=0.1, default=1, max=100);

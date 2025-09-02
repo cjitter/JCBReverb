@@ -195,7 +195,8 @@ endif()
 # Instalación automática para macOS (se puede desactivar con JUCE_AUTO_INSTALL_PLUGINS OFF)
 if(JUCE_AUTO_INSTALL_PLUGINS)
     # Do not auto-install on Debug builds to avoid polluting user folders during development
-    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    #if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    if(FALSE) # Pemitir instalación en Debug también
         message(STATUS "Auto-install skipped: Debug configuration")
     else()
     # Rutas de instalación del sistema macOS

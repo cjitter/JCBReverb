@@ -1143,7 +1143,7 @@ void JCBReverbAudioProcessorEditor::buttonClicked(juce::Button* button)
         {
             for (int i = 0; i < JCBReverb::num_params(); ++i)
             {
-                if (juce::String(JCBReverb::getparametername(st, i)) == "z_BYPASSS")
+                if (juce::String(JCBReverb::getparametername(st, i)) == "z_BYPASS")
                 {
                     JCBReverb::setparameter(st, i, bypassActive ? 1.f : 0.f, nullptr);
                     break;
@@ -3507,7 +3507,7 @@ juce::File JCBReverbAudioProcessorEditor::getPresetsFolder()
         .getChildFile("Audio")
         .getChildFile("Presets")
         .getChildFile("Coeval")
-        .getChildFile("JCBDistortion");
+        .getChildFile("JCBReverb");
 
     if (!folder.isDirectory() && !folder.existsAsFile()) {
         folder.createDirectory();

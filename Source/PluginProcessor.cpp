@@ -26,8 +26,8 @@ JCBReverbAudioProcessor::JCBReverbAudioProcessor()
 {
     // Configurar límites del guiUndoManager para optimizar rendimiento
     guiUndoManager.setMaxNumberOfStoredUnits(0, 20); // Solo 20 transacciones exactas (ahorro de memoria)
-    
-    
+
+
     // Inicializar Gen~ state
     m_PluginState = (CommonState *)JCBReverb::create(44100, 64);
     JCBReverb::reset(m_PluginState);
@@ -35,7 +35,7 @@ JCBReverbAudioProcessor::JCBReverbAudioProcessor()
     // Inicializar buffers de Gen~
     m_InputBuffers = new t_sample *[JCBReverb::num_inputs()];
     m_OutputBuffers = new t_sample *[JCBReverb::num_outputs()];
-    
+
     for (int i = 0; i < JCBReverb::num_inputs(); i++) {
         m_InputBuffers[i] = nullptr;
     }
@@ -49,7 +49,7 @@ JCBReverbAudioProcessor::JCBReverbAudioProcessor()
         auto name = juce::String(JCBReverb::getparametername(m_PluginState, i));
         apvts.addParameterListener(name, this);
     }
-    
+
     // IMPORTANTE: Sincronizar valores iniciales con Gen~
     // Esto asegura que Gen~ tenga los valores correctos desde el principio
     for (int i = 0; i < JCBReverb::num_params(); i++)
@@ -57,22 +57,22 @@ JCBReverbAudioProcessor::JCBReverbAudioProcessor()
         auto paramName = juce::String(JCBReverb::getparametername(m_PluginState, i));
         if (auto* param = apvts.getRawParameterValue(paramName)) {
             float value = param->load();
-            
+
             // Aplicar misma validación que en parameterChanged() (REVERB)
             if (paramName == "a_INPUT" || paramName == "m_OUTPUT") {
                 value = juce::jlimit(-12.0f, 12.0f, value);
             }
-            else if (paramName == "b_DRYWET" || paramName == "c_REFLECT" || 
-                     paramName == "d_DAMP" || paramName == "e_SIZE" || 
+            else if (paramName == "b_DRYWET" || paramName == "c_REFLECT" ||
+                     paramName == "d_DAMP" || paramName == "e_SIZE" ||
                      paramName == "f_ST") {
                 value = juce::jlimit(0.0f, 1.0f, value);
             }
-            else if (paramName == "g_FREEZE" || paramName == "q_ONOFFEQ" || 
+            else if (paramName == "g_FREEZE" || paramName == "q_ONOFFEQ" ||
                      paramName == "r_ONOFFCOMP" || paramName == "x_PREPOST" ||
                      paramName == "aa_DUCK_ON" || paramName == "ae_WOBBLE_ON") {
                 value = juce::jlimit(0.0f, 1.0f, value);
             }
-            else if (paramName == "h_LOWGAIN" || paramName == "i_PEAKGAIN" || 
+            else if (paramName == "h_LOWGAIN" || paramName == "i_PEAKGAIN" ||
                      paramName == "j_HIGAIN" || paramName == "w_MAKEUP") {
                 value = juce::jlimit(-12.0f, 12.0f, value);
             }
@@ -82,7 +82,7 @@ JCBReverbAudioProcessor::JCBReverbAudioProcessor()
             else if (paramName == "l_HPF") {
                 value = juce::jlimit(20.0f, 20000.0f, value);
             }
-            else if (paramName == "n_LOWFREQ" || paramName == "o_PEAKFREQ" || 
+            else if (paramName == "n_LOWFREQ" || paramName == "o_PEAKFREQ" ||
                      paramName == "p_HIFREQ") {
                 value = juce::jlimit(20.0f, 20000.0f, value);
             }
@@ -116,7 +116,7 @@ JCBReverbAudioProcessor::JCBReverbAudioProcessor()
             else if (paramName == "ag_WOBBLE_RATE") {
                 value = juce::jlimit(0.1f, 10.0f, value);
             }
-            
+
             JCBReverb::setparameter(m_PluginState, i, value, nullptr);
         }
     }
@@ -128,21 +128,21 @@ JCBReverbAudioProcessor::~JCBReverbAudioProcessor()
 {
     // CRÍTICO: Primero indicar que estamos destruyendo para evitar race conditions
     isBeingDestroyed = true;
-    
+
     // Detener timer AAX inmediatamente (antes que cualquier otra cosa)
     #if JucePlugin_Build_AAX
     stopTimer();
     // Pequeña espera para asegurar que el timer callback no esté ejecutándose
     juce::Thread::sleep(10);
     #endif
-    
+
     // Destruir listeners de parámetros del apvts
     for (int i = 0; i < JCBReverb::num_params(); i++)
     {
         auto name = juce::String(JCBReverb::getparametername(m_PluginState, i));
         apvts.removeParameterListener(name, this);
     }
-    
+
     // Limpiar buffers con protección nullptr
     if (m_InputBuffers != nullptr) {
         for (int i = 0; i < JCBReverb::num_inputs(); i++) {
@@ -154,7 +154,7 @@ JCBReverbAudioProcessor::~JCBReverbAudioProcessor()
         delete[] m_InputBuffers;
         m_InputBuffers = nullptr;
     }
-    
+
     if (m_OutputBuffers != nullptr) {
         for (int i = 0; i < JCBReverb::num_outputs(); i++) {
             if (m_OutputBuffers[i] != nullptr) {
@@ -165,7 +165,7 @@ JCBReverbAudioProcessor::~JCBReverbAudioProcessor()
         delete[] m_OutputBuffers;
         m_OutputBuffers = nullptr;
     }
-    
+
     // Destruir Gen~ state al final
     if (m_PluginState != nullptr) {
         JCBReverb::destroy(m_PluginState);
@@ -179,18 +179,18 @@ JCBReverbAudioProcessor::~JCBReverbAudioProcessor()
 void JCBReverbAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
 {
     // Configuración de canales en modo debug eliminada para release
-    
+
     // Inicializar sample rate y vector size
     m_PluginState->sr = sampleRate;
     m_PluginState->vs = samplesPerBlock;
-    
+
     // Callbacks para visualización se añadirán cuando se implemente el display de reverb
-    
+
     // Pre-asignar buffers con tamaño máximo esperado para evitar allocations en audio thread
     // Usar un tamaño seguro que cubra la mayoría de casos (4096 samples es común máximo)
     const long maxExpectedBufferSize = juce::jmax(static_cast<long>(samplesPerBlock), 4096L);
     assureBufferSize(maxExpectedBufferSize);
-    
+
     // Pre-asignar vectors de waveform data para evitar resize en audio thread
     {
         std::lock_guard<std::mutex> lock(waveformMutex);
@@ -216,18 +216,18 @@ void JCBReverbAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlo
 
     // Reverb: latencia fija (no tiene lookahead)
     setLatencySamples(0);
-    
+
     // === INICIALIZACIÓN DEL SISTEMA DE BYPASS SUAVE ===
     // Pre-asignar scratch buffers para evitar allocations en audio thread
     ensureScratchCapacity(juce::jmax(static_cast<int>(samplesPerBlock), 4096));
-    
+
     // Configurar longitud del fade desde bypassFadeMs (7ms por defecto)
     {
         const int lenFromMs = juce::roundToInt(bypassFadeMs * static_cast<float>(sampleRate) / 1000.0f);
         bypassFadeLen = juce::jlimit(128, 512, lenFromMs > 0 ? lenFromMs : 128);
     }
     bypassFadePos = 0;
-    
+
     // Estado inicial coherente con el host
     const bool hb = isHostBypassed();
     hostBypassMirror.store(hb, std::memory_order_relaxed);
@@ -238,27 +238,27 @@ void JCBReverbAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlo
     // CRITICAL: Changed from SmoothedValue to atomic - no reset() needed
     leftInputRMS.store(-100.0f, std::memory_order_relaxed);
     rightInputRMS.store(-100.0f, std::memory_order_relaxed);
-    
+
     leftOutputRMS.store(-100.0f, std::memory_order_relaxed);
     rightOutputRMS.store(-100.0f, std::memory_order_relaxed);
-    
-    
-    
+
+
+
     // leftSC.store(-100.0f, std::memory_order_relaxed);
     // rightSC.store(-100.0f, std::memory_order_relaxed);
-    
+
     // Configurar buffers auxiliares
-    
+
     trimInputBuffer.setSize(2, samplesPerBlock);
     trimInputBuffer.clear();
-    
+
     // sidechainBuffer.setSize(getTotalNumInputChannels(), samplesPerBlock);
     // sidechainBuffer.clear();
-    
+
     // Inicializar buffers de forma de onda
     currentInputSamples.resize(samplesPerBlock, 0.0f);
     currentProcessedSamples.resize(samplesPerBlock, 0.0f);
-    
+
     // IMPORTANTE: Re-sincronizar todos los parámetros con Gen~ en prepareToPlay
     // Esto asegura que los valores estén correctos cuando el DAW comienza a reproducir
     for (int i = 0; i < JCBReverb::num_params(); i++)
@@ -308,10 +308,10 @@ void JCBReverbAudioProcessor::processBlockCommon(juce::AudioBuffer<float>& buffe
         return;
 
     // No forzar reset en arranque de reproducción; dejar que el motor continúe suavemente
-    
+
     // Ajustar buffers auxiliares si es necesario
     assureBufferSize(numSamples);
-    
+
     // === 1. SIEMPRE capturar entrada ANTES de procesar (crítico para bypass) ===
     // Importante: usar el número de canales de ENTRADA del bus principal para leer correctamente en layouts 1->2
     ensureScratchCapacity(numSamples);
@@ -325,7 +325,7 @@ void JCBReverbAudioProcessor::processBlockCommon(juce::AudioBuffer<float>& buffe
         // Copiar R de la fuente correcta; si entrada mono, duplicar L
         std::memcpy(inR, srcR, sizeof(float) * static_cast<size_t>(numSamples));
     }
-    
+
     // === 2. Sincronizar y_IOMODE con el layout de buses ===
     if (genIdxIoMode >= 0)
     {
@@ -391,10 +391,10 @@ void JCBReverbAudioProcessor::processBlockCommon(juce::AudioBuffer<float>& buffe
     fillGenInputBuffers(buffer);
     processGenAudio(numSamples);
     fillOutputBuffers(buffer); // buffer = WET procesado
-    
+
     auto* wetL = buffer.getWritePointer(0);
     auto* wetR = (numChannels > 1) ? buffer.getWritePointer(1) : wetL;
-    
+
     // === 4. DRY sin compensación (JCBDistortion no tiene latencia/lookahead) ===
     float* dryL = scratchDry.getWritePointer(0);
     float* dryR = scratchDry.getWritePointer(1);
@@ -405,7 +405,7 @@ void JCBReverbAudioProcessor::processBlockCommon(juce::AudioBuffer<float>& buffe
         dryL[n] = inL[n];
         dryR[n] = (mainInputChannels > 1 ? inR[n] : inL[n]);
     }
-    
+
     // Detectar condición "stuck" del motor WET: WET ~0 con entrada significativa (detectada en entrada capturada)
     auto blockMagnitude = [&](const float* ch, int n){
         float m = 0.0f; for (int i = 0; i < n; ++i) m = juce::jmax(m, std::abs(ch[i])); return m; };
@@ -454,21 +454,21 @@ void JCBReverbAudioProcessor::processBlockCommon(juce::AudioBuffer<float>& buffe
         }
         // No se aplica lógica de bypass de host en este modo simplificado
     }
-    
+
     // Safety: final sanitize on the mixed output
     // sanitizeStereo(wetL, (numChannels > 1 ? wetR : nullptr), numSamples); // Sanitizer removed - Gen~ fixed
 
     // === 6. Análisis y medición post-procesamiento ===
-    
+
     // Alimentar visualización cuando se implemente el display de reverb
-    
+
     // Capturar formas de onda
     captureInputWaveformData(buffer, numSamples);
     captureOutputWaveformData(buffer, numSamples);
-    
+
     // Actualizar detección de clipping
     updateClipDetection(buffer, buffer);
-    
+
     // Actualizar medidores
     updateInputMeters(buffer);
     updateOutputMeters(buffer);
@@ -488,19 +488,19 @@ void JCBReverbAudioProcessor::assureBufferSize(long bufferSize)
     if (bufferSize > m_CurrentBufferSize) {
         // NOTA: RT-safe porque prepareToPlay() pre-asigna hasta 4096 samples
         // Solo se ejecuta este bloque si el DAW solicita > 4096 samples (muy raro)
-        
+
         // Redimensionar buffers de entrada
         for (int i = 0; i < JCBReverb::num_inputs(); i++) {
             delete[] m_InputBuffers[i];
             m_InputBuffers[i] = new t_sample[bufferSize];
         }
-        
+
         // Redimensionar buffers de salida
         for (int i = 0; i < JCBReverb::num_outputs(); i++) {
             delete[] m_OutputBuffers[i];
             m_OutputBuffers[i] = new t_sample[bufferSize];
         }
-        
+
         m_CurrentBufferSize = bufferSize;
     }
 }
@@ -509,7 +509,7 @@ void JCBReverbAudioProcessor::fillGenInputBuffers(const juce::AudioBuffer<float>
 {
     const auto mainInputChannels = getMainBusNumInputChannels();
     const int numSamples = buffer.getNumSamples();
-    
+
     if (mainInputChannels > 1) {
         // Modo estéreo - fill main L/R inputs (inputs 0 and 1)
         for (int j = 0; j < numSamples; j++) {
@@ -542,7 +542,7 @@ void JCBReverbAudioProcessor::fillOutputBuffers(juce::AudioBuffer<float>& buffer
 {
     const int numSamples = buffer.getNumSamples();
     const auto mainOutputChannels = getMainBusNumOutputChannels();
-    
+
     // Llenar buffers de salida principales - conversión double a float
     for (int i = 0; i < mainOutputChannels; i++) {
         float* destPtr = buffer.getWritePointer(i);
@@ -551,18 +551,18 @@ void JCBReverbAudioProcessor::fillOutputBuffers(juce::AudioBuffer<float>& buffer
             destPtr[j] = static_cast<float>(srcPtr[j]);
         }
     }
-    
+
     // Preparar buffer para medidor de entrada (después de trim) - como en Maximizer
     // Asumimos que siempre hay outputs 3 y 4 para post-TRIM
-    if (JCBReverb::num_outputs() > 4) {
+    if (JCBReverb::num_outputs() >= 4) {
         float* trimL = trimInputBuffer.getWritePointer(0);
-        const t_sample* srcL = m_OutputBuffers[3];  // out4 = post-TRIM L
+        const t_sample* srcL = m_OutputBuffers[2];  // out3 = post-TRIM L (índice base-0)
         for (int j = 0; j < numSamples; j++) {
             trimL[j] = static_cast<float>(srcL[j]);
         }
         if (trimInputBuffer.getNumChannels() > 1) {
             float* trimR = trimInputBuffer.getWritePointer(1);
-            const t_sample* srcR = m_OutputBuffers[4];  // out5 = post-TRIM R
+            const t_sample* srcR = m_OutputBuffers[3];  // out4 = post-TRIM R (índice base-0)
             for (int j = 0; j < numSamples; j++) {
                 trimR[j] = static_cast<float>(srcR[j]);
             }
@@ -593,20 +593,20 @@ void JCBReverbAudioProcessor::updateInputMeters(const juce::AudioBuffer<float>& 
     const auto rmsValueL = juce::Decibels::gainToDecibels(trimInputBuffer.getRMSLevel(0, 0, numSamples));
     const auto rmsValueR = (trimInputBuffer.getNumChannels() > 1) ?
     juce::Decibels::gainToDecibels(trimInputBuffer.getRMSLevel(1, 0, numSamples)) : rmsValueL;
-    
+
     // Calcular valores de pico reales
     const auto peakValueL = juce::Decibels::gainToDecibels(trimInputBuffer.getMagnitude(0, 0, numSamples));
     const auto peakValueR = (trimInputBuffer.getNumChannels() > 1) ?
     juce::Decibels::gainToDecibels(trimInputBuffer.getMagnitude(1, 0, numSamples)) : peakValueL;
-    
+
     // Usar combinación ponderada 70% peak + 30% RMS
     const auto displayValueL = (peakValueL * 0.7f) + (rmsValueL * 0.3f);
     const auto displayValueR = (peakValueR * 0.7f) + (rmsValueR * 0.3f);
-    
+
     // Si estamos cerca del clipping (> -3dB), mostrar el valor de pico puro
     const auto inputValueL = (peakValueL > -3.0f) ? peakValueL : displayValueL;
     const auto inputValueR = (peakValueR > -3.0f) ? peakValueR : displayValueR;
-    
+
     // CRÍTICO: Usar atomic store para thread safety
     // No smoothing is done here - just direct atomic updates
     if (mainInputChannels < 2) {
@@ -629,21 +629,21 @@ void JCBReverbAudioProcessor::updateOutputMeters(const juce::AudioBuffer<float>&
     const auto rmsValueL = juce::Decibels::gainToDecibels(buffer.getRMSLevel(0, 0, numSamples));
     const auto rmsValueR = (mainOutputChannels > 1) ?
     juce::Decibels::gainToDecibels(buffer.getRMSLevel(1, 0, numSamples)) : rmsValueL;
-    
+
     // Calcular valores de pico reales (máximo absoluto en el buffer)
     const auto peakValueL = juce::Decibels::gainToDecibels(buffer.getMagnitude(0, 0, numSamples));
     const auto peakValueR = (mainOutputChannels > 1) ?
     juce::Decibels::gainToDecibels(buffer.getMagnitude(1, 0, numSamples)) : peakValueL;
-    
+
     // Usar una combinación ponderada de RMS y Peak para mejor visualización
     // 70% peak + 30% RMS da una representación más precisa similar a medidores profesionales
     const auto displayValueL = (peakValueL * 0.7f) + (rmsValueL * 0.3f);
     const auto displayValueR = (peakValueR * 0.7f) + (rmsValueR * 0.3f);
-    
+
     // Si estamos cerca del clipping (> -3dB), mostrar el valor de pico puro
     const auto finalValueL = (peakValueL > -3.0f) ? peakValueL : displayValueL;
     const auto finalValueR = (peakValueR > -3.0f) ? peakValueR : displayValueR;
-    
+
     // CRÍTICO: Usar atomic store para thread safety
     if (mainOutputChannels > 1) {
         // Modo estéreo
@@ -665,49 +665,49 @@ void JCBReverbAudioProcessor::updateSidechainMeters(const juce::AudioBuffer<floa
 
     // Resetear flags de clipping sidechain para este buffer
     bool scClip[2] = {false, false};
-    
+
     const bool extKeyActive = false;  // Maximizer no tiene external key
-    
+
     // Si EXT KEY no está activo, mostrar silencio en los medidores
     if (!extKeyActive) {
         const auto valueSC = -100.0f;
-        
+
         // leftSC.store(valueSC, std::memory_order_relaxed);
         // rightSC.store(valueSC, std::memory_order_relaxed);
-        
+
         return;  // No procesar más si EXT KEY está desactivado
     }
-    
+
     // CAMBIO: Usar las salidas 5 y 6 de Gen~ (índices 5 y 6 en m_OutputBuffers)
     // Estas salidas ya incluyen el procesamiento de SC TRIM aplicado por Gen~
     if (JCBReverb::num_outputs() > 6) {
         // Calcular RMS y pico del sidechain desde las salidas de Gen~
         float maxSCL = 0.0f, maxSCR = 0.0f;
         float rmsSumL = 0.0f, rmsSumR = 0.0f;
-        
+
         for (int i = 0; i < numSamples; ++i) {
             // Usar salidas 5 y 6 de Gen~ que ya tienen SC TRIM aplicado
             float sampleL = static_cast<float>(m_OutputBuffers[5][i]);
             float sampleR = static_cast<float>(m_OutputBuffers[6][i]);
-            
+
             // Peak detection
             maxSCL = juce::jmax(maxSCL, std::abs(sampleL));
             maxSCR = juce::jmax(maxSCR, std::abs(sampleR));
-            
+
             // RMS accumulation
             rmsSumL += sampleL * sampleL;
             rmsSumR += sampleR * sampleR;
         }
-        
+
         // Calcular RMS
         float rmsL = std::sqrt(rmsSumL / static_cast<float>(numSamples));
         float rmsR = std::sqrt(rmsSumR / static_cast<float>(numSamples));
-        
+
         const auto rmsValueSCLeft = juce::Decibels::gainToDecibels(rmsL);
         const auto rmsValueSCRight = juce::Decibels::gainToDecibels(rmsR);
         const auto peakValueSCLeft = juce::Decibels::gainToDecibels(maxSCL);
         const auto peakValueSCRight = juce::Decibels::gainToDecibels(maxSCR);
-        
+
         // Detectar clipping basado en el valor de pico
         if (maxSCL >= 0.999f) {  // Usar el mismo umbral que los medidores principales
             scClip[0] = true;
@@ -715,14 +715,14 @@ void JCBReverbAudioProcessor::updateSidechainMeters(const juce::AudioBuffer<floa
         if (maxSCR >= 0.999f) {
             scClip[1] = true;
         }
-        
+
         // Usar combinación ponderada como en los medidores principales
         const auto displayValueSCLeft = (peakValueSCLeft * 0.7f) + (rmsValueSCLeft * 0.3f);
         const auto displayValueSCRight = (peakValueSCRight * 0.7f) + (rmsValueSCRight * 0.3f);
-        
+
         const auto valueSCLeft = (peakValueSCLeft > -3.0f) ? peakValueSCLeft : displayValueSCLeft;
         const auto valueSCRight = (peakValueSCRight > -3.0f) ? peakValueSCRight : displayValueSCRight;
-        
+
         // if (!isProTools()) {
         //     leftSC.store(valueSCLeft, std::memory_order_relaxed);
         //     rightSC.store(valueSCRight, std::memory_order_relaxed);
@@ -734,11 +734,11 @@ void JCBReverbAudioProcessor::updateSidechainMeters(const juce::AudioBuffer<floa
     } else {
         // Sidechain no disponible - mostrar silencio
         const auto valueSC = -100.0f;
-        
+
         // leftSC.store(valueSC, std::memory_order_relaxed);
         // rightSC.store(valueSC, std::memory_order_relaxed);
     }
-    
+
     // Actualizar flags atómicos de clip
     for (int channel = 0; channel < 2; ++channel) {
         if (scClip[channel]) {
@@ -756,16 +756,16 @@ juce::AudioProcessor::BusesProperties JCBReverbAudioProcessor::createBusesProper
     auto propBuses = juce::AudioProcessor::BusesProperties()
         .withOutput("Output", juce::AudioChannelSet::stereo(), true)
         .withInput("Input", juce::AudioChannelSet::stereo(), true);
-    
+
     /*
     juce::PluginHostType daw;
-    
+
     if (daw.isProTools())
         propBuses.addBus(true, "Sidechain MONO", juce::AudioChannelSet::mono(), false);
     else
         propBuses.addBus(true, "Sidechain ST", juce::AudioChannelSet::stereo(), false);
     */
-    
+
     return propBuses;
 }
 
@@ -781,13 +781,13 @@ bool JCBReverbAudioProcessor::isBusesLayoutSupported(const juce::AudioProcessor:
     if (mainOut != juce::AudioChannelSet::mono()
         && mainOut != juce::AudioChannelSet::stereo())
         return false;
-    
+
     // Verificar bus principal de entrada
     auto mainIn = layouts.getMainInputChannelSet();
     if (mainIn != juce::AudioChannelSet::mono()
         && mainIn != juce::AudioChannelSet::stereo())
         return false;
-    
+
     // Pro Tools AAX: Rechazar específicamente stereo input → mono output
     // Solo permitir: 1→1, 2→2, 1→2. NO permitir: 2→1
 #if JucePlugin_Build_AAX
@@ -795,28 +795,28 @@ bool JCBReverbAudioProcessor::isBusesLayoutSupported(const juce::AudioProcessor:
     if (mainIn == juce::AudioChannelSet::stereo() && mainOut == juce::AudioChannelSet::mono())
         return false;
 #endif
-    
+
     /*
     // Si hay bus de sidechain, verificar que sea válido
     if (layouts.inputBuses.size() > 1)
     {
         auto sidechainBus = layouts.inputBuses[1];
-        
+
         // El sidechain puede estar desactivado (empty)
         if (!sidechainBus.isDisabled())
         {
             // Solo aceptar sidechain mono o estéreo si está activo
-            if (sidechainBus != juce::AudioChannelSet::mono() 
+            if (sidechainBus != juce::AudioChannelSet::mono()
                 && sidechainBus != juce::AudioChannelSet::stereo())
                 return false;
         }
-            
+
         // No aceptar más de 2 buses de entrada
         if (layouts.inputBuses.size() > 2)
             return false;
     }
     */
-    
+
     return true;
 #endif
 }
@@ -833,7 +833,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout JCBReverbAudioProcessor::cre
    std::vector<std::unique_ptr<juce::RangedAudioParameter>> params;
 
    // === PARÁMETROS DEL REVERB ===
-   
+
    // a_INPUT - Input gain
    params.push_back(std::make_unique<juce::AudioParameterFloat>(
        juce::ParameterID("a_INPUT", versionHint),
@@ -857,21 +857,21 @@ juce::AudioProcessorValueTreeState::ParameterLayout JCBReverbAudioProcessor::cre
    params.push_back(std::make_unique<juce::AudioParameterFloat>(
        juce::ParameterID("c_REFLECT", versionHint),
        "Reflections",
-       juce::NormalisableRange<float>(0.1f, 0.98f, 0.001f),
+       juce::NormalisableRange<float>(0.1f, 0.99f, 0.001f),
        0.86f));
 
    // d_DAMP - Damping
    params.push_back(std::make_unique<juce::AudioParameterFloat>(
        juce::ParameterID("d_DAMP", versionHint),
        "Damping",
-       juce::NormalisableRange<float>(0.f, 0.9f, 0.01f),
+       juce::NormalisableRange<float>(0.001f, 1.f, 0.001f),
        0.8f));
 
    // e_SIZE - Room size
    params.push_back(std::make_unique<juce::AudioParameterFloat>(
        juce::ParameterID("e_SIZE", versionHint),
        "Size",
-       juce::NormalisableRange<float>(0.1f, 4.f, 0.001f),
+       juce::NormalisableRange<float>(0.125f, 4.f, 0.001f),
        1.0f));
 
    // f_ST - Stereo width
@@ -888,7 +888,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout JCBReverbAudioProcessor::cre
        false));
 
    // === PARÁMETROS DEL EQ ===
-   
+
    // h_LOWGAIN - Low shelf gain
    params.push_back(std::make_unique<juce::AudioParameterFloat>(
        juce::ParameterID("h_LOWGAIN", versionHint),
@@ -968,7 +968,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout JCBReverbAudioProcessor::cre
        false));
 
    // === PARÁMETROS DEL COMPRESOR ===
-   
+
    // r_ONOFFCOMP - Compressor on/off
    params.push_back(std::make_unique<juce::AudioParameterBool>(
        juce::ParameterID("r_ONOFFCOMP", versionHint),
@@ -995,7 +995,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout JCBReverbAudioProcessor::cre
    params.push_back(std::make_unique<juce::AudioParameterFloat>(
        juce::ParameterID("u_ATK", versionHint),
        "Attack",
-       juce::NormalisableRange<float>(0.1f, 500.f, 0.1f, 0.3f),
+       juce::NormalisableRange<float>(5.f, 250.f, 0.1f, 0.3f),
        10.f,
        "ms"));
 
@@ -1003,7 +1003,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout JCBReverbAudioProcessor::cre
    params.push_back(std::make_unique<juce::AudioParameterFloat>(
        juce::ParameterID("v_REL", versionHint),
        "Release",
-       juce::NormalisableRange<float>(5.f, 1000.f, 1.f, 0.3f),
+       juce::NormalisableRange<float>(5.f, 500.f, 1.f, 0.3f),
        100.f,
        "ms"));
 
@@ -1015,79 +1015,18 @@ juce::AudioProcessorValueTreeState::ParameterLayout JCBReverbAudioProcessor::cre
        0.f,
        "dB"));
 
-   // x_PREPOST - PRE/POST switch
-   params.push_back(std::make_unique<juce::AudioParameterBool>(
-       juce::ParameterID("x_PREPOST", versionHint),
-       "Pre/Post",
-       false));
-
-   // y_IOMODE - IO layout mode (1=mono->mono, 2=mono->stereo, 3=stereo->stereo)
+   // y_IOMODE - IO layout mode (1=mono->mono, 2=mono->stereo, 3=stereo->stereo) - NOT CONNECTED YET IN GEN~
    params.push_back(std::make_unique<juce::AudioParameterFloat>(
        juce::ParameterID("y_IOMODE", versionHint),
        "IO Mode",
        juce::NormalisableRange<float>(1.f, 3.f, 1.f),
        3.f));
 
-   // z_BYPASSS - Internal bypass
+   // z_BYPASS - Internal bypass
    params.push_back(std::make_unique<juce::AudioParameterBool>(
-       juce::ParameterID("z_BYPASSS", versionHint),
+       juce::ParameterID("z_BYPASS", versionHint),
        "Internal Bypass",
        false));
-
-   // === PARÁMETROS DE DUCKING ===
-   
-   // aa_DUCK_ON - Ducking on/off
-   params.push_back(std::make_unique<juce::AudioParameterBool>(
-       juce::ParameterID("aa_DUCK_ON", versionHint),
-       "Duck On",
-       false));
-
-   // ab_DUCK_DB - Ducking amount in dB
-   params.push_back(std::make_unique<juce::AudioParameterFloat>(
-       juce::ParameterID("ab_DUCK_DB", versionHint),
-       "Duck Amount",
-       juce::NormalisableRange<float>(-60.f, 0.f, 0.1f),
-       -30.f,
-       "dB"));
-
-   // ac_DUCK_ATK - Ducking attack
-   params.push_back(std::make_unique<juce::AudioParameterFloat>(
-       juce::ParameterID("ac_DUCK_ATK", versionHint),
-       "Duck Attack",
-       juce::NormalisableRange<float>(1.f, 50.f, 0.1f),
-       10.f,
-       "ms"));
-
-   // ad_DUCK_REL - Ducking release
-   params.push_back(std::make_unique<juce::AudioParameterFloat>(
-       juce::ParameterID("ad_DUCK_REL", versionHint),
-       "Duck Release",
-       juce::NormalisableRange<float>(20.f, 600.f, 1.f),
-       200.f,
-       "ms"));
-
-   // === PARÁMETROS DE WOBBLE ===
-   
-   // ae_WOBBLE_ON - Wobble on/off
-   params.push_back(std::make_unique<juce::AudioParameterBool>(
-       juce::ParameterID("ae_WOBBLE_ON", versionHint),
-       "Wobble On",
-       false));
-
-   // af_WOBBLE_AMT - Wobble amount
-   params.push_back(std::make_unique<juce::AudioParameterFloat>(
-       juce::ParameterID("af_WOBBLE_AMT", versionHint),
-       "Wobble Amount",
-       juce::NormalisableRange<float>(0.f, 1.f, 0.01f),
-       0.5f));
-
-   // ag_WOBBLE_RATE - Wobble rate
-   params.push_back(std::make_unique<juce::AudioParameterFloat>(
-       juce::ParameterID("ag_WOBBLE_RATE", versionHint),
-       "Wobble Rate",
-       juce::NormalisableRange<float>(0.1f, 100.f, 0.1f, 0.3f),
-       1.f,
-       "Hz"));
 
    // === PARÁMETRO DE BYPASS (para el host) ===
    params.push_back(std::make_unique<juce::AudioParameterBool>(
@@ -1104,11 +1043,11 @@ juce::AudioProcessorValueTreeState::ParameterLayout JCBReverbAudioProcessor::cre
 void JCBReverbAudioProcessor::parameterChanged(const juce::String& parameterID, float newValue)
 {
     if (!m_PluginState) return;
-    
+
     // CRÍTICO: Buscar dinámicamente el índice del parámetro en Gen~
     // Los parámetros Gen~ están ordenados ALFABÉTICAMENTE, no en el orden esperado
     int genParamIndex = -1;
-    
+
     for (int i = 0; i < JCBReverb::num_params(); i++)
     {
         auto genParamName = juce::String(JCBReverb::getparametername(m_PluginState, i));
@@ -1118,7 +1057,7 @@ void JCBReverbAudioProcessor::parameterChanged(const juce::String& parameterID, 
             break;
         }
     }
-    
+
     // Si encontramos el parámetro, actualizarlo en Gen~
     if (genParamIndex >= 0)
     {
@@ -1127,65 +1066,67 @@ void JCBReverbAudioProcessor::parameterChanged(const juce::String& parameterID, 
         if (parameterID == "a_INPUT" || parameterID == "m_OUTPUT") {
             newValue = juce::jlimit(-12.0f, 12.0f, newValue);
         }
-        else if (parameterID == "b_DRYWET" || parameterID == "c_REFLECT" || 
-                 parameterID == "d_DAMP" || parameterID == "e_SIZE" || 
-                 parameterID == "f_ST") {
+        else if (parameterID == "b_DRYWET") {
             newValue = juce::jlimit(0.0f, 1.0f, newValue);
         }
-        else if (parameterID == "g_FREEZE" || parameterID == "q_ONOFFEQ" || 
-                 parameterID == "r_ONOFFCOMP" || parameterID == "x_PREPOST" ||
-                 parameterID == "aa_DUCK_ON" || parameterID == "ae_WOBBLE_ON") {
+        else if (parameterID == "c_REFLECT") {
+            newValue = juce::jlimit(0.1f, 0.99f, newValue);
+        }
+        else if (parameterID == "d_DAMP") {
+            newValue = juce::jlimit(0.001f, 1.0f, newValue);
+        }
+        else if (parameterID == "e_SIZE") {
+            newValue = juce::jlimit(0.125f, 4.0f, newValue);
+        }
+        else if (parameterID == "f_ST") {
+            newValue = juce::jlimit(0.0f, 0.8f, newValue);
+        }
+        else if (parameterID == "g_FREEZE" || parameterID == "q_ONOFFEQ" ||
+                 parameterID == "r_ONOFFCOMP" || parameterID == "z_BYPASS") {
             newValue = juce::jlimit(0.0f, 1.0f, newValue);
         }
-        else if (parameterID == "h_LOWGAIN" || parameterID == "i_PEAKGAIN" || 
-                 parameterID == "j_HIGAIN" || parameterID == "w_MAKEUP") {
-            newValue = juce::jlimit(-12.0f, 12.0f, newValue);
+        else if (parameterID == "h_LOWGAIN" || parameterID == "i_PEAKGAIN" ||
+                 parameterID == "j_HIGAIN") {
+            newValue = juce::jlimit(-30.0f, 30.0f, newValue);
+        }
+        else if (parameterID == "w_MAKEUP") {
+            newValue = juce::jlimit(-6.0f, 6.0f, newValue);
         }
         else if (parameterID == "k_LPF") {
-            newValue = juce::jlimit(20.0f, 20000.0f, newValue);
+            newValue = juce::jlimit(100.0f, 20000.0f, newValue);
         }
         else if (parameterID == "l_HPF") {
-            newValue = juce::jlimit(20.0f, 20000.0f, newValue);
+            newValue = juce::jlimit(20.0f, 5000.0f, newValue);
         }
-        else if (parameterID == "n_LOWFREQ" || parameterID == "o_PEAKFREQ" || 
-                 parameterID == "p_HIFREQ") {
-            newValue = juce::jlimit(20.0f, 20000.0f, newValue);
+        else if (parameterID == "n_LOWFREQ") {
+            newValue = juce::jlimit(20.0f, 800.0f, newValue);
+        }
+        else if (parameterID == "o_PEAKFREQ") {
+            newValue = juce::jlimit(100.0f, 2500.0f, newValue);
+        }
+        else if (parameterID == "p_HIFREQ") {
+            newValue = juce::jlimit(800.0f, 15000.0f, newValue);
         }
         else if (parameterID == "s_THD") {
-            newValue = juce::jlimit(-60.0f, 0.0f, newValue);
+            newValue = juce::jlimit(-36.0f, 0.0f, newValue);
         }
         else if (parameterID == "t_RATIO") {
             newValue = juce::jlimit(1.0f, 20.0f, newValue);
         }
         else if (parameterID == "u_ATK") {
-            newValue = juce::jlimit(0.0f, 100.0f, newValue);
+            newValue = juce::jlimit(5.0f, 250.0f, newValue);
         }
         else if (parameterID == "v_REL") {
-            newValue = juce::jlimit(0.0f, 1000.0f, newValue);
+            newValue = juce::jlimit(5.0f, 500.0f, newValue);
         }
         else if (parameterID == "y_IOMODE") {
-            newValue = juce::jlimit(0.0f, 3.0f, newValue);
+            newValue = juce::jlimit(1.0f, 3.0f, newValue);
         }
-        else if (parameterID == "z_BYPASSS") {
-            newValue = juce::jlimit(0.0f, 1.0f, newValue);
-        }
-        else if (parameterID == "ab_DUCK_DB") {
-            newValue = juce::jlimit(-60.0f, 0.0f, newValue);
-        }
-        else if (parameterID == "ac_DUCK_ATK" || parameterID == "ad_DUCK_REL") {
-            newValue = juce::jlimit(0.0f, 1000.0f, newValue);
-        }
-        else if (parameterID == "af_WOBBLE_AMT") {
-            newValue = juce::jlimit(0.0f, 1.0f, newValue);
-        }
-        else if (parameterID == "ag_WOBBLE_RATE") {
-            newValue = juce::jlimit(0.1f, 10.0f, newValue);
-        }
-        
+
         // Actualizar el parámetro en Gen~ con el valor ya validado
         JCBReverb::setparameter(m_PluginState, genParamIndex, newValue, nullptr);
     }
-    
+
     // Bypass es manejado por el host, no por Gen~
     if (parameterID == "bypass")
     {
@@ -1227,7 +1168,7 @@ float JCBReverbAudioProcessor::getRmsInputValue(const int channel) const noexcep
     if (!isInitialized()) {
         return -100.0f;  // Safe default value
     }
-    
+
     jassert(channel == 0 || channel == 1);
     if (channel == 0)
         return leftInputRMS.load(std::memory_order_relaxed);
@@ -1242,7 +1183,7 @@ float JCBReverbAudioProcessor::getRmsOutputValue(const int channel) const noexce
     if (!isInitialized()) {
         return -100.0f;  // Safe default value
     }
-    
+
     jassert(channel == 0 || channel == 1);
     if (channel == 0)
         return leftOutputRMS.load(std::memory_order_relaxed);
@@ -1277,7 +1218,7 @@ juce::String JCBReverbAudioProcessor::getPluginFormat() const noexcept
 {
     // Detectar el formato del plugin en tiempo de ejecución
     const auto format = juce::PluginHostType().getPluginLoadedAs();
-    
+
     switch (format)
     {
         case juce::AudioProcessor::wrapperType_VST3:
@@ -1309,13 +1250,13 @@ void JCBReverbAudioProcessor::captureInputWaveformData(const juce::AudioBuffer<f
         // Si no puede obtener el lock, salir inmediatamente para evitar RT violations
         return;
     }
-    
+
     // AUDIO-THREAD SAFE: Usar tamaño fijo pre-asignado, no resize() dinámico
     if (currentInputSamples.size() < static_cast<size_t>(numSamples)) {
         // Solo redimensionar si es absolutamente necesario (debería estar pre-asignado)
         currentInputSamples.resize(juce::jmax(numSamples, 4096));
     }
-    
+
     // Para la visualización de entrada, preferir outs post-TRIM (Gen out4/out5 => idx [3]/[4]) si existen
     if (JCBReverb::num_outputs() > 4)
     {
@@ -1349,12 +1290,12 @@ void JCBReverbAudioProcessor::captureOutputWaveformData(const juce::AudioBuffer<
         // Si no puede obtener el lock, salir inmediatamente para evitar RT violations
         return;
     }
-    
+
     // AUDIO-THREAD SAFE: Usar tamaño fijo pre-asignado, no resize() dinámico
     if (currentProcessedSamples.size() < static_cast<size_t>(numSamples)) {
         currentProcessedSamples.resize(juce::jmax(numSamples, 4096));
     }
-    
+
     // Copiar salida procesada (promedio de canales principales L/R) desde el buffer real
     const int chs = outputBuffer.getNumChannels();
     if (chs > 1)
@@ -1404,7 +1345,7 @@ void JCBReverbAudioProcessor::getStateInformation(juce::MemoryBlock& destData)
 {
     // Crear una copia del state para no modificar el original
     auto stateCopy = apvts.state.createCopy();
-    
+
     // Remover parámetros momentáneos antes de guardar
     // Estos botones no deben persistir entre sesiones
     auto paramsNode = stateCopy.getChildWithName("PARAMETERS");
@@ -1413,10 +1354,10 @@ void JCBReverbAudioProcessor::getStateInformation(juce::MemoryBlock& destData)
         auto param = paramsNode.getChildWithProperty("id", "bypass");
         if (param.isValid())
             param.setProperty("value", 0.0f, nullptr);
-        
+
         // Reverb: plugin limpio de parámetros legacy
     }
-    
+
     auto preset = stateCopy.getOrCreateChildWithName("Presets", nullptr);
     preset.setProperty("currentPresetID", lastPreset, nullptr);
     preset.setProperty("tooltipEnabled", tooltipEnabled, nullptr);
@@ -1424,32 +1365,32 @@ void JCBReverbAudioProcessor::getStateInformation(juce::MemoryBlock& destData)
     preset.setProperty("presetTextItalic", presetTextItalic, nullptr);
     preset.setProperty("envelopeVisualEnabled", envelopeVisualEnabled, nullptr);
     preset.setProperty("tooltipLanguageEnglish", tooltipLanguageEnglish, nullptr);
-    
+
     // Guardar tamaño del editor
     preset.setProperty("editorWidth", editorSize.x, nullptr);
     preset.setProperty("editorHeight", editorSize.y, nullptr);
-    
+
     // Guardar estado del modo de visualización (no automatizable)
     preset.setProperty("displayModeIsFFT", displayModeIsFFT, nullptr);
-    
+
     // Save A/B states
     auto abNode = stateCopy.getOrCreateChildWithName("ABStates", nullptr);
     abNode.setProperty("isStateA", isStateA, nullptr);
-    
+
     // Save state A
     auto stateANode = abNode.getOrCreateChildWithName("StateA", nullptr);
     stateANode.removeAllChildren(nullptr);
     for (const auto& [paramId, value] : stateA.values) {
         stateANode.setProperty(paramId, value, nullptr);
     }
-    
+
     // Save state B
     auto stateBNode = abNode.getOrCreateChildWithName("StateB", nullptr);
     stateBNode.removeAllChildren(nullptr);
     for (const auto& [paramId, value] : stateB.values) {
         stateBNode.setProperty(paramId, value, nullptr);
     }
-    
+
     juce::MemoryOutputStream memoria(destData, true);
     stateCopy.writeToStream(memoria);
 }
@@ -1459,11 +1400,11 @@ void JCBReverbAudioProcessor::setStateInformation(const void* data, int sizeInBy
     auto tree = juce::ValueTree::readFromData(data, sizeInBytes);
     if (tree.isValid()) {
         apvts.state = tree;
-        
+
         // Forzar parámetros momentáneos a OFF después de cargar
         if (auto* pBypass = apvts.getParameter("bypass"))
             pBypass->setValueNotifyingHost(0.0f);
-        
+
         // Re-sincronizar todos los parámetros a Gen tras cargar estado
         if (m_PluginState)
         {
@@ -1474,11 +1415,11 @@ void JCBReverbAudioProcessor::setStateInformation(const void* data, int sizeInBy
                     JCBReverb::setparameter(m_PluginState, i, p->load(), nullptr);
             }
         }
-        
+
         // Clear undo history AFTER all values have been set
         // This prevents any parameter changes from being recorded in undo history
         guiUndoManager.clearUndoHistory();
-        
+
         auto preset = apvts.state.getChildWithName("Presets");
         if (preset.isValid()) {
             lastPreset = preset.getProperty("currentPresetID");
@@ -1487,21 +1428,21 @@ void JCBReverbAudioProcessor::setStateInformation(const void* data, int sizeInBy
             presetTextItalic = preset.getProperty("presetTextItalic", false);
             envelopeVisualEnabled = preset.getProperty("envelopeVisualEnabled", true);
             tooltipLanguageEnglish = preset.getProperty("tooltipLanguageEnglish", false);
-            
+
             // Restaurar tamaño del editor
             int savedWidth = preset.getProperty("editorWidth", 1250);
             int savedHeight = preset.getProperty("editorHeight", 350);
             editorSize = {savedWidth, savedHeight};
-            
+
             // Restaurar estado del modo de visualización (no automatizable)
             displayModeIsFFT = preset.getProperty("displayModeIsFFT", false);
         }
-        
+
         // Restore A/B states
         auto abNode = apvts.state.getChildWithName("ABStates");
         if (abNode.isValid()) {
             isStateA = abNode.getProperty("isStateA", true);
-            
+
             // Restore state A
             auto stateANode = abNode.getChildWithName("StateA");
             if (stateANode.isValid()) {
@@ -1511,7 +1452,7 @@ void JCBReverbAudioProcessor::setStateInformation(const void* data, int sizeInBy
                     stateA.values[propName.toString()] = stateANode[propName];
                 }
             }
-            
+
             // Restore state B
             auto stateBNode = abNode.getChildWithName("StateB");
             if (stateBNode.isValid()) {
@@ -1522,13 +1463,13 @@ void JCBReverbAudioProcessor::setStateInformation(const void* data, int sizeInBy
                 }
             }
         }
-        
+
         // IMPORTANTE: Sincronizar todos los parámetros con Gen~ después de cargar el estado
         for (int i = 0; i < JCBReverb::num_params(); i++) {
             auto paramName = juce::String(JCBReverb::getparametername(m_PluginState, i));
             if (auto* param = apvts.getRawParameterValue(paramName)) {
                 float value = param->load();
-                
+
                 // Corregir valores muy pequeños en ATK y REL
                 if (paramName == "d_ATK") {
                     if (value < 0.1f) {
@@ -1549,12 +1490,12 @@ void JCBReverbAudioProcessor::setStateInformation(const void* data, int sizeInBy
                     }
                 }
                 // NOTA: El compresor no tiene parámetro HOLD (es del expansor/gate)
-                
+
                 parameterChanged(paramName, value);
             }
         }
-        
-        
+
+
         // Forzar actualización del editor de forma thread-safe
         // Usar MessageManager para evitar llamadas directas a getActiveEditor()
         juce::MessageManager::callAsync([this]() {
@@ -1569,7 +1510,7 @@ void JCBReverbAudioProcessor::setStateInformation(const void* data, int sizeInBy
 //==============================================================================
 // COMPARACIÓN A/B
 //==============================================================================
-void JCBReverbAudioProcessor::saveCurrentStateToActive() 
+void JCBReverbAudioProcessor::saveCurrentStateToActive()
 {
     if (isStateA) {
         stateA.captureFrom(apvts);
@@ -1578,14 +1519,14 @@ void JCBReverbAudioProcessor::saveCurrentStateToActive()
     }
 }
 
-void JCBReverbAudioProcessor::toggleAB() 
+void JCBReverbAudioProcessor::toggleAB()
 {
     // Save current state before switching
     saveCurrentStateToActive();
-    
+
     // Switch state
     isStateA = !isStateA;
-    
+
     // Load the other state
     if (isStateA) {
         stateA.applyTo(apvts);
@@ -1594,13 +1535,13 @@ void JCBReverbAudioProcessor::toggleAB()
     }
 }
 
-void JCBReverbAudioProcessor::copyAtoB() 
+void JCBReverbAudioProcessor::copyAtoB()
 {
     stateA.captureFrom(apvts);
     stateB = stateA;
 }
 
-void JCBReverbAudioProcessor::copyBtoA() 
+void JCBReverbAudioProcessor::copyBtoA()
 {
     stateB.captureFrom(apvts);
     stateA = stateB;
@@ -1625,11 +1566,11 @@ float JCBReverbAudioProcessor::getParameter(int index)
         t_param value;
         t_param min = JCBReverb::getparametermin(m_PluginState, index);
         t_param range = fabs(JCBReverb::getparametermax(m_PluginState, index) - min);
-        
+
         JCBReverb::getparameter(m_PluginState, index, &value);
-        
+
         value = (value - min) / range;
-        
+
         return value;
     }
     else
@@ -1648,7 +1589,7 @@ void JCBReverbAudioProcessor::setParameter(int index, float newValue)
         t_param min = JCBReverb::getparametermin(m_PluginState, index);
         t_param range = fabs(JCBReverb::getparametermax(m_PluginState, index) - min);
         t_param value = newValue * range + min;
-        
+
         JCBReverb::setparameter(m_PluginState, index, value, nullptr);
     }
     else
@@ -1688,7 +1629,7 @@ const juce::String JCBReverbAudioProcessor::getParameterText(int index)
         text += juce::String(JCBReverb::getparameterunits(m_PluginState, index));
         return text;
     }
-    
+
     // Retornar string vacío para índices inválidos
     return "";
 }
@@ -1731,14 +1672,14 @@ void JCBReverbAudioProcessor::updateClipDetection(const juce::AudioBuffer<float>
     const int numSamples = inputBuffer.getNumSamples();
     const auto mainInputChannels = getMainBusNumInputChannels();
     const auto mainOutputChannels = getMainBusNumOutputChannels();
-    
+
     // NOTA: El compresor no tiene soft clip, siempre detectar clips en salida
     bool isSoftClipActive = false; // Compresor no tiene soft clip
-    
+
     // Reset clip flags for this buffer
     bool inputClip[2] = {false, false};
     bool outputClip[2] = {false, false};
-    
+
     // Detectar clips en entrada (usando trimInputBuffer para consistencia con medidores)
     for (int channel = 0; channel < juce::jmin(2, mainInputChannels); ++channel) {
         for (int sample = 0; sample < numSamples; ++sample) {
@@ -1751,7 +1692,7 @@ void JCBReverbAudioProcessor::updateClipDetection(const juce::AudioBuffer<float>
             }
         }
     }
-    
+
     // Detectar clips en salida solo si soft clip NO está activo
     if (!isSoftClipActive) {
         for (int channel = 0; channel < juce::jmin(2, mainOutputChannels); ++channel) {
@@ -1764,7 +1705,7 @@ void JCBReverbAudioProcessor::updateClipDetection(const juce::AudioBuffer<float>
             }
         }
     }
-    
+
     // Actualizar flags atómicos
     for (int channel = 0; channel < 2; ++channel) {
         if (inputClip[channel]) {
@@ -1855,12 +1796,12 @@ void JCBReverbAudioProcessor::timerCallback()
 {
     // Timer callback para tareas que requieren ejecución fuera del audio thread
     // Para distorsión, mantenemos funcionalidad mínima necesaria
-    
+
     // Verificar si el processor está siendo destruido
     if (isBeingDestroyed.load()) {
         return;
     }
-    
+
     // Actualizar estado de playback para medidores
     // En distorsión no necesitamos lógica compleja de gain reduction
 }

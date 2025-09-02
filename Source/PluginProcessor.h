@@ -50,6 +50,7 @@ public:
     
     bool isBusesLayoutSupported(const juce::AudioProcessor::BusesLayout& layouts) const override;
     void processBlock(juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
+    void processBlockBypassed(juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
     
     //==============================================================================
     // Gestión del editor
@@ -189,6 +190,7 @@ private:
     //==============================================================================
     // Integración Gen~
     void assureBufferSize(long bufferSize);
+    void processBlockCommon(juce::AudioBuffer<float>& buffer, bool hostWantsBypass);
     void fillGenInputBuffers(const juce::AudioBuffer<float>& buffer);
     void processGenAudio(int numSamples);
     void fillOutputBuffers(juce::AudioBuffer<float>& buffer);
@@ -379,8 +381,9 @@ public:
     }
     
     // Método común de procesamiento con bypass suave
-    void processBlockCommon(juce::AudioBuffer<float>& buffer, bool hostWantsBypass);
-    void processBlockBypassed(juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
+    //void processBlockCommon(juce::AudioBuffer<float>& buffer, bool hostWantsBypass);
+    void processBlockSimple(juce::AudioBuffer<float>& buffer);  // TEMPORAL: Para debug de Freeze
+    //void processBlockBypassed(juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
 
     // Override de AsyncUpdater para actualizaciones thread-safe
     void handleAsyncUpdate() override;
