@@ -385,7 +385,6 @@ public:
     
     // Método común de procesamiento con bypass suave
     //void processBlockCommon(juce::AudioBuffer<float>& buffer, bool hostWantsBypass);
-    void processBlockSimple(juce::AudioBuffer<float>& buffer);  // TEMPORAL: Para debug de Freeze
     //void processBlockBypassed(juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
 
     // Override de AsyncUpdater para actualizaciones thread-safe

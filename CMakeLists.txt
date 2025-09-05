@@ -122,7 +122,6 @@ juce_add_binary_data(JCBReverb_BinaryData
         Assets/diagram.png
 
         # Archivos de texto/documentación usada en UI
-        Assets/code/GenExpr.txt
         Assets/code/DistortionCore.txt
         Assets/code/EffectsChain.txt
         Assets/code/InputStage.txt
