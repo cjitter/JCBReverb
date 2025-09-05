@@ -87,7 +87,7 @@ JCBReverbAudioProcessor::JCBReverbAudioProcessor()
                 value = juce::jlimit(0.0f, 1.0f, value);
             }
             else if (paramName == "cREFLECT" || paramName == "c_REFLECT") {
-                value = juce::jlimit(0.1f, 0.95f, value);
+                value = juce::jlimit(0.1f, 1.0f, value);
             }
             else if (paramName == "d_DAMP") {
                 value = juce::jlimit(0.1f, 0.95f, value);
@@ -98,7 +98,7 @@ JCBReverbAudioProcessor::JCBReverbAudioProcessor()
             else if (paramName == "f_ST") {
                 value = juce::jlimit(0.0f, 0.8f, value);
             }
-            else if (paramName == "g_FREEZE" || paramName == "q_ONOFFEQ" || paramName == "r_ONOFFCOMP" || paramName == "z_BYPASS") {
+            else if (paramName == "g_FREEZE" || paramName == "q_ONOFFEQ" || paramName == "r_ONOFFCOMP" || paramName == "y_FILTERS" || paramName == "z_BYPASS") {
                 value = juce::jlimit(0.0f, 1.0f, value);
             }
             else if (paramName == "h_LOWGAIN" || paramName == "i_PEAKGAIN" || paramName == "j_HIGAIN") {
@@ -108,7 +108,7 @@ JCBReverbAudioProcessor::JCBReverbAudioProcessor()
                 value = juce::jlimit(100.0f, 20000.0f, value);
             }
             else if (paramName == "l_HPF") {
-                value = juce::jlimit(20.0f, 5000.0f, value);
+                value = juce::jlimit(20.0f, 1000.0f, value);
             }
             else if (paramName == "m_OUTPUT") {
                 value = juce::jlimit(-12.0f, 12.0f, value);
@@ -1159,15 +1159,15 @@ juce::AudioProcessorValueTreeState::ParameterLayout JCBReverbAudioProcessor::cre
    params.push_back(std::make_unique<juce::AudioParameterFloat>(
        juce::ParameterID("c_REFLECT", versionHint),
        "Reflections",
-       juce::NormalisableRange<float>(0.1f, 0.95f, 0.01f),
-       0.85f));
+       juce::NormalisableRange<float>(0.1f, 1.0f, 0.01f),
+       0.75f));
 
    // d_DAMP - Damping
    params.push_back(std::make_unique<juce::AudioParameterFloat>(
        juce::ParameterID("d_DAMP", versionHint),
        "Damping",
        juce::NormalisableRange<float>(0.1f, 0.95f, 0.01f),
-       0.25f));
+       0.3125f));  // Default para mostrar 25% en UI
 
    // e_SIZE - Room size
    params.push_back(std::make_unique<juce::AudioParameterFloat>(
@@ -1181,7 +1181,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout JCBReverbAudioProcessor::cre
        juce::ParameterID("f_ST", versionHint),
        "Stereo",
        juce::NormalisableRange<float>(0.f, 0.8f, 0.01f),
-       0.5f));
+       0.4f));  // Default para mostrar 50% en UI
 
    // g_FREEZE - Freeze mode
    params.push_back(std::make_unique<juce::AudioParameterBool>(
@@ -1220,15 +1220,15 @@ juce::AudioProcessorValueTreeState::ParameterLayout JCBReverbAudioProcessor::cre
        juce::ParameterID("k_LPF", versionHint),
        "LPF",
         juce::NormalisableRange<float>(100.f, 20000.f, 1.f, 0.3f),
-        20000.f,
+        12000.f,
        "Hz"));
 
    // l_HPF - High pass filter
    params.push_back(std::make_unique<juce::AudioParameterFloat>(
        juce::ParameterID("l_HPF", versionHint),
        "HPF",
-       juce::NormalisableRange<float>(20.f, 5000.f, 1.f, 0.3f),
-       20.f,
+       juce::NormalisableRange<float>(20.f, 1000.f, 1.f, 0.3f),
+       100.f,
        "Hz"));
 
    // m_OUTPUT - Output gain
@@ -1267,6 +1267,12 @@ juce::AudioProcessorValueTreeState::ParameterLayout JCBReverbAudioProcessor::cre
    params.push_back(std::make_unique<juce::AudioParameterBool>(
        juce::ParameterID("q_ONOFFEQ", versionHint),
        "EQ",
+       false));
+
+   // y_FILTERS - Filters On/Off
+   params.push_back(std::make_unique<juce::AudioParameterBool>(
+       juce::ParameterID("y_FILTERS", versionHint),
+       "Filters",
        false));
 
    // === PARÁMETROS DEL COMPRESOR ===

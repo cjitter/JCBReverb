@@ -78,6 +78,9 @@ public:
     
     // Métodos de actualización para controles de reverb se añadirán cuando se implementen
     
+    // Métodos de actualización para controles
+    void updateSidechainComponentStates();
+    
     // Debug overlay
     void setDebugOverlayVisible(bool v) { debugOverlayVisible = v; repaint(); }
     
@@ -185,48 +188,6 @@ private:
         }
     };
     
-    // LookAndFeel personalizado para el slider BAND con gradiente en el thumb
-    class BandSliderLookAndFeel : public juce::LookAndFeel_V4
-    {
-    public:
-        BandSliderLookAndFeel() {}
-        
-        void drawLinearSlider(juce::Graphics& g,
-                            int x, int y, int width, int height,
-                            float sliderPos,
-                            float minSliderPos,
-                            float maxSliderPos,
-                            const juce::Slider::SliderStyle style,
-                            juce::Slider& slider) override;
-        
-    private:
-        // Colores de las bandas (consistentes con SpectrumAnalyzerComponent)
-        const juce::Colour lowBandColour{0xFF9C27B0};   // Púrpura (graves)
-        const juce::Colour highBandColour{0xFF2196F3};  // Azul (agudos)
-        
-        juce::Colour getInterpolatedBandColour(float bandValue) const;
-    };
-    
-    // LookAndFeel personalizado para el botón FILTERS con gradiente basado en banda seleccionada
-    class FiltersButtonLookAndFeel : public juce::LookAndFeel_V4
-    {
-    public:
-        FiltersButtonLookAndFeel() {}
-        
-        void drawButtonBackground(juce::Graphics& g, juce::Button& button,
-                                const juce::Colour& backgroundColour,
-                                bool shouldDrawButtonAsHighlighted,
-                                bool shouldDrawButtonAsDown) override;
-        
-    private:
-        
-        // Colores de las bandas (consistentes con SpectrumAnalyzerComponent y BandSliderLookAndFeel)
-        const juce::Colour lowBandColour{0xFF9C27B0};   // Púrpura (graves)
-        const juce::Colour highBandColour{0xFF2196F3};  // Azul (agudos)
-        
-        juce::Colour getInterpolatedBandColour(float bandValue) const;
-    };
-    
     // LookAndFeel personalizado para botón SOLO con gradiente invertido de púrpura
     class SoloButtonLookAndFeel : public juce::LookAndFeel_V4
     {
@@ -291,38 +252,14 @@ private:
         const juce::Colour coralColour{0xFFFEB2B2};  // Rosa pálido para distorsión
     };
     
-    // LookAndFeel personalizado para botones con fondo completamente transparente (DOWNSAMPLE, SOLO BAND)
-    class TransparentButtonLookAndFeel : public juce::LookAndFeel_V4
-    {
-    public:
-        TransparentButtonLookAndFeel() {}
-        
-        void drawButtonBackground(juce::Graphics& g, juce::Button& button,
-                                const juce::Colour& backgroundColour,
-                                bool shouldDrawButtonAsHighlighted,
-                                bool shouldDrawButtonAsDown) override;
-        
-        void drawButtonText(juce::Graphics& g, juce::TextButton& button,
-                           bool shouldDrawButtonAsHighlighted,
-                           bool shouldDrawButtonAsDown) override;
-        
-    private:
-        const juce::Colour lowBandColour{0xFF9C27B0};   // Púrpura (Low band)
-        const juce::Colour highBandColour{0xFF2196F3};  // Azul (High band)
-        
-        juce::Colour getInterpolatedBandColour(float bandValue) const;
-    };
-
     // Debug overlay controls
     bool debugOverlayVisible { true };
-    juce::Label debugLabel;
+    //juce::Label debugLabel;
 
     //==========================================================================
     // LISTENERS ESPECIALIZADOS
     //==========================================================================
-    
-    
-    
+
     //==========================================================================
     // COMPONENTES DE DISPLAY PRINCIPALES
     //==========================================================================
@@ -336,125 +273,55 @@ private:
     // Medidores con posicionamiento exacto desde JCBExpansorGate
     GradientMeter inputMeterL, inputMeterR;
     GradientMeterOutput outputMeterL, outputMeterR;
-    
-    
+
     //==========================================================================
     // SLIDERS DE TRIM (superpuestos a meters)
     //==========================================================================
     
-    // COMENTADO: Sliders de trim incorrectos - usar parámetros correctos de reverb
-    /*
-    TrimSlider trimSlider;      // INCORRECTO: debería ser a_input
-    TrimSlider makeupSlider;    // INCORRECTO: i_MAKEUP no existe, debería ser w_makeup o m_output
+    // Sliders de trim superpuestos a meters (entrada/salida)
+    TrimSlider trimSlider;      // a_INPUT (dB)
+    TrimSlider makeupSlider;    // m_OUTPUT (dB)
     std::unique_ptr<CustomSliderAttachment> trimAttachment;
     std::unique_ptr<CustomSliderAttachment> makeupAttachment;
-    */
     
     //==========================================================================
     // DISPLAYS DE VALOR INDEPENDIENTES
     //==========================================================================
-    
-    
+
     //==========================================================================
     // KNOBS DE CONTROL (organizados por ubicación visual)
     //==========================================================================
-    
-    // TODO v1.0: Refactoring post-alpha
-    // Reorganizar structs para que coincidan con el layout visual real:
-    // - LeftTopKnobs: MODE, DRIVE, EVEN, CEIL (fila superior izquierda)
-    // - RightTopKnobs: BIT, D/W (fila superior derecha)
-    // - LeftBottomKnobs: TILT + PRE, TONE + POST (fila media izquierda)
-    // - RightBottomKnobs: RLPF, Q, DECI (fila media derecha)
-    // - CenterButtons: ON, BIT CRUSHER, DECIMATOR (botones centrales)
-    // NOTA: Actualmente los controles NO están en los structs correctos según su posición visual
-    
-    // COMENTADO: Controles de distorsión - no aplican a reverb
-    /*
-    struct LeftTopKnobs {
-        CustomSlider ceilingSlider{"ceiling"};  // e_CEILING - CEIL knob (DISTORSION)
-        std::unique_ptr<CustomSliderAttachment> ceilingAttachment;
-    } leftTopKnobs;
-    */
 
-    // COMENTADO: Controles de tone/drywet incorrectos - no corresponden a reverb
-    /*
-    struct LeftBottomKnobs {
-        CustomSlider drywetSlider{"drywet"};  // INCORRECTO: debería ser b_drywet
-        CustomSlider toneFreqSlider{"tonefreq"};  // r_TONEFREQ - DISTORSION
-        CustomSlider toneQSlider{"toneQ"};  // t_TONEQ - DISTORSION
-        juce::TextButton toneLpfButton{"TONE"};  // q_TONEON - DISTORSION
-        juce::TextButton tonePosButton{"POST"};  // u_TONEPOS - DISTORSION
-        
-        std::unique_ptr<CustomSliderAttachment> drywetAttachment;
-        std::unique_ptr<CustomSliderAttachment> toneFreqAttachment;
-        std::unique_ptr<CustomSliderAttachment> toneQAttachment;
-        std::unique_ptr<UndoableButtonAttachment> toneLpfAttachment;
-        std::unique_ptr<UndoableButtonAttachment> tonePosAttachment;
-    } leftBottomKnobs;
-    */
-
-    
-    // COMENTADO: Controles de tilt/bits/downsample - todos de distorsión
-    /*
-    struct RightTopControls {
-        CustomSlider tiltSlider{"tilt"};  // i_TILT - DISTORSION (no existe en reverb)
-        juce::TextButton tiltOnButton{"TILT"};  // s_TILTON - DISTORSION
-        juce::TextButton tiltPosButton{"PRE"};  // p_TILTPOS - DISTORSION
-        CustomSlider bitsSlider{"BIT"};  // g_BITS - DISTORSION
-        CustomSlider downsampleSlider{"DECI"};  // m_DOWNSAMPLE - DISTORSION
-        juce::TextButton downsampleButton{"DOWNSAMPLE"};  // n_DOWNSAMPLEON - DISTORSION
-        juce::TextButton safeLimitButton{"LIMIT"};  // p_SAFELIMITON - DISTORSION
-        
-        std::unique_ptr<CustomSliderAttachment> tiltAttachment;
-        std::unique_ptr<UndoableButtonAttachment> tiltOnAttachment;
-        std::unique_ptr<UndoableButtonAttachment> tiltPosButtonAttachment;
-        std::unique_ptr<CustomSliderAttachment> bitsAttachment;
-        std::unique_ptr<CustomSliderAttachment> downsampleAttachment;
-        std::unique_ptr<UndoableButtonAttachment> downsampleButtonAttachment;
-        std::unique_ptr<UndoableButtonAttachment> safeLimitAttachment;
-    } rightTopControls;
-    */
-    
-    // COMENTADO: Controles de drive/mode/distorsión - no aplican a reverb
-    /*
-    struct RightBottomKnobs {
-        CustomSlider driveSlider{"drive"};  // b_DRIVE - DISTORSION
-        CustomSlider modeSlider{"mode"};  // d_MODE - DISTORSION
-        juce::TextButton distOnButton{"ON"};  // p_DISTON - DISTORSION
-        CustomSlider dcSlider{"dc"};  // c_DC - DISTORSION
-        juce::TextButton bitButton{"BIT CRUSHER"};  // h_BITSON - DISTORSION
-        
-        std::unique_ptr<CustomSliderAttachment> driveAttachment;
-        std::unique_ptr<CustomSliderAttachment> modeAttachment;
-        std::unique_ptr<UndoableButtonAttachment> distOnButtonAttachment;
-        std::unique_ptr<CustomSliderAttachment> dcAttachment;
-        std::unique_ptr<UndoableButtonAttachment> bitAttachment;
-    } rightBottomKnobs;
-    */
-    
     //==========================================================================
     // CONTROLES DE FILTRO DE ENTRADA (j_HPF, k_LPF, l_SC)
     //==========================================================================
     
-    // COMENTADO: Controles de crossover/sidechain - de distorsión, no reverb
-    /*
     struct SidechainControls {
-        CustomSlider xLowSlider{"xlow"};  // j_HPF - DISTORSION
-        CustomSlider bandSlider{"band"};  // o_BAND - DISTORSION
-        CustomSlider xHighSlider{"xhigh"};  // k_LPF - DISTORSION
-        juce::Label bandLowLabel;
-        juce::Label bandMidLabel;
-        juce::Label bandHighLabel;
-        juce::TextButton scButton{"XOVER"};  // l_SC - DISTORSION
-        juce::TextButton bandSoloButton{"SOLO"};  // p_BANDSOLO - DISTORSION
-        
-        std::unique_ptr<CustomSliderAttachment> xLowAttachment;
-        std::unique_ptr<CustomSliderAttachment> bandAttachment;
-        std::unique_ptr<CustomSliderAttachment> xHighAttachment;
+        CustomSlider hpfSlider{"hpf"};  // j_HPF - DISTORSION
+        CustomSlider lpfSlider{"lpf"};  // k_LPF - DISTORSION
+        juce::TextButton scButton{"FILTERS"};  // y_FILTERS - REVERB
+        std::unique_ptr<CustomSliderAttachment> hpfAttachment;
+        std::unique_ptr<CustomSliderAttachment> lpfAttachment;
         std::unique_ptr<UndoableButtonAttachment> scAttachment;
-        std::unique_ptr<UndoableButtonAttachment> bandSoloAttachment;
     } sidechainControls;
-    */
+
+    // Left top area controls
+    struct LeftTopReverbKnobs {
+        CustomSlider reflectSlider{"reflect"};
+        CustomSlider sizeSlider   { "size"  };
+        CustomSlider drywetSlider { "drywet"};
+        CustomSlider dampSlider   { "damp"  };
+        CustomSlider stSlider     { "stereo"};
+        juce::TextButton freezeButton {   "FREEZE"};
+
+        std::unique_ptr<CustomSliderAttachment> reflectAttachment;
+        std::unique_ptr<CustomSliderAttachment> sizeAttachment;
+        std::unique_ptr<CustomSliderAttachment> drywetAttachment;
+        std::unique_ptr<CustomSliderAttachment> dampAttachment;
+        std::unique_ptr<CustomSliderAttachment> stAttachment;
+        std::unique_ptr<UndoableButtonAttachment> freezeAttachment;
+
+    } leftTopKnobs;
     
     //==========================================================================
     // GRUPOS DE BUTTONS (organizados por función y ubicación)
@@ -1029,13 +896,10 @@ private:
     // Instancias de Look and Feel
     CustomSlider::LookAndFeel sliderLAFBig;
     SmallButtonLAF smallButtonLAF;
-    BandSliderLookAndFeel bandSliderLAF;
-    std::unique_ptr<FiltersButtonLookAndFeel> filtersButtonLAF;  // Unique_ptr porque necesita APVTS en constructor
     std::unique_ptr<SoloButtonLookAndFeel> soloButtonLAF;  // LookAndFeel para botón SOLO con gradiente invertido
     std::unique_ptr<ReversedGradientButtonLookAndFeel> reversedGradientButtonLAF;  // LookAndFeel con gradiente invertido
     std::unique_ptr<TealGradientButtonLookAndFeel> tealGradientButtonLAF;  // LookAndFeel con gradiente teal para PRE/POST
     std::unique_ptr<CoralGradientButtonLookAndFeel> coralGradientButtonLAF;  // LookAndFeel con gradiente coral para DIST ON
-    std::unique_ptr<TransparentButtonLookAndFeel> transparentButtonLAF;  // LookAndFeel transparente para DOWNSAMPLE y SOLO BAND
     
     // Banderas de estado principales
     bool isLoadingPreset = false;

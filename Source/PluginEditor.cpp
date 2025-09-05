@@ -71,13 +71,11 @@ JCBReverbAudioProcessorEditor::JCBReverbAudioProcessorEditor (JCBReverbAudioProc
       // scMeterL([&p](){ return p.getSCValue(0); }), // SC meter L
       // scMeterR([&p](){ return p.getSCValue(1); }) // SC meter R
 {
-    // Inicializar LookAndFeel personalizado para el botón FILTERS
-    filtersButtonLAF = std::make_unique<FiltersButtonLookAndFeel>();
+    // Inicializar LookAndFeel personalizado para botones
     soloButtonLAF = std::make_unique<SoloButtonLookAndFeel>();
     reversedGradientButtonLAF = std::make_unique<ReversedGradientButtonLookAndFeel>();
     tealGradientButtonLAF = std::make_unique<TealGradientButtonLookAndFeel>();
     coralGradientButtonLAF = std::make_unique<CoralGradientButtonLookAndFeel>();
-    transparentButtonLAF = std::make_unique<TransparentButtonLookAndFeel>();
     
     // Configurar todos los componentes
     setupBackground();
@@ -87,16 +85,7 @@ JCBReverbAudioProcessorEditor::JCBReverbAudioProcessorEditor (JCBReverbAudioProc
     setupPresetArea();
     setupUtilityButtons();
     setupParameterButtons();
-    
-    // Agregar display principal
-    
-    // Agregar visualizador de curvas de distorsión
-    // addAndMakeVisible(distortionCurveDisplay) - No necesario para reverb;
-    
-    // Agregar analizador de espectro (inicialmente invisible)
-    // addAndMakeVisible(spectrumAnalyzer) - Temporalmente deshabilitado;
-    // spectrumAnalyzer.setVisible(false);
-    
+
     // Agregar título y versión - mismo estilo que ExpansorGate
     auto titleFont = juce::Font(juce::FontOptions(22.0f));
     titleLink.setColour(juce::TextButton::buttonColourId, juce::Colours::transparentBlack);
@@ -122,7 +111,6 @@ JCBReverbAudioProcessorEditor::JCBReverbAudioProcessorEditor (JCBReverbAudioProc
 #endif
     
     titleLink.setButtonText(titleText);
-    
     // NO agregar tooltip individual - solo usar la ventana general de tooltips
     // El tooltip se actualiza dinámicamente en updateTooltips() usando getTooltipText("title")
     titleLink.setTooltip("");
@@ -133,14 +121,12 @@ JCBReverbAudioProcessorEditor::JCBReverbAudioProcessorEditor (JCBReverbAudioProc
     };
     
     addAndMakeVisible(titleLink);
-    
-    
+
     // Agregar tooltip
     addAndMakeVisible(tooltipComponent);
     tooltipComponent.setAlwaysOnTop(true);
     tooltipComponent.showTip(JUCE_UTF8("Pasa el mouse sobre los controles\npara ver ayuda detallada"));
-    
-    
+
     // Establecer tamaño inicial con restricciones
     auto savedSize = processor.getSavedSize();
     int initialWidth = savedSize.x > 0 ? savedSize.x : DEFAULT_WIDTH;
@@ -171,23 +157,7 @@ JCBReverbAudioProcessorEditor::JCBReverbAudioProcessorEditor (JCBReverbAudioProc
     
     // Timer para resetear indicadores de clip cada cierto tiempo
     clipResetCounter = 0;
-    
-    // DISTORTION: Transfer display no necesita inicialización con parámetros
-    // Se usará solo para visualización de salida, no función de transferencia
 
-    // Solo se usará para visualización de salida, sin controles interactivos
-    
-    
-    // Solo se mantiene para visualización básica si es necesario en el futuro
-    // transferFunctionListener eliminado - no necesario para reverb
-    
-    
-    // Listeners para parámetros de reverb se añadirán según sea necesario
-    
-    // Listeners de reverb se implementarán cuando se añadan los controles correctos
-    
-    // Crear y registrar parameter listener para cambios en la banda seleccionada
-    
     // Configurar estado inicial del idioma
     if (processor.getTooltipLanguageEnglish()) {
         currentLanguage = TooltipLanguage::English;
@@ -199,52 +169,13 @@ JCBReverbAudioProcessorEditor::JCBReverbAudioProcessorEditor (JCBReverbAudioProc
         utilityButtons.tooltipLangButton.setColour(juce::TextButton::textColourOffId, DarkTheme::textPrimary);
     }
 
-
-
     // Actualizar todos los tooltips basado en idioma inicial
     updateAllTooltips();
-    
-    // Configurar AUTO RELEASE button
-    
+
     // Configurar estados iniciales
-    
     updateButtonStates();
     updateFilterButtonText();  // Establecer texto inicial de botones de filtro
-    
-    // COMENTADO: Llamadas a métodos update de controles de distorsión
-    /*
-    updateSidechainComponentStates();
-    updateDistortionComponentStates();
-    updateBitCrusherComponentStates();
-    updateDownsampleComponentStates();
-    updateToneLpfComponentStates();
-    updateTiltComponentStates();
-    */
-    
-    // Establecer estado inicial de SOLO SIDECHAIN en transfer display
-    
-    // COMENTADO: Display mode de distorsión no aplica a reverb
-    /*
-    if (processor.displayModeIsFFT)
-    {
-        // currentDisplayMode = DisplayMode::FFT; // COMENTADO: DisplayMode eliminado
-        utilityButtons.runGraphicsButton.setButtonText("FFT");
-        utilityButtons.runGraphicsButton.setColour(juce::TextButton::buttonColourId, 
-                                                  juce::Colours::transparentBlack);
-        utilityButtons.zoomButton.setAlpha(1.0f);
-        utilityButtons.zoomButton.setEnabled(true);
-    }
-    else
-    {
-        // currentDisplayMode = DisplayMode::FFT; // COMENTADO: DisplayMode eliminado
-        utilityButtons.runGraphicsButton.setButtonText("curves");
-        utilityButtons.runGraphicsButton.setColour(juce::TextButton::buttonColourId, 
-                                                  DarkTheme::accent.withAlpha(0.3f));
-        utilityButtons.zoomButton.setAlpha(0.4f);
-        utilityButtons.zoomButton.setEnabled(false);
-    }
-    */
-    
+
     // Actualizar valores de sliders desde APVTS para evitar problemas al cargar sesión
     // Usar MessageManager::callAsync para ejecución thread-safe sin delay
     juce::MessageManager::callAsync([safeThis = juce::Component::SafePointer<JCBReverbAudioProcessorEditor>(this)]() {
@@ -265,235 +196,17 @@ JCBReverbAudioProcessorEditor::JCBReverbAudioProcessorEditor (JCBReverbAudioProc
     
     // Aplicar estados iniciales de todos los modos en el orden correcto
     updateButtonStates();
-    
-    
-    // Inicializar texto del botón AR basado en el estado actual del parámetro
-    
+
     // CRASH FIX: Configurar las funciones reales de los medidores DESPUÉS de toda la inicialización
     // Esto evita accesos prematuros a valores atómicos del processor durante la construcción
     inputMeterL.setValueFunction([this](){ return processor.isInitialized() ? processor.getRmsInputValue(0) : -100.0f; });
     inputMeterR.setValueFunction([this](){ return processor.isInitialized() ? processor.getRmsInputValue(1) : -100.0f; });
     outputMeterL.setValueFunction([this](){ return processor.isInitialized() ? processor.getRmsOutputValue(0) : -100.0f; });
     outputMeterR.setValueFunction([this](){ return processor.isInitialized() ? processor.getRmsOutputValue(1) : -100.0f; });
-    
-    // Callbacks para visualización se añadirán cuando se implemente el display de reverb
 
-    // Inicializar texto debug overlay
-    debugLabel.setText("FS:0  RS:0", juce::dontSendNotification);
-    
-    
     // CRASH FIX: Iniciar timer AL FINAL para evitar acceso prematuro a valores atómicos
     // El timer debe iniciarse después de que todo esté completamente inicializado
     startTimerHz(TIMER_HZ);
-}
-
-//==============================================================================
-// IMPLEMENTACIÓN DE BANDSLIDER LOOKANDFEEL
-//==============================================================================
-
-void JCBReverbAudioProcessorEditor::BandSliderLookAndFeel::drawLinearSlider(
-    juce::Graphics& g,
-    int x, int y, int width, int height,
-    float sliderPos,
-    float minSliderPos,
-    float maxSliderPos,
-    const juce::Slider::SliderStyle style,
-    juce::Slider& slider)
-{
-    if (style == juce::Slider::LinearHorizontal)
-    {
-        // Dibujar el track de fondo (línea horizontal)
-        const float trackHeight = 2.0f;
-        const float trackY = y + height * 0.5f - trackHeight * 0.5f;
-        
-        g.setColour(juce::Colours::white.withAlpha(0.12f));
-        g.fillRoundedRectangle(x, trackY, width, trackHeight, trackHeight * 0.5f);
-        
-        // Dibujar el thumb con gradiente basado en el valor actual
-        const float thumbDiameter = juce::jmin(width, height) * 0.7f;
-        const float thumbX = sliderPos - thumbDiameter * 0.5f;
-        const float thumbY = y + height * 0.5f - thumbDiameter * 0.5f;
-        
-        // Obtener el valor actual del slider (0=Low, 1=Mid, 2=High)
-        float bandValue = static_cast<float>(slider.getValue());
-        
-        // Calcular colores para el gradiente del thumb
-        juce::Colour thumbColour = getInterpolatedBandColour(bandValue);
-        
-        // Dibujar sombra del thumb
-        g.setColour(juce::Colours::black.withAlpha(0.3f));
-        g.fillEllipse(thumbX + 1.0f, thumbY + 1.0f, thumbDiameter, thumbDiameter);
-        
-        // Dibujar el thumb con gradiente
-        if (bandValue <= 1.0f)
-        {
-            // Gradiente entre Low (púrpura) y Mid (mezcla)
-            float t = bandValue;  // 0 a 1
-            juce::ColourGradient gradient(
-                lowBandColour,
-                thumbX, thumbY + thumbDiameter * 0.5f,
-                lowBandColour.interpolatedWith(highBandColour, 0.5f),
-                thumbX + thumbDiameter, thumbY + thumbDiameter * 0.5f,
-                false
-            );
-            gradient.addColour(0.5, lowBandColour.interpolatedWith(highBandColour, t * 0.5f));
-            g.setGradientFill(gradient);
-        }
-        else
-        {
-            // Gradiente entre Mid (mezcla) y High (azul)
-            float t = bandValue - 1.0f;  // 0 a 1
-            juce::ColourGradient gradient(
-                lowBandColour.interpolatedWith(highBandColour, 0.5f),
-                thumbX, thumbY + thumbDiameter * 0.5f,
-                highBandColour,
-                thumbX + thumbDiameter, thumbY + thumbDiameter * 0.5f,
-                false
-            );
-            gradient.addColour(0.5, lowBandColour.interpolatedWith(highBandColour, 0.5f + t * 0.5f));
-            g.setGradientFill(gradient);
-        }
-        
-        g.fillEllipse(thumbX, thumbY, thumbDiameter, thumbDiameter);
-        
-        // Añadir un borde sutil al thumb
-        g.setColour(thumbColour.brighter(0.3f).withAlpha(0.8f));
-        g.drawEllipse(thumbX, thumbY, thumbDiameter, thumbDiameter, 1.0f);
-        
-        // Añadir punto central brillante
-        const float centerDotSize = thumbDiameter * 0.2f;
-        g.setColour(juce::Colours::white.withAlpha(0.9f));
-        g.fillEllipse(
-            thumbX + thumbDiameter * 0.5f - centerDotSize * 0.5f,
-            thumbY + thumbDiameter * 0.5f - centerDotSize * 0.5f,
-            centerDotSize,
-            centerDotSize
-        );
-    }
-    else
-    {
-        // Delegar a la implementación por defecto para otros estilos
-        juce::LookAndFeel_V4::drawLinearSlider(g, x, y, width, height, 
-                                              sliderPos, minSliderPos, maxSliderPos, 
-                                              style, slider);
-    }
-}
-
-juce::Colour JCBReverbAudioProcessorEditor::BandSliderLookAndFeel::getInterpolatedBandColour(float bandValue) const
-{
-    // bandValue: 0=Low, 1=Mid, 2=High
-    if (bandValue <= 1.0f)
-    {
-        // Interpolar entre Low (púrpura) y Mid (mezcla púrpura-azul)
-        return lowBandColour.interpolatedWith(
-            lowBandColour.interpolatedWith(highBandColour, 0.5f),
-            bandValue
-        );
-    }
-    else
-    {
-        // Interpolar entre Mid (mezcla) y High (azul)
-        float t = bandValue - 1.0f;
-        return lowBandColour.interpolatedWith(highBandColour, 0.5f)
-            .interpolatedWith(highBandColour, t);
-    }
-}
-
-//==============================================================================
-// IMPLEMENTACIÓN DE FILTERSBUTTONLOOKANDFEEL
-//==============================================================================
-
-void JCBReverbAudioProcessorEditor::FiltersButtonLookAndFeel::drawButtonBackground(
-    juce::Graphics& g, juce::Button& button,
-    const juce::Colour& backgroundColour,
-    bool shouldDrawButtonAsHighlighted,
-    bool shouldDrawButtonAsDown)
-{
-    auto bounds = button.getLocalBounds().toFloat();
-    
-    // Si el botón está activado (toggle ON), dibujar gradiente basado en banda seleccionada
-    if (auto* toggleButton = dynamic_cast<juce::TextButton*>(&button))
-    {
-        if (toggleButton->getToggleState())
-        {
-            // Usar siempre el color de banda Mid (valor fijo 1.0f)
-            float bandValue = 1.0f;  // Siempre Mid - color fijo independiente de la selección actual
-            
-            // Crear gradiente basado en la banda Mid
-            juce::ColourGradient gradient;
-            
-            if (bandValue <= 1.0f)
-            {
-                // Gradiente entre Low (púrpura) y Mid (mezcla)
-                float t = bandValue;  // 0 a 1
-                gradient = juce::ColourGradient(
-                    lowBandColour.withAlpha(0.20f),  // Restaurar transparencia original
-                    bounds.getX(), bounds.getCentreY(),
-                    lowBandColour.interpolatedWith(highBandColour, 0.5f).withAlpha(0.15f),  // Restaurar transparencia original
-                    bounds.getRight(), bounds.getCentreY(),
-                    false
-                );
-                // Añadir punto intermedio para transición más suave
-                gradient.addColour(0.5, lowBandColour.interpolatedWith(highBandColour, t * 0.5f).withAlpha(0.18f));
-            }
-            else
-            {
-                // Gradiente entre Mid (mezcla) y High (azul)
-                float t = bandValue - 1.0f;  // 0 a 1
-                gradient = juce::ColourGradient(
-                    lowBandColour.interpolatedWith(highBandColour, 0.5f).withAlpha(0.15f),  // Restaurar transparencia original
-                    bounds.getX(), bounds.getCentreY(),
-                    highBandColour.withAlpha(0.20f),  // Restaurar transparencia original
-                    bounds.getRight(), bounds.getCentreY(),
-                    false
-                );
-                // Añadir punto intermedio para transición más suave
-                gradient.addColour(0.5, lowBandColour.interpolatedWith(highBandColour, 0.5f + t * 0.5f).withAlpha(0.18f));
-            }
-            
-            // Dibujar fondo con gradiente
-            g.setGradientFill(gradient);
-            g.fillRoundedRectangle(bounds, 3.0f);
-            
-            // Añadir un borde sutil con el color interpolado
-            juce::Colour borderColour = getInterpolatedBandColour(bandValue);
-            g.setColour(borderColour.withAlpha(0.3f));
-            g.drawRoundedRectangle(bounds.reduced(0.5f), 3.0f, 1.0f);
-        }
-        else
-        {
-            // Botón desactivado: fondo transparente (comportamiento por defecto)
-            g.setColour(backgroundColour);
-            g.fillRoundedRectangle(bounds, 3.0f);
-        }
-    }
-    else
-    {
-        // Fallback para otros tipos de botones
-        g.setColour(backgroundColour);
-        g.fillRoundedRectangle(bounds, 3.0f);
-    }
-}
-
-juce::Colour JCBReverbAudioProcessorEditor::FiltersButtonLookAndFeel::getInterpolatedBandColour(float bandValue) const
-{
-    // bandValue: 0=Low, 1=Mid, 2=High
-    // Misma lógica que BandSliderLookAndFeel para consistencia
-    if (bandValue <= 1.0f)
-    {
-        // Interpolar entre Low (púrpura) y Mid (mezcla púrpura-azul)
-        return lowBandColour.interpolatedWith(
-            lowBandColour.interpolatedWith(highBandColour, 0.5f),
-            bandValue
-        );
-    }
-    else
-    {
-        // Interpolar entre Mid (mezcla) y High (azul)
-        float t = bandValue - 1.0f;
-        return lowBandColour.interpolatedWith(highBandColour, 0.5f)
-            .interpolatedWith(highBandColour, t);
-    }
 }
 
 //==============================================================================
@@ -670,134 +383,21 @@ void JCBReverbAudioProcessorEditor::CoralGradientButtonLookAndFeel::drawButtonBa
     }
 }
 
-//==============================================================================
-// IMPLEMENTACIÓN DE TRANSPARENTBUTTONLOOKANDFEEL
-//==============================================================================
-
-void JCBReverbAudioProcessorEditor::TransparentButtonLookAndFeel::drawButtonBackground(
-    juce::Graphics& g, juce::Button& button,
-    const juce::Colour& backgroundColour,
-    bool shouldDrawButtonAsHighlighted,
-    bool shouldDrawButtonAsDown)
-{
-    auto bounds = button.getLocalBounds().toFloat();
-    
-    // Si el botón está activado (toggle ON), solo dibujar borde sutil sin fondo
-    if (auto* toggleButton = dynamic_cast<juce::TextButton*>(&button))
-    {
-        // Para tiltPosButton, siempre dibujar el borde (tanto PRE como POST son estados válidos)
-        bool shouldDrawBorder = toggleButton->getToggleState() || 
-                               button.getComponentID() == "tiltpos";
-        
-        if (shouldDrawBorder)
-        {
-            // NO dibujar fondo - completamente transparente
-            
-            // Solo añadir un borde muy sutil
-            juce::Colour borderColour = lowBandColour.interpolatedWith(highBandColour, 0.5f);
-            g.setColour(borderColour.withAlpha(0.15f));  // Borde muy sutil
-            g.drawRoundedRectangle(bounds.reduced(0.5f), 3.0f, 1.0f);
-        }
-        else
-        {
-            // Botón desactivado: fondo transparente (comportamiento por defecto)
-            g.setColour(backgroundColour);
-            g.fillRoundedRectangle(bounds, 3.0f);
-        }
-    }
-}
-
-void JCBReverbAudioProcessorEditor::TransparentButtonLookAndFeel::drawButtonText(
-    juce::Graphics& g, 
-    juce::TextButton& button,
-    bool /*shouldDrawButtonAsHighlighted*/,
-    bool /*shouldDrawButtonAsDown*/)
-{
-    auto font = getTextButtonFont(button, button.getHeight());
-    g.setFont(font);
-    
-    // Todos los botones usan findColour normal
-    if (button.getToggleState())
-        g.setColour(button.findColour(juce::TextButton::textColourOnId));
-    else
-        g.setColour(button.findColour(juce::TextButton::textColourOffId));
-    
-    const int yIndent = juce::jmin(4, button.proportionOfHeight(0.3f));
-    const int cornerSize = juce::jmin(button.getHeight(), button.getWidth()) / 2;
-    const int leftIndent = cornerSize / 2 + 1;
-    const int rightIndent = leftIndent;
-    const int textWidth = button.getWidth() - leftIndent - rightIndent;
-    
-    g.drawFittedText(button.getButtonText(),
-                    leftIndent, yIndent, textWidth, button.getHeight() - yIndent * 2,
-                    juce::Justification::centred, 2);
-}
-
-juce::Colour JCBReverbAudioProcessorEditor::TransparentButtonLookAndFeel::getInterpolatedBandColour(float bandValue) const
-{
-    // Mismo código que FiltersButtonLookAndFeel para consistencia
-    if (bandValue <= 1.0f)
-    {
-        return lowBandColour.interpolatedWith(
-            lowBandColour.interpolatedWith(highBandColour, 0.5f),
-            bandValue
-        );
-    }
-    else
-    {
-        float t = bandValue - 1.0f;
-        return lowBandColour.interpolatedWith(highBandColour, 0.5f)
-            .interpolatedWith(highBandColour, t);
-    }
-}
 
 JCBReverbAudioProcessorEditor::~JCBReverbAudioProcessorEditor()
 {
     // CRÍTICO: Detener timer PRIMERO para prevenir crashes durante destrucción
     stopTimer();
-    
-    // Eliminar parameter listeners
-    processor.apvts.removeParameterListener("g_BITS", this);
-    
-    
-    // DISTORTION: Transfer function listener sin parameter listeners activos
-    // if (transferFunctionListener) - sin listeners que remover
-    
-    
-    // Remover listeners de reverb cuando se implementen
-    
-    // Remoción de listeners de reverb cuando se implementen
-    
-    // IMPORTANTE: Limpiar todos los LookAndFeels de componentes hijos antes de destrucción
-    // Esto resuelve la aserción juce_LookAndFeel.cpp:82 detectada por pluginval
-    
-    // COMENTADO: Limpiar look and feel de controles de distorsión
-    /* 
-    leftTopKnobs.ceilingSlider.setLookAndFeel(nullptr);
-    leftBottomKnobs.drywetSlider.setLookAndFeel(nullptr);
-    leftBottomKnobs.toneFreqSlider.setLookAndFeel(nullptr);
-    leftBottomKnobs.toneQSlider.setLookAndFeel(nullptr);
-    rightTopControls.bitsSlider.setLookAndFeel(nullptr);
-    rightBottomKnobs.driveSlider.setLookAndFeel(nullptr);
-    rightBottomKnobs.modeSlider.setLookAndFeel(nullptr);
-    rightTopControls.tiltSlider.setLookAndFeel(nullptr);
-    rightTopControls.downsampleSlider.setLookAndFeel(nullptr);
-    rightBottomKnobs.dcSlider.setLookAndFeel(nullptr);
-    sidechainControls.xLowSlider.setLookAndFeel(nullptr);
-    sidechainControls.xHighSlider.setLookAndFeel(nullptr);
-    sidechainControls.bandSlider.setLookAndFeel(nullptr);
-    leftBottomKnobs.toneLpfButton.setLookAndFeel(nullptr);
-    leftBottomKnobs.tonePosButton.setLookAndFeel(nullptr);
-    rightBottomKnobs.distOnButton.setLookAndFeel(nullptr);
-    rightTopControls.tiltOnButton.setLookAndFeel(nullptr);
-    rightTopControls.tiltPosButton.setLookAndFeel(nullptr);
-    rightTopControls.downsampleButton.setLookAndFeel(nullptr);
-    sidechainControls.bandSoloButton.setLookAndFeel(nullptr);
+
+    sidechainControls.hpfSlider.setLookAndFeel(nullptr);
+    sidechainControls.lpfSlider.setLookAndFeel(nullptr);
     sidechainControls.scButton.setLookAndFeel(nullptr);
-    rightTopControls.safeLimitButton.setLookAndFeel(nullptr);
-    rightBottomKnobs.bitButton.setLookAndFeel(nullptr);
-    */
-    
+
+    leftTopKnobs.reflectSlider.setLookAndFeel(nullptr);
+    leftTopKnobs.dampSlider.setLookAndFeel(nullptr);
+    leftTopKnobs.sizeSlider.setLookAndFeel(nullptr);
+    leftTopKnobs.drywetSlider.setLookAndFeel(nullptr);
+
     // Limpiar LookAndFeel del editor principal
     setLookAndFeel(nullptr);
 }
@@ -835,7 +435,6 @@ void JCBReverbAudioProcessorEditor::resized()
     // Guardar tamaño de ventana
     processor.setSavedSize({getWidth(), getHeight()});
     
-    // Si el usuario redimensiona manualmente (no es uno de los tamaños predefinidos),
     // guardar como tamaño personalizado para poder volver a él
     int currentWidth = getWidth();
     int currentHeight = getHeight();
@@ -853,92 +452,63 @@ void JCBReverbAudioProcessorEditor::resized()
     // Meters de entrada (lado izquierdo)
     inputMeterL.setBounds(getScaledBounds(2, 42, 12, 117));
     inputMeterR.setBounds(getScaledBounds(12, 42, 12, 117));
-    
-    // Meters de sidechain - ahora directamente adyacentes a los meters de entrada (sin gap)
-    // scMeterL.setBounds(getScaledBounds(24, 42, 12, 117));
-    // scMeterR.setBounds(getScaledBounds(34, 42, 12, 117));
-    
-    // COMENTADO: Slider de trim incorrecto
-    // trimSlider.setBounds(getScaledBounds(2, 40, 22, 130));
-    
-    // Sliders de trim de sidechain superpuestos a los medidores de sidechain
-    // scTrimSlider.setBounds(getScaledBounds(24, 40, 22, 130));  // Altura expandida para TextBox integrado
-    
-    // Medidor GR (centro-derecha) - más delgado y alto, posición final ajustada
-    
+
+    // Slider de trim superpuesto a los meters de entrada
+    trimSlider.setBounds(getScaledBounds(2, 40, 22, 130));
+    // Slider de makeup superpuesto a los meters de salida
+    makeupSlider.setBounds(getScaledBounds(677, 40, 22, 130));
+
     // Medidores de salida (lado derecho)
     outputMeterL.setBounds(getScaledBounds(677, 42, 12, 117));
     outputMeterR.setBounds(getScaledBounds(687, 42, 12, 117));
 
-    // Posicionar debug label en esquina inferior derecha
-    const int dbgW = 220;
-    const int dbgH = 16;
-    debugLabel.setBounds(getWidth() - dbgW - 10, getHeight() - dbgH - 6, dbgW, dbgH);
-    
-    // COMENTADO: Slider de makeup incorrecto
-    // makeupSlider.setBounds(getScaledBounds(677, 40, 22, 130));
-    
-    
+    // Posicionar HPF/LPF en la parte superior central + botón FILTERS - 285, 5, 36, 36
+    sidechainControls.hpfSlider.setBounds(getScaledBounds(285, 3, 39, 39));
+    sidechainControls.lpfSlider.setBounds(getScaledBounds(388, 3, 39, 39));
+    {
+        const int buttonWidth = 45;
+        const int centerX = 353;
+        sidechainControls.scButton.setBounds(getScaledBounds(centerX - buttonWidth/2, 15, buttonWidth, 20));
+    }
+
+    // Posición leftTopKnobs
+    leftTopKnobs.reflectSlider.setBounds(getScaledBounds(52, 49, 53, 53));
+    leftTopKnobs.sizeSlider.setBounds(getScaledBounds(100, 49, 53, 53));
+    leftTopKnobs.dampSlider.setBounds(getScaledBounds(150, 49, 53, 53));
+
+    leftTopKnobs.drywetSlider.setBounds(getScaledBounds(73, 102, 53, 53));
+    leftTopKnobs.stSlider.setBounds(getScaledBounds(128, 102, 53, 53));
+    leftTopKnobs.freezeButton.setBounds(getScaledBounds(185, 115, 45, 20));
+
+    // Posicionar debug label en esquina inferior derecha - ELIMINAR SI NO SE USA
+    // const int dbgW = 220;
+    // const int dbgH = 16;
+    // debugLabel.setBounds(getWidth() - dbgW - 10, getHeight() - dbgH - 6, dbgW, dbgH);
+
     // === TRANSFER FUNCTION DISPLAY (CENTER) ===
-    float x = 460.0f * 700.0f / 1247.0f;
-    float y = 73.0f * 200.0f / 353.0f + 4.0f;
-    float w = 335.0f * 700.0f / 1247.0f;
-    float h = 205.0f * 200.0f / 353.0f - 5.0f;
-    
-    // Posicionar el visualizador de curvas de distorsión en el mismo lugar
-    // distortionCurveDisplay.setBounds(getScaledBounds(x, y, w, h));
-    
+    // float x = 460.0f * 700.0f / 1247.0f;
+    // float y = 73.0f * 200.0f / 353.0f + 4.0f;
+    // float w = 335.0f * 700.0f / 1247.0f;
+    // float h = 205.0f * 200.0f / 353.0f - 5.0f;
+
     // Posicionar el analizador de espectro en el mismo lugar
     // spectrumAnalyzer.setBounds(getScaledBounds(x, y, w, h));
 
-    // COMENTADO: Posicionamiento de controles de distorsión
     /*
     leftBottomKnobs.toneLpfButton.setBounds(getScaledBounds(126, 118, 25, 15));
     leftBottomKnobs.tonePosButton.setBounds(getScaledBounds(136, 138, 20, 10));
     leftBottomKnobs.toneFreqSlider.setBounds(getScaledBounds(146, 102, 53, 53));
     leftBottomKnobs.toneQSlider.setBounds(getScaledBounds(193, 102, 53, 53));
-    rightTopControls.tiltSlider.setBounds(getScaledBounds(73, 102, 53, 53));
     rightTopControls.tiltOnButton.setBounds(getScaledBounds(53, 118, 25, 15));
     rightTopControls.tiltPosButton.setBounds(getScaledBounds(63, 138, 20, 10));
     rightBottomKnobs.distOnButton.setBounds(getScaledBounds(33, 68, 25, 20));
-    rightBottomKnobs.modeSlider.setBounds(getScaledBounds(52, 49, 53, 53));
     rightBottomKnobs.driveSlider.setBounds(getScaledBounds(100, 49, 53, 53));
-    rightBottomKnobs.dcSlider.setBounds(getScaledBounds(146, 49, 53, 53));
     leftTopKnobs.ceilingSlider.setBounds(getScaledBounds(193, 49, 53, 53));
     rightTopControls.bitsSlider.setBounds(getScaledBounds(475, 51, 53, 53));
     rightBottomKnobs.bitButton.setBounds(getScaledBounds(525, 73, 57, 15));
     rightTopControls.downsampleSlider.setBounds(getScaledBounds(530, 102, 53, 53));
     rightTopControls.downsampleButton.setBounds(getScaledBounds(580, 118, 57, 15));
-    leftBottomKnobs.drywetSlider.setBounds(getScaledBounds(585, 51, 53, 53));
     rightTopControls.safeLimitButton.setBounds(getScaledBounds(678, 30, 20, 10));
-    */
-    // Movido junto con FILTERS button abajo
-
-
-    // COMENTADO: Controles de filtro/sidechain de distorsión
-    /*
-    sidechainControls.xLowSlider.setBounds(getScaledBounds(285, 5, 36, 36));
-    sidechainControls.xHighSlider.setBounds(getScaledBounds(388, 5, 36, 36));
-    const int bandCenterX = 353;
-    auto bandBounds = getScaledBounds(bandCenterX - 35, 24, 70, 10);
-    sidechainControls.bandSlider.setBounds(bandBounds);
-    */
-    
-    // COMENTADO: Más posicionamiento de controles de sidechain
-    /*
-    const int labelY = bandBounds.getBottom() + 1;
-    const int labelHeight = 14;
-    sidechainControls.bandLowLabel.setBounds(
-        bandBounds.getX(), labelY, 30, labelHeight);
-    sidechainControls.bandMidLabel.setBounds(
-        bandBounds.getX() + bandBounds.getWidth()/2 - 15, labelY, 30, labelHeight);
-    sidechainControls.bandHighLabel.setBounds(
-        bandBounds.getRight() - 25, labelY, 25, labelHeight);
-    const int buttonWidth = 25;
-    const int centerX = 353;
-    const int spacing = 2;
-    sidechainControls.scButton.setBounds(getScaledBounds(centerX - buttonWidth - spacing/2, 8, buttonWidth, 12));
-    sidechainControls.bandSoloButton.setBounds(getScaledBounds(centerX + spacing/2, 8, buttonWidth, 12));
     */
 
     // === PRESET AREA (TOP LEFT) ===
@@ -968,13 +538,11 @@ void JCBReverbAudioProcessorEditor::resized()
     const int bottomCenterX = 358;  // Centro horizontal del plugin para botones inferiores
     const int totalButtonWidth = 44 + 10 + 50;  // DIAGRAM + gap + BYPASS
     const int buttonsStartX = bottomCenterX - (totalButtonWidth / 2);
-    
     // DIAGRAM y BYPASS centrados horizontalmente
     centerButtons.diagramButton.setBounds(getScaledBounds(buttonsStartX, bottomButtonsY, 44, 12));
     parameterButtons.bypassButton.setBounds(getScaledBounds(buttonsStartX + 52, bottomButtonsY, 44, 12));
     
-    // Botones TODO movidos abajo a la derecha, centrados en el rectángulo
-    // Calcular posición central para el grupo de botones TODO
+    // Calcular posición central para el grupo de botones "POR HACER"
     const int todoStartX = 503;    // Movido a la derecha para mejor centrado en el rectángulo
     const int todoY = 175;       // Mismo Y que botones de utilidad
     utilityButtons.hqButton.setBounds(getScaledBounds(todoStartX, todoY, 18, 12));
@@ -1073,8 +641,7 @@ void JCBReverbAudioProcessorEditor::timerCallback()
         processor.resetClipIndicators();
         clipResetCounter = 0;
     }
-    
-    
+
     // Pasar el estado de Logic parado al display
     // Determinar si el procesamiento está inactivo
     // Usar sistema híbrido optimizado (timestamp + playhead + audio tail)
@@ -1098,15 +665,13 @@ void JCBReverbAudioProcessorEditor::timerCallback()
         {
         }
     }
-    
-    // FFT processing removed - disabled for stability
 
     // Debug overlay: update counters each frame (lightweight atomics)
-    {
-        const int fs = processor.getDiagFailsafeCount();
-        const int rs = processor.getDiagGenResets();
-        debugLabel.setText(juce::String::formatted("FS:%d  RS:%d", fs, rs), juce::dontSendNotification);
-    }
+    //{
+        //const int fs = processor.getDiagFailsafeCount();
+        //const int rs = processor.getDiagGenResets();
+        //debugLabel.setText(juce::String::formatted("FS:%d  RS:%d", fs, rs), juce::dontSendNotification);
+    //}
 }
 
 void JCBReverbAudioProcessorEditor::buttonClicked(juce::Button* button)
@@ -1155,69 +720,11 @@ void JCBReverbAudioProcessorEditor::buttonClicked(juce::Button* button)
         outputMeterL.setBypassMode(bypassActive);
         outputMeterR.setBypassMode(bypassActive);
     }
-    // COMENTADO: Control de filtros y módulos de distorsión - no aplican a reverb
-    /*
     else if (button == &sidechainControls.scButton)
     {
         // Actualizar estado visual de sliders HPF/LPF
         updateSidechainComponentStates();
     }
-    // DISTORTION: Control de activación del módulo de distorsión
-    else if (button == &rightBottomKnobs.distOnButton)
-    {
-        // Actualizar estado visual de sliders de distorsión (MODE, EVEN, DRIVE, CEIL)
-        updateDistortionComponentStates();
-    }
-    // Control de activación de BIT CRUSHER
-    else if (button == &rightBottomKnobs.bitButton)
-    {
-        // Actualizar estado visual del slider BIT
-        updateBitCrusherComponentStates();
-    }
-    // Control de activación de DOWNSAMPLE
-    else if (button == &rightTopControls.downsampleButton)
-    {
-        // Actualizar estado visual del slider DECI
-        updateDownsampleComponentStates();
-    }
-    // Control de activación de TONE LPF
-    else if (button == &leftBottomKnobs.toneLpfButton)
-    {
-        // Actualizar estado visual del slider TONE
-        updateToneLpfComponentStates();
-    }
-    // Control de activación de TILT
-    else if (button == &rightTopControls.tiltOnButton)
-    {
-        // Actualizar estado visual del slider TILT
-        updateTiltComponentStates();
-    }
-    */
-    /* MAXIMIZER: Otros controles sidechain comentados (no existen en DISTORTION)
-    else if (button == &sidechainControls.keyButton)
-    {
-        // Actualizar visibilidad del medidor de sidechain cuando KEY es activado
-        updateButtonStates();
-        
-        // Actualizar estado EXT KEY en transfer display
-    }
-    else if (button == &sidechainControls.soloScButton)
-    {
-        if (sidechainControls.soloScButton.getToggleState()) {
-            // SOLO SC desactiva BYPASS y DIAGRAM
-            parameterButtons.bypassButton.setToggleState(false, juce::sendNotification);
-            if (centerButtons.diagramButton.getToggleState()) {
-                centerButtons.diagramButton.setToggleState(false, juce::dontSendNotification);
-                hideDiagram(); // Cerrar DIAGRAM si está abierto
-            }
-        }
-        
-        updateButtonStates();
-        
-        // Actualizar transfer function display para estado SOLO SC
-        bool soloActive = sidechainControls.soloScButton.getToggleState();
-    }
-    */
     else if (button == &utilityButtons.runGraphicsButton)
     {
         // COMENTADO: toggleDisplayMode no existe para reverb
@@ -1392,8 +899,7 @@ void JCBReverbAudioProcessorEditor::buttonClicked(juce::Button* button)
     }
     else if (button == &utilityButtons.midiLearnButton)
     {
-        
-        // TODO: Implementar modo MIDI learn
+        //POR HACER: Implementar modo MIDI learn
     }
     else if (button == &utilityButtons.zoomButton)
     {
@@ -1465,7 +971,6 @@ void JCBReverbAudioProcessorEditor::buttonClicked(juce::Button* button)
 
 void JCBReverbAudioProcessorEditor::parameterChanged(const juce::String& parameterID, float newValue)
 {
-    // BITS ahora usa CustomSliderAttachment, no necesita listener manual
 }
 
 //==============================================================================
@@ -1528,680 +1033,85 @@ void JCBReverbAudioProcessorEditor::handleParameterChange()
             processor.setPresetTextItalic(true);
         }
     }
-    
-    // Actualizar texto del botón EXT KEY dinámicamente basándose en el estado del parámetro "r_KEY"
-    /*
-    // if (auto* keyParam = processor.apvts.getRawParameterValue("r_KEY")) {
-        bool isExtKeyActive = keyParam->load() > 0.5f;
-        if (isExtKeyActive) {
-            sidechainControls.keyButton.setButtonText("SC EXT");
-        } else {
-            sidechainControls.keyButton.setButtonText("SC INT");
-        }
-        // Nota: El tooltip se actualiza automáticamente via getTooltipText("extkey") en updateAllTooltips()
-    }
-    */
-    
-    // NUEVO: Actualizar alpha del REL slider basado en estado de AUTOREL
-}
 
+    // No crear UI aquí. Solo actualizar estados visuales si es necesario.
+}
 
 //==============================================================================
 // MÉTODOS DE SETUP Y CONFIGURACIÓN
 //==============================================================================
 void JCBReverbAudioProcessorEditor::setupKnobs()
 {
-    // TODO: Implementar controles correctos para reverb
-    // COMENTADO: Todo el código antiguo de controles de distorsión
-    /*
-    // Parámetros necesarios:
-    // - a_input, b_drywet, c_reflect, d_damp, e_size, f_st, g_freeze (reverb)
-    // - h_lowGain, i_peakGain, j_hiGain, n_lowFreq, o_peakFreq, p_hiFreq, q_onoffEQ (EQ)
-    // - k_lpf, l_hpf (filtros)
-    // - r_onoffCOMP, s_thd, t_ratio, u_atk, v_rel, w_makeup (compresor)
-    // - m_output (salida)
-    
-    // COMENTADO: Todo el código antiguo de controles de distorsión
-    /*
-    // Establecer undo manager y editor para todos los sliders primero
-    
-    // === LEFT TOP KNOBS ===
-    // CEILING (e_CEILING) - Output ceiling -20dB to 6dB
-    leftTopKnobs.ceilingSlider.setComponentID("ceiling");
-    leftTopKnobs.ceilingSlider.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
-    leftTopKnobs.ceilingSlider.setTextBoxStyle(juce::Slider::TextBoxAbove, false, 70, 16);
-    leftTopKnobs.ceilingSlider.setLookAndFeel(&sliderLAFBig);
-    leftTopKnobs.ceilingSlider.setTextBoxIsEditable(true);
-    leftTopKnobs.ceilingSlider.setColour(juce::Slider::textBoxOutlineColourId, juce::Colours::transparentBlack);
-    leftTopKnobs.ceilingSlider.setColour(juce::Slider::textBoxTextColourId, juce::Colour(0xFFFEB2B2));  // Rosa pálido como distorsión
-    leftTopKnobs.ceilingSlider.setDoubleClickReturnValue(true, 0.0);  // Default: 0 dB
-    leftTopKnobs.ceilingSlider.setPopupDisplayEnabled(false, false, this);
-    leftTopKnobs.ceilingSlider.setNumDecimalPlacesToDisplay(1);
-    leftTopKnobs.ceilingSlider.setTextValueSuffix(" dB");
-    // Rango: -20 dB a 6 dB (según CLAUDE.md)
-    leftTopKnobs.ceilingSlider.setRange(-20.0, 6.0, 0.1);
-    // Centrar control visual en 0 dB para mejor resolución
-    leftTopKnobs.ceilingSlider.setSkewFactorFromMidPoint(0.0);
-    addAndMakeVisible(leftTopKnobs.ceilingSlider);
-    if (auto* param = processor.apvts.getParameter("e_CEILING"))
-    {
-        leftTopKnobs.ceilingAttachment = std::make_unique<CustomSliderAttachment>(
-            *param, leftTopKnobs.ceilingSlider, &undoManager);
-        leftTopKnobs.ceilingAttachment->onParameterChange = [this]() { handleParameterChange(); };
-    }
-    // Tooltip actualizado via getTooltipText("ceiling") en updateAllTooltips()
-    
-    // === LEFT BOTTOM KNOBS ===
-    // DRYWET (o_DRYWET) - Mezcla dry/wet 0-100%
-    leftBottomKnobs.drywetSlider.setComponentID("drywet");
-    leftBottomKnobs.drywetSlider.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
-    leftBottomKnobs.drywetSlider.setTextBoxStyle(juce::Slider::TextBoxAbove, false, 70, 16);
-    leftBottomKnobs.drywetSlider.setLookAndFeel(&sliderLAFBig);
-    leftBottomKnobs.drywetSlider.setTextBoxIsEditable(true);
-    leftBottomKnobs.drywetSlider.setColour(juce::Slider::textBoxOutlineColourId, juce::Colours::transparentBlack);
-    leftBottomKnobs.drywetSlider.setColour(juce::Slider::textBoxTextColourId, juce::Colour(0xFFB1CAF6));  // Azul pálido como output
-    leftBottomKnobs.drywetSlider.setDoubleClickReturnValue(true, 1.0);  // Default: 100% (o_DRYWET = 1.0)
-    leftBottomKnobs.drywetSlider.setPopupDisplayEnabled(false, false, this);
-    leftBottomKnobs.drywetSlider.setRange(0.0, 1.0, 0.01);  // Rango interno 0.0-1.0
-    leftBottomKnobs.drywetSlider.textFromValueFunction = [](double value) {
-        return juce::String(static_cast<int>(value * 101)) + " %";
-    };
-    leftBottomKnobs.drywetSlider.valueFromTextFunction = [](const juce::String& text) {
-        auto trimmed = text.trim();
-        // Eliminar símbolo de porcentaje si existe
-        if (trimmed.endsWith("%"))
-            trimmed = trimmed.dropLastCharacters(1).trim();
-        
-        // Convertir a número y normalizar de 0-100 a 0-1
-        auto percentage = trimmed.getDoubleValue();
-        return juce::jlimit(0.0, 1.0, percentage / 100.0);
-    };
-    addAndMakeVisible(leftBottomKnobs.drywetSlider);
-    if (auto* param = processor.apvts.getParameter("a_DRYWET"))
-    {
-        leftBottomKnobs.drywetAttachment = std::make_unique<CustomSliderAttachment>(
-            *param, leftBottomKnobs.drywetSlider, &undoManager);
-        leftBottomKnobs.drywetAttachment->onParameterChange = [this]() { handleParameterChange(); };
-    }
-    leftBottomKnobs.drywetSlider.setTooltip(JUCE_UTF8("D/W: mezcla entre señal seca y procesada.\n0% = solo señal original, 100% = solo señal comprimida.\nValor por defecto: 100% (wet)"));
-    
-    // TONE FREQ slider - movido desde RightTopControls
-    leftBottomKnobs.toneFreqSlider.setComponentID("r_TONEFREQ");
-    leftBottomKnobs.toneFreqSlider.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
-    leftBottomKnobs.toneFreqSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 60, 16);
-    leftBottomKnobs.toneFreqSlider.setLookAndFeel(&sliderLAFBig);
-    leftBottomKnobs.toneFreqSlider.setColour(juce::Slider::rotarySliderOutlineColourId, juce::Colour(0xFF6EB8F6));  // Azul claro TONE
-    leftBottomKnobs.toneFreqSlider.setColour(juce::Slider::textBoxTextColourId, juce::Colour(0xFF6EB8F6));
-    leftBottomKnobs.toneFreqSlider.setColour(juce::Slider::textBoxOutlineColourId, juce::Colours::transparentBlack);
-    leftBottomKnobs.toneFreqSlider.setTextBoxIsEditable(true);
-    leftBottomKnobs.toneFreqSlider.setEnabled(true);
-    leftBottomKnobs.toneFreqSlider.setDoubleClickReturnValue(true, 20000.0f);
-    leftBottomKnobs.toneFreqSlider.setPopupDisplayEnabled(false, false, this);
-    leftBottomKnobs.toneFreqSlider.setNumDecimalPlacesToDisplay(0);
-    leftBottomKnobs.toneFreqSlider.textFromValueFunction = [](double value) {
-        if (value < 1000.0)
-            return juce::String(static_cast<int>(value));
-        else
-            return juce::String(value / 1000.0, 1) + "k";
-    };
-    leftBottomKnobs.toneFreqSlider.setTextValueSuffix(" Hz");
-    leftBottomKnobs.toneFreqSlider.setRange(20.0, 20000.0, 1.0);
-    leftBottomKnobs.toneFreqSlider.setSkewFactorFromMidPoint(3000.0);
-    addAndMakeVisible(leftBottomKnobs.toneFreqSlider);
-    if (auto* param = processor.apvts.getParameter("r_TONEFREQ"))
-    {
-        leftBottomKnobs.toneFreqAttachment = std::make_unique<CustomSliderAttachment>(
-            *param, leftBottomKnobs.toneFreqSlider, &undoManager);
-        leftBottomKnobs.toneFreqAttachment->onParameterChange = [this]() { handleParameterChange(); };
-    }
-    
-    // TONE Q slider - nuevo parámetro t_TONEQ
-    leftBottomKnobs.toneQSlider.setComponentID("t_TONEQ");
-    leftBottomKnobs.toneQSlider.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
-    leftBottomKnobs.toneQSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 60, 16);
-    leftBottomKnobs.toneQSlider.setLookAndFeel(&sliderLAFBig);
-    leftBottomKnobs.toneQSlider.setColour(juce::Slider::rotarySliderOutlineColourId, juce::Colour(0xFF6EB8F6));  // Azul claro TONE
-    leftBottomKnobs.toneQSlider.setColour(juce::Slider::textBoxTextColourId, juce::Colour(0xFF6EB8F6));
-    leftBottomKnobs.toneQSlider.setColour(juce::Slider::textBoxOutlineColourId, juce::Colours::transparentBlack);
-    leftBottomKnobs.toneQSlider.setTextBoxIsEditable(true);
-    leftBottomKnobs.toneQSlider.setEnabled(true);
-    leftBottomKnobs.toneQSlider.setDoubleClickReturnValue(true, 0.7071067811865476f);
-    leftBottomKnobs.toneQSlider.setPopupDisplayEnabled(false, false, this);
-    leftBottomKnobs.toneQSlider.setNumDecimalPlacesToDisplay(0);
-    leftBottomKnobs.toneQSlider.textFromValueFunction = [](double value) {
-        // Mapear Q a porcentaje 0-100%
-        float percent = (value - 0.7071067811865476f) / (16.0f - 0.7071067811865476f) * 100.0f;
-        return juce::String(static_cast<int>(percent)) + "%";
-    };
-    leftBottomKnobs.toneQSlider.setRange(0.7071067811865476, 16.0, 0.01);
-    addAndMakeVisible(leftBottomKnobs.toneQSlider);
-    if (auto* param = processor.apvts.getParameter("t_TONEQ"))
-    {
-        leftBottomKnobs.toneQAttachment = std::make_unique<CustomSliderAttachment>(
-            *param, leftBottomKnobs.toneQSlider, &undoManager);
-        leftBottomKnobs.toneQAttachment->onParameterChange = [this]() { handleParameterChange(); };
-    }
-    
-    // Botón TONE - movido desde RightTopControls
-    leftBottomKnobs.toneLpfButton.setComponentID("tonelpf");
-    leftBottomKnobs.toneLpfButton.setLookAndFeel(transparentButtonLAF.get());
-    leftBottomKnobs.toneLpfButton.setButtonText("TONE");
-    leftBottomKnobs.toneLpfButton.setColour(juce::TextButton::buttonColourId, juce::Colours::transparentBlack);
-    leftBottomKnobs.toneLpfButton.setColour(juce::TextButton::buttonOnColourId, juce::Colours::transparentBlack);
-    leftBottomKnobs.toneLpfButton.setColour(juce::TextButton::textColourOffId, juce::Colour(0xFF6EB8F6).withAlpha(0.3f));
-    leftBottomKnobs.toneLpfButton.setColour(juce::TextButton::textColourOnId, juce::Colour(0xFF6EB8F6).withAlpha(0.4f));
-    leftBottomKnobs.toneLpfButton.setClickingTogglesState(true);
-    addAndMakeVisible(leftBottomKnobs.toneLpfButton);
-    if (auto* param = processor.apvts.getParameter("q_TONEON"))
-    {
-        leftBottomKnobs.toneLpfAttachment = std::make_unique<UndoableButtonAttachment>(
-            *param, leftBottomKnobs.toneLpfButton, &undoManager);
-        leftBottomKnobs.toneLpfAttachment->onStateChange = [](bool) {};
-        leftBottomKnobs.toneLpfAttachment->onParameterChange = [this]() {
-            handleParameterChange();
-        };
-        leftBottomKnobs.toneLpfButton.setButtonText("TONE");
-    }
-    
-    // Botón TONE POS - nuevo parámetro u_TONEPOS (PRE/POST)
-    leftBottomKnobs.tonePosButton.setComponentID("tonepos");
-    leftBottomKnobs.tonePosButton.setLookAndFeel(transparentButtonLAF.get());
-    leftBottomKnobs.tonePosButton.setButtonText("POST");
-    leftBottomKnobs.tonePosButton.setClickingTogglesState(true);
-    leftBottomKnobs.tonePosButton.setColour(juce::TextButton::buttonColourId, juce::Colours::transparentBlack);
-    leftBottomKnobs.tonePosButton.setColour(juce::TextButton::buttonOnColourId, juce::Colours::transparentBlack);
-    leftBottomKnobs.tonePosButton.setColour(juce::TextButton::textColourOffId, juce::Colour(0xFF6EB8F6));  // Azul claro TONE
-    leftBottomKnobs.tonePosButton.setColour(juce::TextButton::textColourOnId, juce::Colour(0xFF6EB8F6));
-    leftBottomKnobs.tonePosButton.addListener(this);
-    addAndMakeVisible(leftBottomKnobs.tonePosButton);
-    if (auto* param = processor.apvts.getParameter("u_TONEPOS"))
-    {
-        leftBottomKnobs.tonePosAttachment = std::make_unique<UndoableButtonAttachment>(
-            *param, leftBottomKnobs.tonePosButton, &undoManager);
-        leftBottomKnobs.tonePosAttachment->onStateChange = [this](bool isPost) {
-            leftBottomKnobs.tonePosButton.setButtonText(isPost ? "POST" : "PRE");
-        };
-        leftBottomKnobs.tonePosAttachment->onParameterChange = [this]() {
-            handleParameterChange();
-        };
-        // Sincronizar texto inicial con el estado actual del parámetro
-        bool initialState = param->getValue() >= 0.5f;
-        leftBottomKnobs.tonePosButton.setButtonText(initialState ? "POST" : "PRE");
-    }
-    
-    // === RIGHT TOP CONTROLS ===
-    // BITS - bit crusher resolution control
-    rightTopControls.bitsSlider.setComponentID("bit");
-    rightTopControls.bitsSlider.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
-    rightTopControls.bitsSlider.setTextBoxStyle(juce::Slider::TextBoxAbove, false, 70, 16);
-    rightTopControls.bitsSlider.setLookAndFeel(&sliderLAFBig);
-    rightTopControls.bitsSlider.setTextBoxIsEditable(true);
-    rightTopControls.bitsSlider.setColour(juce::Slider::textBoxOutlineColourId, juce::Colours::transparentBlack);
-    rightTopControls.bitsSlider.setColour(juce::Slider::textBoxTextColourId, juce::Colour(0xFFB2FFB3));  // Verde pálido para bits
-    rightTopControls.bitsSlider.setRange(3.0, 16.0, 1.0);  // Rango igual al parámetro: 3-16 bits
-    rightTopControls.bitsSlider.setDoubleClickReturnValue(true, 16.0);  // Valor por defecto 16 bits
-    rightTopControls.bitsSlider.setPopupDisplayEnabled(false, false, this);
-    rightTopControls.bitsSlider.setNumDecimalPlacesToDisplay(0);  // Solo enteros
-    // IMPORTANTE: Configurar formatter ANTES de setValue para evitar bug de inicialización
-    rightTopControls.bitsSlider.textFromValueFunction = [](double value) {
-        return juce::String(static_cast<int>(value)) + " bit";
-    };
-    rightTopControls.bitsSlider.setValue(16.0);  // Default 16 bits
-    addAndMakeVisible(rightTopControls.bitsSlider);
-    
-    // Crear CustomSliderAttachment para integrar en sistema UNDO/REDO
-    if (auto* param = processor.apvts.getParameter("g_BITS"))
-    {
-        rightTopControls.bitsAttachment = std::make_unique<CustomSliderAttachment>(
-            *param, rightTopControls.bitsSlider, &undoManager);
-        rightTopControls.bitsAttachment->onParameterChange = [this]() { handleParameterChange(); };
-    }
-    
-    // === PERILLAS INFERIORES DERECHAS ===
-    // ATK - copiado exactamente de ExpansorGate
-    rightBottomKnobs.driveSlider.setComponentID("drive");
-    rightBottomKnobs.driveSlider.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
-    rightBottomKnobs.driveSlider.setTextBoxStyle(juce::Slider::TextBoxAbove, false, 70, 16);
-    rightBottomKnobs.driveSlider.setLookAndFeel(&sliderLAFBig);
-    rightBottomKnobs.driveSlider.setColour(juce::Slider::textBoxOutlineColourId, juce::Colours::transparentBlack);
-    rightBottomKnobs.driveSlider.setColour(juce::Slider::textBoxTextColourId, juce::Colour(0xFFFEB2B2));  // Rosa pálido como distorsión
-    rightBottomKnobs.driveSlider.setDoubleClickReturnValue(true, 1.0);  // Valor por defecto 1.0 (sin drive)
-    rightBottomKnobs.driveSlider.setPopupDisplayEnabled(false, false, this);
-    rightBottomKnobs.driveSlider.setTextBoxIsEditable(true);
-    // DISTORTION: Formato numérico simple para b_DRIVE (amplificación 1-50)
-    rightBottomKnobs.driveSlider.setNumDecimalPlacesToDisplay(1);
-    // Configurar rango para DRIVE: 1-50x
-    rightBottomKnobs.driveSlider.setRange(1.0, 50.0, 0.1);
-    rightBottomKnobs.driveSlider.setSkewFactorFromMidPoint(5.0);  // Concentrar rango útil en valores bajos
-    addAndMakeVisible(rightBottomKnobs.driveSlider);
-    if (auto* param = processor.apvts.getParameter("b_DRIVE"))
-    {
-        rightBottomKnobs.driveAttachment = std::make_unique<CustomSliderAttachment>(
-            *param, rightBottomKnobs.driveSlider, &undoManager);
-        rightBottomKnobs.driveAttachment->onParameterChange = [this]() { handleParameterChange(); };
-    }
-    // Tooltip actualizado via getTooltipText("attack") en updateAllTooltips()
-    
-    // REL - modificado con rango mínimo de 1ms y formato de decimales progresivo
-    rightBottomKnobs.modeSlider.setComponentID("mode");
-    rightBottomKnobs.modeSlider.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
-    rightBottomKnobs.modeSlider.setTextBoxStyle(juce::Slider::TextBoxAbove, false, 100, 16);  // Ancho aumentado para nombre
-    rightBottomKnobs.modeSlider.setLookAndFeel(&sliderLAFBig);
-    rightBottomKnobs.modeSlider.setColour(juce::Slider::textBoxOutlineColourId, juce::Colours::transparentBlack);
-    rightBottomKnobs.modeSlider.setColour(juce::Slider::rotarySliderOutlineColourId, juce::Colours::white);  // Default para color dinámico
-    rightBottomKnobs.modeSlider.setRange(0.0, 7.0, 0.1);  // MODE: 0-7
-    rightBottomKnobs.modeSlider.setSkewFactorFromMidPoint(3.5);  // Linear para modos discretos
-    rightBottomKnobs.modeSlider.setDoubleClickReturnValue(true, 0.0);  // Valor por defecto modo 0
-    rightBottomKnobs.modeSlider.setPopupDisplayEnabled(false, false, this);
-    rightBottomKnobs.modeSlider.setTextBoxIsEditable(true);
-    // DISTORTION: Formato con número y nombre del algoritmo
-    rightBottomKnobs.modeSlider.textFromValueFunction = [](double value) {
-        int mode = static_cast<int>(value);
-        juce::String modeName;
-        
-        switch (mode)
-        {
-            case 0: modeName = "SOFT CLIP"; break;
-            case 1: modeName = "SIGMOID"; break;
-            case 2: modeName = "RECT FW"; break;      // Full Wave abreviado
-            case 3: modeName = "FUZZ EXPO"; break;
-            case 4: modeName = "HYPER TANG"; break;
-            case 5: modeName = "RECT HW"; break;      // Half Wave abreviado
-            case 6: modeName = "ARC TANG"; break;
-            case 7: modeName = "HARD CLIP"; break;
-            default: modeName = ""; break;
-        }
-        
-        return juce::String(mode + 1) + " - " + modeName;
-    };
-    rightBottomKnobs.modeSlider.valueFromTextFunction = [](const juce::String& text) {
-        auto trimmed = text.trim();
-        
-        // Si contiene guión, extraer solo el número
-        if (trimmed.contains("-"))
-        {
-            auto parts = juce::StringArray::fromTokens(trimmed, "-", "");
-            if (parts.size() > 0)
-            {
-                int modeNumber = parts[0].trim().getIntValue();
-                return juce::jlimit(0.0, 7.0, static_cast<double>(modeNumber - 1));
-            }
-        }
-        
-        // Si es solo un número
-        int modeNumber = trimmed.getIntValue();
-        return juce::jlimit(0.0, 7.0, static_cast<double>(modeNumber - 1));
-    };
-    rightBottomKnobs.modeSlider.setNumDecimalPlacesToDisplay(0);
-    rightBottomKnobs.modeSlider.setColour(juce::Slider::textBoxTextColourId, juce::Colour(0xFFFEB2B2));  // Color rosa pálido fijo
-    addAndMakeVisible(rightBottomKnobs.modeSlider);
-    if (auto* param = processor.apvts.getParameter("d_MODE"))
-    {
-        rightBottomKnobs.modeAttachment = std::make_unique<CustomSliderAttachment>(
-            *param, rightBottomKnobs.modeSlider, &undoManager);
-        rightBottomKnobs.modeAttachment->onParameterChange = [this]() { 
-            handleParameterChange();
-        };
-    }
-    
-    // DIST ON button - botón para activar/desactivar distorsión
-    rightBottomKnobs.distOnButton.setComponentID("diston");
-    rightBottomKnobs.distOnButton.setLookAndFeel(transparentButtonLAF.get());  // Usar fondo transparente con borde sutil
-    rightBottomKnobs.distOnButton.setButtonText("ON");
-    rightBottomKnobs.distOnButton.setClickingTogglesState(true);
-    rightBottomKnobs.distOnButton.setColour(juce::TextButton::buttonColourId, juce::Colours::transparentBlack);
-    rightBottomKnobs.distOnButton.setColour(juce::TextButton::buttonOnColourId, juce::Colours::transparentBlack);  // Transparente con borde sutil
-    rightBottomKnobs.distOnButton.setColour(juce::TextButton::textColourOffId, DarkTheme::textSecondary.withAlpha(0.7f));
-    rightBottomKnobs.distOnButton.setColour(juce::TextButton::textColourOnId, juce::Colour(0xFFFEB2B2));  // Rosa pálido como los sliders de distorsión
-    rightBottomKnobs.distOnButton.addListener(this);
-    addAndMakeVisible(rightBottomKnobs.distOnButton);
-    if (auto* param = processor.apvts.getParameter("p_DISTON"))
-    {
-        rightBottomKnobs.distOnButtonAttachment = std::make_unique<UndoableButtonAttachment>(
-            *param, rightBottomKnobs.distOnButton, &undoManager);
-        
-        // Configurar callback para cambiar texto cuando el estado cambie (por cualquier razón)
-        rightBottomKnobs.distOnButtonAttachment->onStateChange = [this](bool isOn) {
-            rightBottomKnobs.distOnButton.setButtonText(isOn ? "ON" : "OFF");
-        };
-        
-        // Callback para cuando el usuario hace click (para preset modification indicator)
-        rightBottomKnobs.distOnButtonAttachment->onParameterChange = [this]() {
-            handleParameterChange();
-        };
-        
-        // Sincronizar texto inicial con el estado actual del parámetro
-        bool initialState = param->getValue() >= 0.5f;
-        rightBottomKnobs.distOnButton.setButtonText(initialState ? "ON" : "OFF");
-    }
-    
-    // DITHER button - área izquierda
-    rightBottomKnobs.bitButton.setComponentID("bitcrusher");
-    rightBottomKnobs.bitButton.setLookAndFeel(reversedGradientButtonLAF.get());  // Usar gradiente invertido
-    rightBottomKnobs.bitButton.setButtonText("BIT CRUSHER");
-    rightBottomKnobs.bitButton.setColour(juce::TextButton::buttonColourId, juce::Colours::transparentBlack);
-    rightBottomKnobs.bitButton.setColour(juce::TextButton::buttonOnColourId, juce::Colours::transparentBlack);  // Transparente para gradiente
-    rightBottomKnobs.bitButton.setColour(juce::TextButton::textColourOffId, juce::Colour(0xFFB2FFB3));  // Verde pálido como el slider
-    rightBottomKnobs.bitButton.setColour(juce::TextButton::textColourOnId, juce::Colour(0xFFB2FFB3));  // Verde pálido como el slider
-    rightBottomKnobs.bitButton.setClickingTogglesState(true);
-    addAndMakeVisible(rightBottomKnobs.bitButton);
-    if (auto* param = processor.apvts.getParameter("h_BITSON"))
-    {
-        rightBottomKnobs.bitAttachment = std::make_unique<UndoableButtonAttachment>(
-            *param, rightBottomKnobs.bitButton, &undoManager);
-        rightBottomKnobs.bitAttachment->onParameterChange = [this]() {
-            handleParameterChange();
-        };
-    }
-    // Tooltip actualizado via getTooltipText("dither") en updateAllTooltips()
-    
-    // DET knob - área derecha superior  
-rightTopControls.tiltSlider.setComponentID("tilt");
-    rightTopControls.tiltSlider.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
-    rightTopControls.tiltSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 70, 16);
-    rightTopControls.tiltSlider.setLookAndFeel(&sliderLAFBig);
-    rightTopControls.tiltSlider.setTextBoxIsEditable(true);
-    rightTopControls.tiltSlider.setColour(juce::Slider::textBoxOutlineColourId, juce::Colours::transparentBlack);
-    rightTopControls.tiltSlider.setColour(juce::Slider::textBoxTextColourId, juce::Colour(0xFFA6DAD5));  // Verde agua pálido como tilt
-    rightTopControls.tiltSlider.setRange(-6.0, 6.0, 0.1);
-    rightTopControls.tiltSlider.setValue(0.0);
-    rightTopControls.tiltSlider.setDoubleClickReturnValue(true, 0.0);  // TILT neutro en 0 dB
-    rightTopControls.tiltSlider.setPopupDisplayEnabled(false, false, this);
-    rightTopControls.tiltSlider.setNumDecimalPlacesToDisplay(1);
-    // Custom text formatting para mostrar dB
-    rightTopControls.tiltSlider.textFromValueFunction = [](double value) {
-        return juce::String(value, 1) + " dB";
-    };
-    addAndMakeVisible(rightTopControls.tiltSlider);
-    if (auto* param = processor.apvts.getParameter("i_TILT"))
-    {
-        rightTopControls.tiltAttachment = std::make_unique<CustomSliderAttachment>(
-            *param, rightTopControls.tiltSlider, &undoManager);
-        rightTopControls.tiltAttachment->onParameterChange = [this]() { handleParameterChange(); };
-    }
-    
-    // TILT ON button - botón activador de TILT
-    rightTopControls.tiltOnButton.setComponentID("tilton");
-    rightTopControls.tiltOnButton.setLookAndFeel(transparentButtonLAF.get());
-    rightTopControls.tiltOnButton.setButtonText("TILT");
-    rightTopControls.tiltOnButton.setClickingTogglesState(true);
-    rightTopControls.tiltOnButton.setColour(juce::TextButton::buttonColourId, juce::Colours::transparentBlack);
-    rightTopControls.tiltOnButton.setColour(juce::TextButton::buttonOnColourId, juce::Colours::transparentBlack);
-    rightTopControls.tiltOnButton.setColour(juce::TextButton::textColourOffId, juce::Colour(0xFFA6DAD5).withAlpha(0.3f));  // Verde agua pálido con alpha
-    rightTopControls.tiltOnButton.setColour(juce::TextButton::textColourOnId, juce::Colour(0xFFA6DAD5).withAlpha(0.4f));  // Verde agua pálido con alpha
-    rightTopControls.tiltOnButton.addListener(this);
-    addAndMakeVisible(rightTopControls.tiltOnButton);
-    if (auto* param = processor.apvts.getParameter("s_TILTON"))
-    {
-        rightTopControls.tiltOnAttachment = std::make_unique<UndoableButtonAttachment>(
-            *param, rightTopControls.tiltOnButton, &undoManager);
-        rightTopControls.tiltOnAttachment->onStateChange = [](bool) {};
-        rightTopControls.tiltOnAttachment->onParameterChange = [this]() {
-            handleParameterChange();
-        };
-        rightTopControls.tiltOnButton.setButtonText("TILT");
-    }
-    
-    // TILT POS button - botón para posición PRE/POST
-    rightTopControls.tiltPosButton.setComponentID("tiltpos");
-    rightTopControls.tiltPosButton.setLookAndFeel(transparentButtonLAF.get());  // Usar fondo transparente con borde sutil
-    rightTopControls.tiltPosButton.setButtonText("PRE");
-    rightTopControls.tiltPosButton.setClickingTogglesState(true);
-    rightTopControls.tiltPosButton.setColour(juce::TextButton::buttonColourId, juce::Colours::transparentBlack);
-    rightTopControls.tiltPosButton.setColour(juce::TextButton::buttonOnColourId, juce::Colours::transparentBlack);  // Transparente con borde sutil
-    rightTopControls.tiltPosButton.setColour(juce::TextButton::textColourOffId, juce::Colour(0xFFA6DAD5));  // Verde agua pálido como tiltSlider
-    rightTopControls.tiltPosButton.setColour(juce::TextButton::textColourOnId, juce::Colour(0xFFA6DAD5));  // Verde agua pálido como tiltSlider
-    rightTopControls.tiltPosButton.addListener(this);
-    addAndMakeVisible(rightTopControls.tiltPosButton);
-    if (auto* param = processor.apvts.getParameter("p_TILTPOS"))
-    {
-        rightTopControls.tiltPosButtonAttachment = std::make_unique<UndoableButtonAttachment>(
-            *param, rightTopControls.tiltPosButton, &undoManager);
-        
-        // Configurar callback para cambiar texto cuando el estado cambie (por cualquier razón)
-        rightTopControls.tiltPosButtonAttachment->onStateChange = [this](bool isPost) {
-            rightTopControls.tiltPosButton.setButtonText(isPost ? "POST" : "PRE");
-        };
-        
-        // Callback para cuando el usuario hace click (para preset modification indicator)
-        rightTopControls.tiltPosButtonAttachment->onParameterChange = [this]() {
-            handleParameterChange();
-        };
-        
-        // Sincronizar texto inicial con el estado actual del parámetro
-        bool initialState = param->getValue() >= 0.5f;
-        rightTopControls.tiltPosButton.setButtonText(initialState ? "POST" : "PRE");
-    }
-    
-    // DOWNSAMPLE slider - área derecha superior
-    rightTopControls.downsampleSlider.setComponentID("m_DOWNSAMPLE");
-    rightTopControls.downsampleSlider.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
-    rightTopControls.downsampleSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 70, 16);
-    rightTopControls.downsampleSlider.setLookAndFeel(&sliderLAFBig);
-    rightTopControls.downsampleSlider.setTextBoxIsEditable(true);
-    rightTopControls.downsampleSlider.setColour(juce::Slider::textBoxOutlineColourId, juce::Colours::transparentBlack);
-    rightTopControls.downsampleSlider.setColour(juce::Slider::textBoxTextColourId, juce::Colour(0xFFD9B2FF));  // Púrpura pálido para DECI
-    rightTopControls.downsampleSlider.setRange(0.0, 100.0, 1.0);  // m_DOWNSAMPLE: factor 0-100
-    rightTopControls.downsampleSlider.setDoubleClickReturnValue(true, 0.0);  // Default value
-    rightTopControls.downsampleSlider.setPopupDisplayEnabled(false, false, this);
-    // IMPORTANTE: Configurar formatter ANTES de setValue para evitar bug de inicialización
-    rightTopControls.downsampleSlider.textFromValueFunction = [](double value) {
-        // Mostrar directo 0-100 como 0-100%
-        return juce::String(static_cast<int>(value)) + " %";
-    };
-    rightTopControls.downsampleSlider.valueFromTextFunction = [](const juce::String& text) {
-        auto trimmed = text.trim();
-        // Eliminar símbolo de porcentaje si existe
-        if (trimmed.endsWith("%"))
-            trimmed = trimmed.dropLastCharacters(1).trim();
-        
-        // Mapear directo 0-100 ingresado a 0-100 interno
-        auto percentage = trimmed.getDoubleValue();
-        return juce::jlimit(0.0, 100.0, percentage);
-    };
-    rightTopControls.downsampleSlider.setValue(0.0);  // Default 0 (sin downsampling) - ahora con formatter activo
-    addAndMakeVisible(rightTopControls.downsampleSlider);
-    if (auto* param = processor.apvts.getParameter("m_DOWNSAMPLE"))
-    {
-        rightTopControls.downsampleAttachment = std::make_unique<CustomSliderAttachment>(
-            *param, rightTopControls.downsampleSlider, &undoManager);
-        rightTopControls.downsampleAttachment->onParameterChange = [this]() { handleParameterChange(); };
-    }
-    
-    // DOWNSAMPLE button - control de activación
-    rightTopControls.downsampleButton.setComponentID("downsampleon");
-    rightTopControls.downsampleButton.setLookAndFeel(transparentButtonLAF.get());  // Usar fondo transparente
-    rightTopControls.downsampleButton.setButtonText("DECIMATOR");
-    rightTopControls.downsampleButton.setClickingTogglesState(true);
-    rightTopControls.downsampleButton.setColour(juce::TextButton::buttonColourId, juce::Colours::transparentBlack);
-    rightTopControls.downsampleButton.setColour(juce::TextButton::buttonOnColourId, juce::Colours::transparentBlack);  // Transparente para gradiente
-    rightTopControls.downsampleButton.setColour(juce::TextButton::textColourOffId, juce::Colour(0xFFD9B2FF));  // Púrpura pálido como el slider
-    rightTopControls.downsampleButton.setColour(juce::TextButton::textColourOnId, juce::Colour(0xFFD9B2FF));  // Púrpura pálido como el slider
-    rightTopControls.downsampleButton.addListener(this);
-    addAndMakeVisible(rightTopControls.downsampleButton);
-    if (auto* param = processor.apvts.getParameter("n_DOWNSAMPLEON"))
-    {
-        rightTopControls.downsampleButtonAttachment = std::make_unique<UndoableButtonAttachment>(
-            *param, rightTopControls.downsampleButton, &undoManager);
-        rightTopControls.downsampleButtonAttachment->onParameterChange = [this]() {
-            handleParameterChange();
-        };
-    }
-    
-    // DC slider - área derecha inferior, junto a REL
-    rightBottomKnobs.dcSlider.setComponentID("dc");
-    rightBottomKnobs.dcSlider.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
-    rightBottomKnobs.dcSlider.setTextBoxStyle(juce::Slider::TextBoxAbove, false, 70, 16);
-    rightBottomKnobs.dcSlider.setLookAndFeel(&sliderLAFBig);
-    rightBottomKnobs.dcSlider.setTextBoxIsEditable(true);
-    rightBottomKnobs.dcSlider.setColour(juce::Slider::textBoxOutlineColourId, juce::Colours::transparentBlack);
-    rightBottomKnobs.dcSlider.setColour(juce::Slider::textBoxTextColourId, juce::Colour(0xFFFEB2B2));  // Rosa pálido como distorsión
-    rightBottomKnobs.dcSlider.setRange(0.0, 1.0, 0.01);  // c_DC: continuo 0-1 para armónicos pares
-    rightBottomKnobs.dcSlider.setValue(0.0);  // Default 0 (sin asimetría)
-    rightBottomKnobs.dcSlider.setDoubleClickReturnValue(true, 0.0);  // Default value
-    rightBottomKnobs.dcSlider.setPopupDisplayEnabled(false, false, this);
-    rightBottomKnobs.dcSlider.setNumDecimalPlacesToDisplay(0);
-    // Mostrar como porcentaje
-    rightBottomKnobs.dcSlider.textFromValueFunction = [](double value) {
-        return juce::String(static_cast<int>(value * 101)) + " %";
-    };
-    rightBottomKnobs.dcSlider.valueFromTextFunction = [](const juce::String& text) {
-        auto trimmed = text.trim();
-        // Eliminar símbolo de porcentaje si existe
-        if (trimmed.endsWith("%"))
-            trimmed = trimmed.dropLastCharacters(1).trim();
-        
-        // Convertir a número y normalizar de 0-100 a 0-1
-        auto percentage = trimmed.getDoubleValue();
-        return juce::jlimit(0.0, 1.0, percentage / 100.0);
-    };
-    addAndMakeVisible(rightBottomKnobs.dcSlider);
-    if (auto* param = processor.apvts.getParameter("c_DC"))
-    {
-        rightBottomKnobs.dcAttachment = std::make_unique<CustomSliderAttachment>(
-            *param, rightBottomKnobs.dcSlider, &undoManager);
-        rightBottomKnobs.dcAttachment->onParameterChange = [this]() { handleParameterChange(); };
-    } 
-    // Tooltip actualizado via getTooltipText("dc") en updateAllTooltips()
-
-
-    
-    
-    
-    
-    
-    
-    // Conectar perillas al transfer display
-    
     // === FILTROS DE ENTRADA ===
-    // Slider HPF - copia EXACTA de ExpansorGate
-    sidechainControls.xLowSlider.setName("hpf");
-    sidechainControls.xLowSlider.setComponentID("hpf");
-    sidechainControls.xLowSlider.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
-    sidechainControls.xLowSlider.setTextBoxStyle(juce::Slider::TextBoxAbove, false, 60, 16);
-    sidechainControls.xLowSlider.setLookAndFeel(&sliderLAFBig);  // Usar LAF grande como ExpansorGate
-    sidechainControls.xLowSlider.setColour(juce::Slider::rotarySliderOutlineColourId, juce::Colours::white);  // Blanco fijo
-    sidechainControls.xLowSlider.setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);  // Blanco fijo
-    sidechainControls.xLowSlider.setColour(juce::Slider::textBoxOutlineColourId, juce::Colours::transparentBlack);
-    sidechainControls.xLowSlider.setTextBoxIsEditable(true);
-    sidechainControls.xLowSlider.setEnabled(true);  // Inicialmente habilitado
-    sidechainControls.xLowSlider.setAlpha(1.0f);  // Inicialmente visible
-    sidechainControls.xLowSlider.setDoubleClickReturnValue(true, 250.0f);  // Nuevo default 250Hz
-    sidechainControls.xLowSlider.setPopupDisplayEnabled(false, false, this);
-    sidechainControls.xLowSlider.setNumDecimalPlacesToDisplay(0);
+    // Slider HPF
+    sidechainControls.hpfSlider.setName("hpf");
+    sidechainControls.hpfSlider.setComponentID("hpf");
+    sidechainControls.hpfSlider.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
+    sidechainControls.hpfSlider.setTextBoxStyle(juce::Slider::TextBoxAbove, false, 60, 16);
+    sidechainControls.hpfSlider.setLookAndFeel(&sliderLAFBig);  // Usar LAF grande como ExpansorGate
+    sidechainControls.hpfSlider.setColour(juce::Slider::rotarySliderOutlineColourId, juce::Colours::white);  // Blanco fijo
+    sidechainControls.hpfSlider.setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);  // Blanco fijo
+    sidechainControls.hpfSlider.setColour(juce::Slider::textBoxOutlineColourId, juce::Colours::transparentBlack);
+    sidechainControls.hpfSlider.setTextBoxIsEditable(true);
+    sidechainControls.hpfSlider.setEnabled(true);  // Inicialmente habilitado
+    sidechainControls.hpfSlider.setAlpha(1.0f);  // Inicialmente visible
+    sidechainControls.hpfSlider.setDoubleClickReturnValue(true, 100.0f);  // Nuevo default 250Hz
+    sidechainControls.hpfSlider.setPopupDisplayEnabled(false, false, this);
+    sidechainControls.hpfSlider.setNumDecimalPlacesToDisplay(0);
     // Formato de texto personalizado para frecuencia
-    sidechainControls.xLowSlider.textFromValueFunction = [](double value) {
+    sidechainControls.hpfSlider.textFromValueFunction = [](double value) {
         if (value < 1000.0)
             return juce::String(static_cast<int>(value));
         else
             return juce::String(value / 1000.0, 1) + "k";
     };
-    sidechainControls.xLowSlider.setTextValueSuffix(" Hz");
-    // Configurar rango para XOver Low (20-1000 Hz)
-    sidechainControls.xLowSlider.setRange(20.0, 1000.0, 1.0);
-    sidechainControls.xLowSlider.setSkewFactorFromMidPoint(250.0);  // 250Hz en el centro
-    addAndMakeVisible(sidechainControls.xLowSlider);
-    if (auto* param = processor.apvts.getParameter("j_HPF"))
+    sidechainControls.hpfSlider.setTextValueSuffix(" Hz");
+    sidechainControls.hpfSlider.setRange(20.0, 1000.0, 1.0);
+    sidechainControls.hpfSlider.setSkewFactorFromMidPoint(250.0);  // 250Hz en el centro
+    addAndMakeVisible(sidechainControls.hpfSlider);
+    if (auto* param = processor.apvts.getParameter("l_HPF"))
     {
-        sidechainControls.xLowAttachment = std::make_unique<CustomSliderAttachment>(
-            *param, sidechainControls.xLowSlider, &undoManager);
-        sidechainControls.xLowAttachment->onParameterChange = [this]() { handleParameterChange(); };
+        sidechainControls.hpfAttachment = std::make_unique<CustomSliderAttachment>(
+            *param, sidechainControls.hpfSlider, &undoManager);
+        sidechainControls.hpfAttachment->onParameterChange = [this]() { handleParameterChange(); };
     }
-    
-    // Slider BAND - selector de banda del crossover (0=low, 1=mid, 2=high) - HORIZONTAL
-    sidechainControls.bandSlider.setName("band");
-    sidechainControls.bandSlider.setComponentID("band");
-    sidechainControls.bandSlider.setSliderStyle(juce::Slider::LinearHorizontal);  // Slider horizontal
-    sidechainControls.bandSlider.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);  // Sin text box
-    sidechainControls.bandSlider.setLookAndFeel(&bandSliderLAF);  // Usar el LAF personalizado con gradiente
-    sidechainControls.bandSlider.setColour(juce::Slider::backgroundColourId, juce::Colours::white.withAlpha(0.12f));  // Fondo blanco muy sutil
-    sidechainControls.bandSlider.setColour(juce::Slider::trackColourId, juce::Colours::transparentBlack);  // Sin track de progreso
-    sidechainControls.bandSlider.setColour(juce::Slider::thumbColourId, juce::Colours::white);  // Color base (será sobrescrito por LAF)
-    sidechainControls.bandSlider.setTextBoxIsEditable(true);
-    sidechainControls.bandSlider.setEnabled(true);  // Inicialmente habilitado
-    sidechainControls.bandSlider.setAlpha(1.0f);  // Inicialmente visible
-    sidechainControls.bandSlider.setDoubleClickReturnValue(true, 1.0f);  // Default = mid
-    sidechainControls.bandSlider.setPopupDisplayEnabled(false, false, this);
-    sidechainControls.bandSlider.setNumDecimalPlacesToDisplay(2);
-    // Sin formato de texto ya que no hay text box
-    // Configurar rango 0-2 para interpolar entre las 3 bandas
-    sidechainControls.bandSlider.setRange(0.0, 2.0, 0.01);
-    addAndMakeVisible(sidechainControls.bandSlider);
-    if (auto* param = processor.apvts.getParameter("o_BAND"))
-    {
-        sidechainControls.bandAttachment = std::make_unique<CustomSliderAttachment>(
-            *param, sidechainControls.bandSlider, &undoManager);
-        sidechainControls.bandAttachment->onParameterChange = [this]() { 
-            handleParameterChange(); 
-            // Repintar el botón FILTERS para actualizar gradiente con nuevo valor de banda
-            sidechainControls.scButton.repaint();
-        };
-    }
-    
-    // Configurar las labels para BAND (Low, Mid, High) con colores que coinciden con el analizador
-    // Colores tomados de SpectrumAnalyzerComponent para consistencia visual
-    const juce::Colour lowBandColour = juce::Colour(0xFF9C27B0);  // Púrpura (graves)
-    const juce::Colour highBandColour = juce::Colour(0xFF2196F3);  // Azul (agudos)
-    const juce::Colour midBandColour = lowBandColour.interpolatedWith(highBandColour, 0.5f);  // Mezcla púrpura-azul
-    
-    sidechainControls.bandLowLabel.setText("Low", juce::dontSendNotification);
-    sidechainControls.bandLowLabel.setFont(juce::Font(juce::FontOptions(11.0f)));
-    sidechainControls.bandLowLabel.setColour(juce::Label::textColourId, lowBandColour);
-    sidechainControls.bandLowLabel.setJustificationType(juce::Justification::centredLeft);
-    sidechainControls.bandLowLabel.setInterceptsMouseClicks(false, false);
-    addAndMakeVisible(sidechainControls.bandLowLabel);
-    
-    sidechainControls.bandMidLabel.setText("Mid", juce::dontSendNotification);
-    sidechainControls.bandMidLabel.setFont(juce::Font(juce::FontOptions(11.0f)));
-    sidechainControls.bandMidLabel.setColour(juce::Label::textColourId, midBandColour);
-    sidechainControls.bandMidLabel.setJustificationType(juce::Justification::centred);
-    sidechainControls.bandMidLabel.setInterceptsMouseClicks(false, false);
-    addAndMakeVisible(sidechainControls.bandMidLabel);
-    
-    sidechainControls.bandHighLabel.setText("High", juce::dontSendNotification);
-    sidechainControls.bandHighLabel.setFont(juce::Font(juce::FontOptions(11.0f)));
-    sidechainControls.bandHighLabel.setColour(juce::Label::textColourId, highBandColour);
-    sidechainControls.bandHighLabel.setJustificationType(juce::Justification::centredRight);
-    sidechainControls.bandHighLabel.setInterceptsMouseClicks(false, false);
-    addAndMakeVisible(sidechainControls.bandHighLabel);
-    
-    // Slider LPF - copia EXACTA de ExpansorGate
-    sidechainControls.xHighSlider.setName("lpf");
-    sidechainControls.xHighSlider.setComponentID("lpf");
-    sidechainControls.xHighSlider.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
-    sidechainControls.xHighSlider.setTextBoxStyle(juce::Slider::TextBoxAbove, false, 60, 16);
-    sidechainControls.xHighSlider.setLookAndFeel(&sliderLAFBig);  // Usar LAF grande como ExpansorGate
-    sidechainControls.xHighSlider.setColour(juce::Slider::rotarySliderOutlineColourId, juce::Colours::white);  // Blanco fijo
-    sidechainControls.xHighSlider.setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);  // Blanco fijo
-    sidechainControls.xHighSlider.setColour(juce::Slider::textBoxOutlineColourId, juce::Colours::transparentBlack);
-    sidechainControls.xHighSlider.setTextBoxIsEditable(true);
-    sidechainControls.xHighSlider.setEnabled(true);  // Inicialmente habilitado
-    sidechainControls.xHighSlider.setAlpha(1.0f);  // Inicialmente visible
-    sidechainControls.xHighSlider.setDoubleClickReturnValue(true, 5000.0f);  // Nuevo default 5kHz
-    sidechainControls.xHighSlider.setPopupDisplayEnabled(false, false, this);
-    sidechainControls.xHighSlider.setNumDecimalPlacesToDisplay(0);
+
+    // Slider LPF
+    sidechainControls.lpfSlider.setName("lpf");
+    sidechainControls.lpfSlider.setComponentID("lpf");
+    sidechainControls.lpfSlider.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
+    sidechainControls.lpfSlider.setTextBoxStyle(juce::Slider::TextBoxAbove, false, 60, 16);
+    sidechainControls.lpfSlider.setLookAndFeel(&sliderLAFBig);  // Usar LAF grande como ExpansorGate
+    sidechainControls.lpfSlider.setColour(juce::Slider::rotarySliderOutlineColourId, juce::Colours::white);  // Blanco fijo
+    sidechainControls.lpfSlider.setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);  // Blanco fijo
+    sidechainControls.lpfSlider.setColour(juce::Slider::textBoxOutlineColourId, juce::Colours::transparentBlack);
+    sidechainControls.lpfSlider.setTextBoxIsEditable(true);
+    sidechainControls.lpfSlider.setEnabled(true);  // Inicialmente habilitado
+    sidechainControls.lpfSlider.setAlpha(1.0f);  // Inicialmente visible
+    sidechainControls.lpfSlider.setDoubleClickReturnValue(true, 12000.0f);  // Nuevo default 5kHz
+    sidechainControls.lpfSlider.setPopupDisplayEnabled(false, false, this);
+    sidechainControls.lpfSlider.setNumDecimalPlacesToDisplay(0);
     // Formato de texto personalizado para frecuencia
-    sidechainControls.xHighSlider.textFromValueFunction = [](double value) {
+    sidechainControls.lpfSlider.textFromValueFunction = [](double value) {
         if (value < 1000.0)
             return juce::String(static_cast<int>(value));
         else
             return juce::String(value / 1000.0, 1) + "k";
     };
-    sidechainControls.xHighSlider.setTextValueSuffix(" Hz");
-    // Configurar rango para XOver High (1000-20000 Hz)
-    sidechainControls.xHighSlider.setRange(1000.0, 20000.0, 1.0);
-    sidechainControls.xHighSlider.setSkewFactorFromMidPoint(5000.0);  // 5kHz en el centro
-    addAndMakeVisible(sidechainControls.xHighSlider);
+    sidechainControls.lpfSlider.setTextValueSuffix(" Hz");
+    sidechainControls.lpfSlider.setRange(100.0, 20000.0, 1.0);
+    sidechainControls.lpfSlider.setSkewFactorFromMidPoint(5000.0);  // 5kHz en el centro
+    addAndMakeVisible(sidechainControls.lpfSlider);
     if (auto* param = processor.apvts.getParameter("k_LPF"))
     {
-        sidechainControls.xHighAttachment = std::make_unique<CustomSliderAttachment>(
-            *param, sidechainControls.xHighSlider, &undoManager);
-        sidechainControls.xHighAttachment->onParameterChange = [this]() { handleParameterChange(); };
+        sidechainControls.lpfAttachment = std::make_unique<CustomSliderAttachment>(
+            *param, sidechainControls.lpfSlider, &undoManager);
+        sidechainControls.lpfAttachment->onParameterChange = [this]() { handleParameterChange(); };
     }
 
     // Botón FILTERS (antes SC) - VISIBLE para activar/desactivar filtros
     sidechainControls.scButton.setClickingTogglesState(true);
-    sidechainControls.scButton.setLookAndFeel(filtersButtonLAF.get());  // Aplicar LAF con gradiente
+    sidechainControls.scButton.setLookAndFeel(&smallButtonLAF);  // Usar LAF básico
     sidechainControls.scButton.setColour(juce::TextButton::buttonColourId, juce::Colours::transparentBlack);
     sidechainControls.scButton.setColour(juce::TextButton::buttonOnColourId, juce::Colours::transparentBlack);  // Ahora manejado por LAF
     sidechainControls.scButton.setColour(juce::TextButton::textColourOffId, DarkTheme::textSecondary.withAlpha(0.7f));
@@ -2209,68 +1119,172 @@ rightTopControls.tiltSlider.setComponentID("tilt");
     sidechainControls.scButton.addListener(this);
     addAndMakeVisible(sidechainControls.scButton);
     sidechainControls.scAttachment = std::make_unique<UndoableButtonAttachment>(
-        *processor.apvts.getParameter("l_SC"), sidechainControls.scButton, &undoManager);
+        *processor.apvts.getParameter("y_FILTERS"), sidechainControls.scButton, &undoManager);
     sidechainControls.scAttachment->onParameterChange = [this]() { handleParameterChange(); };
-    // Tooltip actualizado via getTooltipText("sc") en updateAllTooltips()
     
-    // Botón SOLO - para solo de banda seleccionada (p_BANDSOLO)
-    sidechainControls.bandSoloButton.setComponentID("bandsolo");
-    sidechainControls.bandSoloButton.setLookAndFeel(soloButtonLAF.get());  // Usar LAF específico con gradiente invertido
-    sidechainControls.bandSoloButton.setButtonText("SOLO");
-    sidechainControls.bandSoloButton.setColour(juce::TextButton::buttonColourId, juce::Colours::transparentBlack);
-    sidechainControls.bandSoloButton.setColour(juce::TextButton::buttonOnColourId, juce::Colours::transparentBlack);  // Transparente para gradiente
-    sidechainControls.bandSoloButton.setColour(juce::TextButton::textColourOffId, DarkTheme::textSecondary.withAlpha(0.7f));
-    sidechainControls.bandSoloButton.setColour(juce::TextButton::textColourOnId, DarkTheme::textPrimary);
-    sidechainControls.bandSoloButton.setClickingTogglesState(true);
-    addAndMakeVisible(sidechainControls.bandSoloButton);
-    if (auto* param = processor.apvts.getParameter("p_BANDSOLO"))
+    // Establecer estado inicial de los filtros
+    updateSidechainComponentStates();
+
+    // === REFLECT (c_REFLECT) === (exact MODE styling with new range and % display)
+    leftTopKnobs.reflectSlider.setComponentID("reflect");
+    leftTopKnobs.reflectSlider.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
+    leftTopKnobs.reflectSlider.setTextBoxStyle(juce::Slider::TextBoxAbove, false, 100, 16);
+    leftTopKnobs.reflectSlider.setLookAndFeel(&sliderLAFBig);
+    leftTopKnobs.reflectSlider.setColour(juce::Slider::textBoxOutlineColourId, juce::Colours::transparentBlack);
+    leftTopKnobs.reflectSlider.setColour(juce::Slider::rotarySliderOutlineColourId, juce::Colours::white);
+    leftTopKnobs.reflectSlider.setColour(juce::Slider::textBoxTextColourId, juce::Colour(0xFFFFFFFF));
+    leftTopKnobs.reflectSlider.setRange(0.1, 1.0, 0.01);
+    leftTopKnobs.reflectSlider.setSkewFactorFromMidPoint(0.77);  // 0.77 aparece en la mitad del knob
+    leftTopKnobs.reflectSlider.setDoubleClickReturnValue(true, 0.77);
+    leftTopKnobs.reflectSlider.setPopupDisplayEnabled(false, false, this);
+    leftTopKnobs.reflectSlider.setTextBoxIsEditable(true);
+    leftTopKnobs.reflectSlider.setNumDecimalPlacesToDisplay(0);
+    leftTopKnobs.reflectSlider.textFromValueFunction = [](double value) {
+        const double pct = juce::jlimit(0.0, 1.0, (value - 0.1) / (1.0 - 0.1));
+        const int p = juce::roundToInt(pct * 100.0);
+        return juce::String(p) + "%";
+    };
+    leftTopKnobs.reflectSlider.valueFromTextFunction = [](const juce::String& text) {
+        auto t = text.trim();
+        if (t.endsWith("%")) t = t.dropLastCharacters(1).trim();
+        const double p = juce::jlimit(0.0, 100.0, t.getDoubleValue());
+        return 0.1 + (p / 100.0) * (1.0 - 0.1);
+    };
+    leftTopKnobs.reflectSlider.setTooltip(getTooltipText("reflect"));
+    addAndMakeVisible(leftTopKnobs.reflectSlider);
+    if (auto* paramReflect = processor.apvts.getParameter("c_REFLECT"))
     {
-        sidechainControls.bandSoloAttachment = std::make_unique<UndoableButtonAttachment>(
-            *param, sidechainControls.bandSoloButton, &undoManager);
-        
-        // Callback para cambios de estado
-        sidechainControls.bandSoloAttachment->onStateChange = [](bool) {
-            // Ya no necesitamos cambiar el texto ni los colores
-        };
-        
-        // Callback para clicks del usuario
-        sidechainControls.bandSoloAttachment->onParameterChange = [this]() {
-            handleParameterChange();
-        };
-        
-        // Sincronización inicial - ya no necesitamos cambiar el texto
+        leftTopKnobs.reflectAttachment = std::make_unique<CustomSliderAttachment>(
+            *paramReflect, leftTopKnobs.reflectSlider, &undoManager);
+        leftTopKnobs.reflectAttachment->onParameterChange = [this]() { handleParameterChange(); };
     }
-    
-    // Botón LIMIT - limitador brickwall de protección (p_SAFELIMITON)
-    rightTopControls.safeLimitButton.setComponentID("safelimit");
-    rightTopControls.safeLimitButton.setLookAndFeel(filtersButtonLAF.get());  // Usar gradiente como FILTERS
-    rightTopControls.safeLimitButton.setButtonText("LIM");
-    rightTopControls.safeLimitButton.setColour(juce::TextButton::buttonColourId, juce::Colours::transparentBlack);
-    rightTopControls.safeLimitButton.setColour(juce::TextButton::buttonOnColourId, juce::Colours::transparentBlack);  // Transparente para gradiente
-    rightTopControls.safeLimitButton.setColour(juce::TextButton::textColourOffId, juce::Colours::white);
-    rightTopControls.safeLimitButton.setColour(juce::TextButton::textColourOnId, juce::Colours::white);
-    rightTopControls.safeLimitButton.setClickingTogglesState(true);
-    addAndMakeVisible(rightTopControls.safeLimitButton);
-    if (auto* param = processor.apvts.getParameter("p_SAFELIMITON"))
+
+    leftTopKnobs.sizeSlider.setComponentID("size");
+    leftTopKnobs.sizeSlider.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
+    leftTopKnobs.sizeSlider.setTextBoxStyle(juce::Slider::TextBoxAbove, false, 70, 16);
+    leftTopKnobs.sizeSlider.setLookAndFeel(&sliderLAFBig);
+    leftTopKnobs.sizeSlider.setColour(juce::Slider::textBoxOutlineColourId, juce::Colours::transparentBlack);
+    leftTopKnobs.sizeSlider.setColour(juce::Slider::textBoxTextColourId, juce::Colour(0xFFFFFFFF));    leftTopKnobs.sizeSlider.setDoubleClickReturnValue(true, 1.0);  // Valor por defecto 1.0
+    leftTopKnobs.sizeSlider.setPopupDisplayEnabled(false, false, this);
+    leftTopKnobs.sizeSlider.setTextBoxIsEditable(true);
+    leftTopKnobs.sizeSlider.setNumDecimalPlacesToDisplay(1);
+    leftTopKnobs.sizeSlider.setRange(0.1, 4.0, 0.01);
+    leftTopKnobs.sizeSlider.setSkewFactorFromMidPoint(1.0); // Concentrar rango útil en valores bajos
+    addAndMakeVisible(leftTopKnobs.sizeSlider);
+    if (auto* param = processor.apvts.getParameter("e_SIZE"))
     {
-        rightTopControls.safeLimitAttachment = std::make_unique<UndoableButtonAttachment>(
-            *param, rightTopControls.safeLimitButton, &undoManager);
-        
-        // Callback para cambios de estado (texto fijo LIMIT)
-        rightTopControls.safeLimitAttachment->onStateChange = [](bool) {
-            // Texto siempre es "LIMIT", no cambia con el estado
-        };
-        
-        // Callback para clicks del usuario
-        rightTopControls.safeLimitAttachment->onParameterChange = [this]() {
-            handleParameterChange();
-        };
-        
-        // Sincronización inicial - texto siempre es "LIMIT"
-        rightTopControls.safeLimitButton.setButtonText("LIM");
+        leftTopKnobs.sizeAttachment = std::make_unique<CustomSliderAttachment>(
+            *param, leftTopKnobs.sizeSlider, &undoManager);
+        leftTopKnobs.sizeAttachment->onParameterChange = [this]() { handleParameterChange(); };
     }
-    // NOTA: Botón LPF y Slider de frecuencia de tono movidos a leftBottomKnobs
-    */
+
+    leftTopKnobs.drywetSlider.setComponentID("drywet");
+    leftTopKnobs.drywetSlider.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
+    leftTopKnobs.drywetSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 70, 16);
+    leftTopKnobs.drywetSlider.setLookAndFeel(&sliderLAFBig);
+    leftTopKnobs.drywetSlider.setTextBoxIsEditable(true);
+    leftTopKnobs.drywetSlider.setColour(juce::Slider::textBoxOutlineColourId, juce::Colours::transparentBlack);
+    leftTopKnobs.drywetSlider.setColour(juce::Slider::textBoxTextColourId, juce::Colour(0xFFB1CAF6));  // Azul pálido como output
+    leftTopKnobs.drywetSlider.setDoubleClickReturnValue(true, 0.33);  // Default: 100% (o_DRYWET = 1.0)
+    leftTopKnobs.drywetSlider.setPopupDisplayEnabled(false, false, this);
+    leftTopKnobs.drywetSlider.setRange(0.0, 1.0, 0.01);  // Rango interno 0.0-1.0
+    leftTopKnobs.drywetSlider.textFromValueFunction = [](double value) {
+        return juce::String(static_cast<int>(value * 101)) + " %";
+    };
+    leftTopKnobs.drywetSlider.valueFromTextFunction = [](const juce::String& text) {
+        auto trimmed = text.trim();
+        // Eliminar símbolo de porcentaje si existe
+        if (trimmed.endsWith("%"))
+            trimmed = trimmed.dropLastCharacters(1).trim();
+
+        // Convertir a número y normalizar de 0-100 a 0-1
+        auto percentage = trimmed.getDoubleValue();
+        return juce::jlimit(0.0, 1.0, percentage / 100.0);
+    };
+    addAndMakeVisible(leftTopKnobs.drywetSlider);
+    if (auto* param = processor.apvts.getParameter("b_DRYWET"))
+    {
+        leftTopKnobs.drywetAttachment = std::make_unique<CustomSliderAttachment>(
+            *param, leftTopKnobs.drywetSlider, &undoManager);
+        leftTopKnobs.drywetAttachment->onParameterChange = [this]() { handleParameterChange(); };
+    }
+
+    leftTopKnobs.dampSlider.setComponentID("damp");
+    leftTopKnobs.dampSlider.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
+    leftTopKnobs.dampSlider.setTextBoxStyle(juce::Slider::TextBoxAbove, false, 70, 16);
+    leftTopKnobs.dampSlider.setLookAndFeel(&sliderLAFBig);
+    leftTopKnobs.dampSlider.setTextBoxIsEditable(true);
+    leftTopKnobs.dampSlider.setColour(juce::Slider::textBoxOutlineColourId, juce::Colours::transparentBlack);
+    leftTopKnobs.dampSlider.setColour(juce::Slider::textBoxTextColourId, juce::Colour(0xFFFFFFFF));
+    leftTopKnobs.dampSlider.setRange(0.1, 0.95, 0.01);
+    leftTopKnobs.dampSlider.setDoubleClickReturnValue(true, 0.3125);  // Para mostrar 25%
+    leftTopKnobs.dampSlider.setPopupDisplayEnabled(false, false, this);
+    // Funciones de conversión para mostrar porcentajes
+    leftTopKnobs.dampSlider.textFromValueFunction = [](double value) {
+        const double pct = juce::jlimit(0.0, 1.0, (value - 0.1) / (0.95 - 0.1));
+        const int p = juce::roundToInt(pct * 100.0);
+        return juce::String(p) + "%";
+    };
+    leftTopKnobs.dampSlider.valueFromTextFunction = [](const juce::String& text) {
+        juce::String cleanText = text.trimEnd().upToLastOccurrenceOf("%", false, false);
+        double pct = juce::jlimit(0.0, 100.0, cleanText.getDoubleValue()) / 100.0;
+        return 0.1 + pct * (0.95 - 0.1);
+    };
+
+    addAndMakeVisible(leftTopKnobs.dampSlider);
+    if (auto* param = processor.apvts.getParameter("d_DAMP"))
+    {
+        leftTopKnobs.dampAttachment = std::make_unique<CustomSliderAttachment>(
+            *param, leftTopKnobs.dampSlider, &undoManager);
+        leftTopKnobs.dampAttachment->onParameterChange = [this]() { handleParameterChange(); };
+    }
+
+    leftTopKnobs.stSlider.setComponentID("stereo");
+    leftTopKnobs.stSlider.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
+    leftTopKnobs.stSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 60, 16);
+    leftTopKnobs.stSlider.setLookAndFeel(&sliderLAFBig);
+
+    leftTopKnobs.stSlider.setColour(juce::Slider::textBoxOutlineColourId, juce::Colours::transparentBlack);
+    leftTopKnobs.stSlider.setColour(juce::Slider::textBoxTextColourId, juce::Colour(0xFFB1CAF6));  // Azul pálido como output
+
+    leftTopKnobs.stSlider.setTextBoxIsEditable(true);
+    leftTopKnobs.stSlider.setEnabled(true);
+    leftTopKnobs.stSlider.setDoubleClickReturnValue(true, 0.5f);
+    leftTopKnobs.stSlider.setPopupDisplayEnabled(false, false, this);
+    leftTopKnobs.stSlider.setRange(0, 0.8,0.5);
+    leftTopKnobs.stSlider.setSkewFactorFromMidPoint(0.5);
+    // Funciones de conversión para mostrar porcentajes
+    leftTopKnobs.stSlider.textFromValueFunction = [](double value) {
+        const double pct = juce::jlimit(0.0, 0.8, (value - 0.f) / (1.0f - 0.f));
+        const int p = juce::roundToInt(pct * 100.0);
+        return juce::String(p) + "%";
+    };
+    leftTopKnobs.stSlider.valueFromTextFunction = [](const juce::String& text) {
+        juce::String cleanText = text.trimEnd().upToLastOccurrenceOf("%", false, false);
+        double pct = juce::jlimit(0.0, 100.0, cleanText.getDoubleValue()) / 100.0;
+        return 0.0 + pct * (1.0 - 0.0);
+    };
+    addAndMakeVisible(leftTopKnobs.stSlider);
+    if (auto* param = processor.apvts.getParameter("f_ST"))
+    {
+        leftTopKnobs.stAttachment = std::make_unique<CustomSliderAttachment>(
+            *param, leftTopKnobs.stSlider, &undoManager);
+        leftTopKnobs.stAttachment->onParameterChange = [this]() { handleParameterChange(); };
+    }
+
+    leftTopKnobs.freezeButton.setClickingTogglesState(true);
+    leftTopKnobs.freezeButton.setLookAndFeel(&smallButtonLAF);  // Usar LAF básico
+    leftTopKnobs.freezeButton.setColour(juce::TextButton::buttonColourId, juce::Colours::transparentBlack);
+    leftTopKnobs.freezeButton.setColour(juce::TextButton::buttonOnColourId, juce::Colours::transparentBlack);
+    leftTopKnobs.freezeButton.setColour(juce::TextButton::textColourOffId, DarkTheme::textSecondary.withAlpha(0.7f));
+    leftTopKnobs.freezeButton.setColour(juce::TextButton::textColourOnId, DarkTheme::textPrimary);
+    leftTopKnobs.freezeButton.addListener(this);
+    addAndMakeVisible(leftTopKnobs.freezeButton);
+    leftTopKnobs.freezeAttachment = std::make_unique<UndoableButtonAttachment>(
+        *processor.apvts.getParameter("g_FREEZE"), leftTopKnobs.freezeButton, &undoManager);
+    leftTopKnobs.freezeAttachment->onParameterChange = [this]() { handleParameterChange(); };
+
+
 }
 
 void JCBReverbAudioProcessorEditor::setupMeters()
@@ -2283,75 +1297,26 @@ void JCBReverbAudioProcessorEditor::setupMeters()
     // Medidores de salida
     addAndMakeVisible(outputMeterL);
     addAndMakeVisible(outputMeterR);
-    
-    /*
-    // Medidores de sidechain (siempre visibles)
-    scMeterL.setVisible(true);
-    scMeterR.setVisible(true);
-    addAndMakeVisible(scMeterL);
-    addAndMakeVisible(scMeterR);
-    */
-    
-    // COMENTADO: Sliders incorrectos - deberían ser input/output para reverb
-    /*
-    // Slider de trim
-    trimSlider.setComponentID("trim");
+
+    // Sliders de trim/makeup (reverb): a_INPUT y m_OUTPUT
+    trimSlider.setComponentID("a_INPUT");
     addAndMakeVisible(trimSlider);
-    
-    // Vincular slider de trim al parámetro k_INPUT - ahora usando attachment thread-safe
-    if (auto* param = processor.apvts.getParameter("k_INPUT"))
+    if (auto* param = processor.apvts.getParameter("a_INPUT"))
     {
-        trimAttachment = std::make_unique<CustomSliderAttachment>(
-            *param, trimSlider, &undoManager);
+        trimAttachment = std::make_unique<CustomSliderAttachment>(*param, trimSlider, &undoManager);
         trimAttachment->onParameterChange = [this]() { handleParameterChange(); };
     }
-    
-    // Slider de makeup - RESTAURADO para i_MAKEUP
-    makeupSlider.setComponentID("makeup");
+
+    // Slider de makeup (salida)
+    makeupSlider.setComponentID("m_OUTPUT");
     addAndMakeVisible(makeupSlider);
-    
-    // Vincular slider de makeup al parámetro l_OUTPUT - usando attachment thread-safe
-    if (auto* param = processor.apvts.getParameter("l_OUTPUT"))
+    if (auto* param = processor.apvts.getParameter("m_OUTPUT"))
     {
-        makeupAttachment = std::make_unique<CustomSliderAttachment>(
-            *param, makeupSlider, &undoManager);
+        makeupAttachment = std::make_unique<CustomSliderAttachment>(*param, makeupSlider, &undoManager);
         makeupAttachment->onParameterChange = [this]() { handleParameterChange(); };
-        
-        // Configurar skew factor SOLO para el slider de salida
-        // El attachment ya estableció el rango desde el parámetro (-24 a +12)
         makeupSlider.setSkewFactorFromMidPoint(0.0);  // Centrar 0 dB visualmente
     }
-    */
-
-    /*
-    // Slider de trim de sidechain
-    scTrimSlider.setComponentID("sctrim");
-    addAndMakeVisible(scTrimSlider);
-    
-    // Establecer propiedades iniciales para el slider de trim de sidechain
-    // scTrimSlider.setTooltip(JUCE_UTF8("SC TRIM: ganancia de entrada del sidechain entre -12 y +12 dB.\nAjusta el nivel del sidechain externo.\nValor por defecto: 0 dB, se activa con EXT KEY"));
-    
-    // Vincular slider de trim de sidechain al parámetro y_SCTRIM - ahora usando attachment thread-safe
-    // if (auto* param = processor.apvts.getParameter("y_SCTRIM"))
-    // {
-    //     scTrimAttachment = std::make_unique<CustomSliderAttachment>(
-    //         *param, scTrimSlider, &undoManager);
-    //     scTrimAttachment->onParameterChange = [this]() { handleParameterChange(); };
-    // }
-    
-    // Inicialmente visible pero con alpha reducido cuando EXT KEY está apagado
-    scTrimSlider.setVisible(true);
-    scTrimSlider.setEnabled(false);
-    scTrimSlider.setAlpha(0.25f);
-    */
-    
-    //==========================================================================
-    // CONFIGURAR DISPLAYS INDEPENDIENTES
-    //==========================================================================
-    
 }
-
-
 
 void JCBReverbAudioProcessorEditor::setupPresetArea()
 {
@@ -2475,7 +1440,7 @@ void JCBReverbAudioProcessorEditor::setupPresetArea()
             if (auto* param = processor.apvts.getParameter("d_MODE")) {
                 float defaultValue = param->getDefaultValue();
                 float realValue = param->getNormalisableRange().convertFrom0to1(defaultValue);
-                rightBottomKnobs.modeSlider.setValue(realValue, juce::sendNotificationSync);
+                reflectControls.reflectSlider.setValue(realValue, juce::sendNotificationSync);
             }
             if (auto* param = processor.apvts.getParameter("l_OUTPUT")) {
                 float defaultValue = param->getDefaultValue();
@@ -2485,12 +1450,12 @@ void JCBReverbAudioProcessorEditor::setupPresetArea()
             if (auto* param = processor.apvts.getParameter("j_HPF")) {
                 float defaultValue = param->getDefaultValue();
                 float realValue = param->getNormalisableRange().convertFrom0to1(defaultValue);
-                sidechainControls.xLowSlider.setValue(realValue, juce::sendNotificationSync);
+                sidechainControls.hpfSlider.setValue(realValue, juce::sendNotificationSync);
             }
             if (auto* param = processor.apvts.getParameter("k_LPF")) {
                 float defaultValue = param->getDefaultValue();
                 float realValue = param->getNormalisableRange().convertFrom0to1(defaultValue);
-                sidechainControls.xHighSlider.setValue(realValue, juce::sendNotificationSync);
+                sidechainControls.lpfSlider.setValue(realValue, juce::sendNotificationSync);
             }
             if (auto* param = processor.apvts.getParameter("l_SC")) {
                 float defaultValue = param->getDefaultValue();
@@ -2994,193 +1959,177 @@ void JCBReverbAudioProcessorEditor::updateBasicButtonStates()
     bypassTextVisible = bypassActive;  // Siempre mostrar texto cuando bypass está activo
 }
 
-// COMENTADO: Métodos update para controles de distorsión que no existen en reverb
-/*
 void JCBReverbAudioProcessorEditor::updateSidechainComponentStates()
 {
     // Obtener estado del botón FILTERS
     const bool filtersActive = sidechainControls.scButton.getToggleState();
     
-    // Los filtros HPF/BAND/LPF activos solo cuando FILTERS está ON
-    sidechainControls.xLowSlider.setVisible(true);  // Siempre visibles
-    sidechainControls.bandSlider.setVisible(true);  // Siempre visible
-    sidechainControls.xHighSlider.setVisible(true);  // Siempre visibles
-    sidechainControls.xLowSlider.setEnabled(filtersActive);  // Activos solo si FILTERS ON
-    sidechainControls.bandSlider.setEnabled(filtersActive);  // Activo solo si FILTERS ON
-    sidechainControls.xHighSlider.setEnabled(filtersActive);   // Activos solo si FILTERS ON
-    sidechainControls.xLowSlider.setAlpha(filtersActive ? 1.0f : 0.5f);  // Alpha indica estado
-    sidechainControls.bandSlider.setAlpha(filtersActive ? 1.0f : 0.5f);  // Alpha indica estado
-    sidechainControls.xHighSlider.setAlpha(filtersActive ? 1.0f : 0.5f);   // Alpha indica estado
-    
-    // Actualizar alpha de las labels de BAND
-    float labelAlpha = filtersActive ? 0.85f : 0.425f;  // Mismo ratio que en paintOverChildren
-    sidechainControls.bandLowLabel.setAlpha(labelAlpha);
-    sidechainControls.bandMidLabel.setAlpha(labelAlpha);
-    sidechainControls.bandHighLabel.setAlpha(labelAlpha);
-    
-    // SOLO BAND button - activo solo cuando FILTERS está ON
-    sidechainControls.bandSoloButton.setEnabled(filtersActive);
-    sidechainControls.bandSoloButton.setAlpha(filtersActive ? 1.0f : 0.5f);
+    // Los filtros HPF/LPF activos solo cuando FILTERS está ON
+    sidechainControls.hpfSlider.setVisible(true);  // Siempre visibles
+    sidechainControls.lpfSlider.setVisible(true);  // Siempre visibles
+    sidechainControls.hpfSlider.setEnabled(filtersActive);  // Activos solo si FILTERS ON
+    sidechainControls.lpfSlider.setEnabled(filtersActive);   // Activos solo si FILTERS ON
+    sidechainControls.hpfSlider.setAlpha(filtersActive ? 1.0f : 0.5f);  // Alpha indica estado
+    sidechainControls.lpfSlider.setAlpha(filtersActive ? 1.0f : 0.5f);   // Alpha indica estado
 }
 
-void JCBReverbAudioProcessorEditor::updateDistortionComponentStates()
-{
-    // Obtener estado del botón distOnButton (p_DISTON)
-    const bool distortionActive = rightBottomKnobs.distOnButton.getToggleState();
-    
-    // MODE slider - activo solo cuando distorsión está ON
-    rightBottomKnobs.modeSlider.setEnabled(distortionActive);
-    rightBottomKnobs.modeSlider.setAlpha(distortionActive ? 1.0f : 0.5f);
-    
-    // EVEN (DC) slider - activo solo cuando distorsión está ON
-    rightBottomKnobs.dcSlider.setEnabled(distortionActive);
-    rightBottomKnobs.dcSlider.setAlpha(distortionActive ? 1.0f : 0.5f);
-    
-    // DRIVE slider - activo solo cuando distorsión está ON
-    rightBottomKnobs.driveSlider.setEnabled(distortionActive);
-    rightBottomKnobs.driveSlider.setAlpha(distortionActive ? 1.0f : 0.5f);
-    
-    // CEIL slider - activo solo cuando distorsión está ON
-    leftTopKnobs.ceilingSlider.setEnabled(distortionActive);
-    leftTopKnobs.ceilingSlider.setAlpha(distortionActive ? 1.0f : 0.5f);
-    
-    // TILT POS button (PRE/POST) - activo solo cuando distorsión está ON
-    rightTopControls.tiltPosButton.setEnabled(distortionActive);
-    rightTopControls.tiltPosButton.setAlpha(distortionActive ? 1.0f : 0.5f);
-    
-    // Actualizar alpha del texto del botón tiltPos según estado de distorsión
-    // PRE y POST deben verse igual (no hay diferencia entre los dos estados)
-    rightTopControls.tiltPosButton.setColour(
-        juce::TextButton::textColourOffId,
-        juce::Colour(0xFFA6DAD5).withAlpha(distortionActive ? 1.0f : 0.5f)  // Verde agua pálido como tiltSlider
-    );
-    rightTopControls.tiltPosButton.setColour(
-        juce::TextButton::textColourOnId,
-        juce::Colour(0xFFA6DAD5).withAlpha(distortionActive ? 1.0f : 0.5f)  // Verde agua pálido como tiltSlider
-    );
-    
-    // Actualizar alpha del texto del botón distOn según estado
-    rightBottomKnobs.distOnButton.setColour(
-        juce::TextButton::textColourOffId, 
-        DarkTheme::textSecondary.withAlpha(0.7f)
-    );
-    rightBottomKnobs.distOnButton.setColour(
-        juce::TextButton::textColourOnId, 
-        juce::Colour(0xFFFEB2B2)  // Rosa pálido como los sliders de distorsión
-    );
-    
-    // Actualizar estado de la curva de distorsión
-    // distortionCurveDisplay.setDistortionEnabled(distortionActive);
-}
+// void JCBReverbAudioProcessorEditor::updateDistortionComponentStates()
+// {
+//     // Obtener estado del botón distOnButton (p_DISTON)
+//     const bool distortionActive = rightBottomKnobs.distOnButton.getToggleState();
+//
+//     // REFLECT slider always enabled for reverb
+//     leftTopKnobs.reflectSlider.setEnabled(true);
+//     leftTopKnobs.reflectSlider.setAlpha(1.0f);
+//
+//     // EVEN (DC) slider - activo solo cuando distorsión está ON
+//     rightBottomKnobs.dcSlider.setEnabled(distortionActive);
+//     rightBottomKnobs.dcSlider.setAlpha(distortionActive ? 1.0f : 0.5f);
+//
+//     // DRIVE slider - activo solo cuando distorsión está ON
+//     rightBottomKnobs.driveSlider.setEnabled(distortionActive);
+//     rightBottomKnobs.driveSlider.setAlpha(distortionActive ? 1.0f : 0.5f);
+//
+//     // CEIL slider - activo solo cuando distorsión está ON
+//     leftTopKnobs.ceilingSlider.setEnabled(distortionActive);
+//     leftTopKnobs.ceilingSlider.setAlpha(distortionActive ? 1.0f : 0.5f);
+//
+//     // TILT POS button (PRE/POST) - activo solo cuando distorsión está ON
+//     rightTopControls.tiltPosButton.setEnabled(distortionActive);
+//     rightTopControls.tiltPosButton.setAlpha(distortionActive ? 1.0f : 0.5f);
+//
+//     // Actualizar alpha del texto del botón tiltPos según estado de distorsión
+//     // PRE y POST deben verse igual (no hay diferencia entre los dos estados)
+//     rightTopControls.tiltPosButton.setColour(
+//         juce::TextButton::textColourOffId,
+//         juce::Colour(0xFFA6DAD5).withAlpha(distortionActive ? 1.0f : 0.5f)  // Verde agua pálido como tiltSlider
+//     );
+//     rightTopControls.tiltPosButton.setColour(
+//         juce::TextButton::textColourOnId,
+//         juce::Colour(0xFFA6DAD5).withAlpha(distortionActive ? 1.0f : 0.5f)  // Verde agua pálido como tiltSlider
+//     );
+//
+//     // Actualizar alpha del texto del botón distOn según estado
+//     rightBottomKnobs.distOnButton.setColour(
+//         juce::TextButton::textColourOffId,
+//         DarkTheme::textSecondary.withAlpha(0.7f)
+//     );
+//     rightBottomKnobs.distOnButton.setColour(
+//         juce::TextButton::textColourOnId,
+//         juce::Colour(0xFFFEB2B2)  // Rosa pálido como los sliders de distorsión
+//     );
+//
+//     // Actualizar estado de la curva de distorsión
+//     // distortionCurveDisplay.setDistortionEnabled(distortionActive);
+// }
 
-void JCBReverbAudioProcessorEditor::updateBitCrusherComponentStates()
-{
-    // Obtener estado del botón BIT CRUSHER (h_BITSON)
-    const bool bitCrusherActive = rightBottomKnobs.bitButton.getToggleState();
-    
-    // BIT slider - siempre interactivo pero con alpha reducido cuando BIT CRUSHER está OFF
-    rightTopControls.bitsSlider.setEnabled(true);  // Siempre habilitado para pre-configuración
-    rightTopControls.bitsSlider.setAlpha(bitCrusherActive ? 1.0f : 0.5f);
-    
-    // Actualizar alpha del texto del botón BIT CRUSHER según estado
-    rightBottomKnobs.bitButton.setColour(
-        juce::TextButton::textColourOffId,
-        juce::Colour(0xFFB2FFB3).withAlpha(bitCrusherActive ? 0.7f : 0.4f)  // Verde pálido
-    );
-    rightBottomKnobs.bitButton.setColour(
-        juce::TextButton::textColourOnId,
-        juce::Colour(0xFFB2FFB3).withAlpha(bitCrusherActive ? 1.0f : 0.5f)  // Verde pálido
-    );
-}
+// void JCBReverbAudioProcessorEditor::updateBitCrusherComponentStates()
+// {
+//     // Obtener estado del botón BIT CRUSHER (h_BITSON)
+//     const bool bitCrusherActive = rightBottomKnobs.bitButton.getToggleState();
+//
+//     // BIT slider - siempre interactivo pero con alpha reducido cuando BIT CRUSHER está OFF
+//     rightTopControls.bitsSlider.setEnabled(true);  // Siempre habilitado para pre-configuración
+//     rightTopControls.bitsSlider.setAlpha(bitCrusherActive ? 1.0f : 0.5f);
+//
+//     // Actualizar alpha del texto del botón BIT CRUSHER según estado
+//     rightBottomKnobs.bitButton.setColour(
+//         juce::TextButton::textColourOffId,
+//         juce::Colour(0xFFB2FFB3).withAlpha(bitCrusherActive ? 0.7f : 0.4f)  // Verde pálido
+//     );
+//     rightBottomKnobs.bitButton.setColour(
+//         juce::TextButton::textColourOnId,
+//         juce::Colour(0xFFB2FFB3).withAlpha(bitCrusherActive ? 1.0f : 0.5f)  // Verde pálido
+//     );
+// }
 
-void JCBReverbAudioProcessorEditor::updateDownsampleComponentStates()
-{
-    // Obtener estado del botón DOWNSAMPLE (n_DOWNSAMPLEON)
-    const bool downsampleActive = rightTopControls.downsampleButton.getToggleState();
-    
-    // DECI slider - siempre interactivo pero con alpha reducido cuando DOWNSAMPLE está OFF
-    rightTopControls.downsampleSlider.setEnabled(true);  // Siempre habilitado para pre-configuración
-    rightTopControls.downsampleSlider.setAlpha(downsampleActive ? 1.0f : 0.5f);
-    
-    // Actualizar alpha del texto del botón DOWNSAMPLE según estado
-    rightTopControls.downsampleButton.setColour(
-        juce::TextButton::textColourOffId,
-        juce::Colour(0xFFD9B2FF).withAlpha(downsampleActive ? 0.7f : 0.4f)  // Púrpura pálido
-    );
-    rightTopControls.downsampleButton.setColour(
-        juce::TextButton::textColourOnId,
-        juce::Colour(0xFFD9B2FF).withAlpha(downsampleActive ? 1.0f : 0.5f)  // Púrpura pálido
-    );
-}
+// void JCBReverbAudioProcessorEditor::updateDownsampleComponentStates()
+// {
+//     // Obtener estado del botón DOWNSAMPLE (n_DOWNSAMPLEON)
+//     const bool downsampleActive = rightTopControls.downsampleButton.getToggleState();
+//
+//     // DECI slider - siempre interactivo pero con alpha reducido cuando DOWNSAMPLE está OFF
+//     rightTopControls.downsampleSlider.setEnabled(true);  // Siempre habilitado para pre-configuración
+//     rightTopControls.downsampleSlider.setAlpha(downsampleActive ? 1.0f : 0.5f);
+//
+//     // Actualizar alpha del texto del botón DOWNSAMPLE según estado
+//     rightTopControls.downsampleButton.setColour(
+//         juce::TextButton::textColourOffId,
+//         juce::Colour(0xFFD9B2FF).withAlpha(downsampleActive ? 0.7f : 0.4f)  // Púrpura pálido
+//     );
+//     rightTopControls.downsampleButton.setColour(
+//         juce::TextButton::textColourOnId,
+//         juce::Colour(0xFFD9B2FF).withAlpha(downsampleActive ? 1.0f : 0.5f)  // Púrpura pálido
+//     );
+// }
 
-void JCBReverbAudioProcessorEditor::updateTiltComponentStates()
-{
-    // Obtener estado del botón TILT (s_TILTON)
-    const bool tiltActive = rightTopControls.tiltOnButton.getToggleState();
-    
-    // TILT slider - siempre interactivo pero con alpha reducido cuando TILT está OFF
-    rightTopControls.tiltSlider.setEnabled(true);  // Siempre habilitado para pre-configuración
-    rightTopControls.tiltSlider.setAlpha(tiltActive ? 1.0f : 0.5f);
-    
-    // TILT POS button - siempre interactivo pero con alpha reducido cuando TILT está OFF
-    rightTopControls.tiltPosButton.setEnabled(true);  // Siempre habilitado para pre-configuración
-    rightTopControls.tiltPosButton.setAlpha(tiltActive ? 1.0f : 0.5f);
-    rightTopControls.tiltPosButton.setColour(
-        juce::TextButton::textColourOffId,
-        juce::Colour(0xFFA6DAD5).withAlpha(tiltActive ? 1.0f : 0.5f)  // Verde agua pálido
-    );
-    rightTopControls.tiltPosButton.setColour(
-        juce::TextButton::textColourOnId,
-        juce::Colour(0xFFA6DAD5).withAlpha(tiltActive ? 1.0f : 0.5f)  // Verde agua pálido
-    );
-    
-    // Actualizar alpha del texto del botón TILT según estado
-    rightTopControls.tiltOnButton.setColour(
-        juce::TextButton::textColourOffId,
-        juce::Colour(0xFFA6DAD5).withAlpha(tiltActive ? 0.7f : 0.3f)  // Verde agua pálido
-    );
-    rightTopControls.tiltOnButton.setColour(
-        juce::TextButton::textColourOnId,
-        juce::Colour(0xFFA6DAD5).withAlpha(tiltActive ? 1.0f : 0.4f)  // Verde agua pálido
-    );
-}
+// void JCBReverbAudioProcessorEditor::updateTiltComponentStates()
+// {
+//     // Obtener estado del botón TILT (s_TILTON)
+//     const bool tiltActive = rightTopControls.tiltOnButton.getToggleState();
+//
+//     // TILT slider - siempre interactivo pero con alpha reducido cuando TILT está OFF
+//     rightTopControls.tiltSlider.setEnabled(true);  // Siempre habilitado para pre-configuración
+//     rightTopControls.tiltSlider.setAlpha(tiltActive ? 1.0f : 0.5f);
+//
+//     // TILT POS button - siempre interactivo pero con alpha reducido cuando TILT está OFF
+//     rightTopControls.tiltPosButton.setEnabled(true);  // Siempre habilitado para pre-configuración
+//     rightTopControls.tiltPosButton.setAlpha(tiltActive ? 1.0f : 0.5f);
+//     rightTopControls.tiltPosButton.setColour(
+//         juce::TextButton::textColourOffId,
+//         juce::Colour(0xFFA6DAD5).withAlpha(tiltActive ? 1.0f : 0.5f)  // Verde agua pálido
+//     );
+//     rightTopControls.tiltPosButton.setColour(
+//         juce::TextButton::textColourOnId,
+//         juce::Colour(0xFFA6DAD5).withAlpha(tiltActive ? 1.0f : 0.5f)  // Verde agua pálido
+//     );
+//
+//     // Actualizar alpha del texto del botón TILT según estado
+//     rightTopControls.tiltOnButton.setColour(
+//         juce::TextButton::textColourOffId,
+//         juce::Colour(0xFFA6DAD5).withAlpha(tiltActive ? 0.7f : 0.3f)  // Verde agua pálido
+//     );
+//     rightTopControls.tiltOnButton.setColour(
+//         juce::TextButton::textColourOnId,
+//         juce::Colour(0xFFA6DAD5).withAlpha(tiltActive ? 1.0f : 0.4f)  // Verde agua pálido
+//     );
+// }
 
-void JCBReverbAudioProcessorEditor::updateToneLpfComponentStates()
-{
-    // Obtener estado del botón TONE LPF (q_TONEON)
-    const bool toneLpfActive = leftBottomKnobs.toneLpfButton.getToggleState();
-    
-    // TONE FREQ slider - siempre interactivo pero con alpha reducido cuando TONE LPF está OFF
-    leftBottomKnobs.toneFreqSlider.setEnabled(true);  // Siempre habilitado para pre-configuración
-    leftBottomKnobs.toneFreqSlider.setAlpha(toneLpfActive ? 1.0f : 0.5f);
-    
-    // TONE Q slider - siempre interactivo pero con alpha reducido cuando TONE LPF está OFF
-    leftBottomKnobs.toneQSlider.setEnabled(true);  // Siempre habilitado para pre-configuración
-    leftBottomKnobs.toneQSlider.setAlpha(toneLpfActive ? 1.0f : 0.5f);
-    
-    // TONE POS button - siempre interactivo pero con alpha reducido cuando TONE LPF está OFF
-    leftBottomKnobs.tonePosButton.setEnabled(true);  // Siempre habilitado para pre-configuración
-    leftBottomKnobs.tonePosButton.setAlpha(toneLpfActive ? 1.0f : 0.5f);
-    leftBottomKnobs.tonePosButton.setColour(
-        juce::TextButton::textColourOffId,
-        juce::Colour(0xFF6EB8F6).withAlpha(toneLpfActive ? 1.0f : 0.5f)  // Azul claro TONE
-    );
-    leftBottomKnobs.tonePosButton.setColour(
-        juce::TextButton::textColourOnId,
-        juce::Colour(0xFF6EB8F6).withAlpha(toneLpfActive ? 1.0f : 0.5f)  // Azul claro TONE
-    );
-    
-    // Actualizar alpha del texto del botón TONE LPF según estado
-    leftBottomKnobs.toneLpfButton.setColour(
-        juce::TextButton::textColourOffId,
-        juce::Colour(0xFF6EB8F6).withAlpha(toneLpfActive ? 0.7f : 0.3f)  // Azul claro TONE
-    );
-    leftBottomKnobs.toneLpfButton.setColour(
-        juce::TextButton::textColourOnId,
-        juce::Colour(0xFF6EB8F6).withAlpha(toneLpfActive ? 1.0f : 0.4f)  // Azul claro TONE
-    );
-}
-*/
+// void JCBReverbAudioProcessorEditor::updateToneLpfComponentStates()
+// {
+//     // Obtener estado del botón TONE LPF (q_TONEON)
+//     const bool toneLpfActive = leftBottomKnobs.toneLpfButton.getToggleState();
+//
+//     // TONE FREQ slider - siempre interactivo pero con alpha reducido cuando TONE LPF está OFF
+//     leftBottomKnobs.toneFreqSlider.setEnabled(true);  // Siempre habilitado para pre-configuración
+//     leftBottomKnobs.toneFreqSlider.setAlpha(toneLpfActive ? 1.0f : 0.5f);
+//
+//     // TONE Q slider - siempre interactivo pero con alpha reducido cuando TONE LPF está OFF
+//     leftBottomKnobs.toneQSlider.setEnabled(true);  // Siempre habilitado para pre-configuración
+//     leftBottomKnobs.toneQSlider.setAlpha(toneLpfActive ? 1.0f : 0.5f);
+//
+//     // TONE POS button - siempre interactivo pero con alpha reducido cuando TONE LPF está OFF
+//     leftBottomKnobs.tonePosButton.setEnabled(true);  // Siempre habilitado para pre-configuración
+//     leftBottomKnobs.tonePosButton.setAlpha(toneLpfActive ? 1.0f : 0.5f);
+//     leftBottomKnobs.tonePosButton.setColour(
+//         juce::TextButton::textColourOffId,
+//         juce::Colour(0xFF6EB8F6).withAlpha(toneLpfActive ? 1.0f : 0.5f)  // Azul claro TONE
+//     );
+//     leftBottomKnobs.tonePosButton.setColour(
+//         juce::TextButton::textColourOnId,
+//         juce::Colour(0xFF6EB8F6).withAlpha(toneLpfActive ? 1.0f : 0.5f)  // Azul claro TONE
+//     );
+//
+//     // Actualizar alpha del texto del botón TONE LPF según estado
+//     leftBottomKnobs.toneLpfButton.setColour(
+//         juce::TextButton::textColourOffId,
+//         juce::Colour(0xFF6EB8F6).withAlpha(toneLpfActive ? 0.7f : 0.3f)  // Azul claro TONE
+//     );
+//     leftBottomKnobs.toneLpfButton.setColour(
+//         juce::TextButton::textColourOnId,
+//         juce::Colour(0xFF6EB8F6).withAlpha(toneLpfActive ? 1.0f : 0.4f)  // Azul claro TONE
+//     );
+// }
 
 void JCBReverbAudioProcessorEditor::updateBackgroundState()
 {
@@ -3342,7 +2291,6 @@ void JCBReverbAudioProcessorEditor::updateMeters()
     outputMeterR.repaint();
 }
 
-
 void JCBReverbAudioProcessorEditor::updateSliderValues()
 {
     // Actualizar todos los sliders con los valores actuales del APVTS
@@ -3383,8 +2331,8 @@ void JCBReverbAudioProcessorEditor::updateSliderValues()
     if (auto* param = processor.apvts.getRawParameterValue("b_DRIVE"))
         rightBottomKnobs.driveSlider.setValue(param->load(), juce::dontSendNotification);
     
-    if (auto* param = processor.apvts.getRawParameterValue("d_MODE"))
-        rightBottomKnobs.modeSlider.setValue(param->load(), juce::dontSendNotification);
+    if (auto* param = processor.apvts.getRawParameterValue("c_REFLECT"))
+        leftTopKnobs.reflectSlider.setValue(param->load(), juce::dontSendNotification);
     */
         
     // COMENTADO: Más controles de distorsión inexistentes
@@ -3402,10 +2350,10 @@ void JCBReverbAudioProcessorEditor::updateSliderValues()
     
     // Controles de sidechain - Todos usan CustomSliderAttachment
     if (auto* param = processor.apvts.getRawParameterValue("j_HPF"))
-        sidechainControls.xLowSlider.setValue(param->load(), juce::dontSendNotification);
+        sidechainControls.hpfSlider.setValue(param->load(), juce::dontSendNotification);
         
     if (auto* param = processor.apvts.getRawParameterValue("k_LPF"))
-        sidechainControls.xHighSlider.setValue(param->load(), juce::dontSendNotification);
+        sidechainControls.lpfSlider.setValue(param->load(), juce::dontSendNotification);
     
     if (auto* param = processor.apvts.getRawParameterValue("o_BAND"))
         sidechainControls.bandSlider.setValue(param->load(), juce::dontSendNotification);
@@ -3494,9 +2442,6 @@ void JCBReverbAudioProcessorEditor::resetGuiSize()
     // Forzar repaint para asegurar que se actualice correctamente
     repaint();
 }
-
-
-
 
 //==============================================================================
 // GESTIÓN DE PRESETS
@@ -4023,79 +2968,35 @@ void JCBReverbAudioProcessorEditor::hideCredits()
 //==============================================================================
 void JCBReverbAudioProcessorEditor::updateTodoButtonTexts()
 {
-    // Actualizar tooltips de botones TODO usando getTooltipText() para consistencia
+    // Actualizar tooltips de botones por hacer para consistencia
     utilityButtons.hqButton.setTooltip(getTooltipText("hq"));
     utilityButtons.dualMonoButton.setTooltip(getTooltipText("dualmono"));
     utilityButtons.msButton.setTooltip(getTooltipText("ms"));
     topButtons.abStateButton.setTooltip(getTooltipText("abstate"));
     utilityButtons.midiLearnButton.setTooltip(getTooltipText("midilearn"));
-    
     // Stereo Linked button - se maneja en updateAllTooltips()
-    
-    
-    // Zoom y Diagram mantienen sus tooltips actuales ya que son funcionales
 }
 
 void JCBReverbAudioProcessorEditor::updateAllTooltips()
 {
-    // Actualizar todos los tooltips de componentes basado en el idioma actual
-    
     // Título
     titleLink.setTooltip(getTooltipText("title"));
-    
-    // COMENTADO: Tooltips de controles de distorsión que no existen
-    /*
-    // Perillas - superiores izquierdas
-    leftBottomKnobs.drywetSlider.setTooltip(getTooltipText("drywet"));
-    leftTopKnobs.ceilingSlider.setTooltip(getTooltipText("ceiling"));  // NUEVO - tooltip para e_CEILING
-    // MAXIMIZER: c_RATIO no existe - comentado según CONTEXTO.txt
-    // leftTopKnobs.ratioSlider.setTooltip(getTooltipText("ratio"));
-    // MAXIMIZER: q_KNEE no existe - comentado según CONTEXTO.txt
-    // leftTopKnobs.kneeSlider.setTooltip(getTooltipText("knee"));
-    
-    // Perillas - lookahead movido a rightTopControls
-    rightTopControls.bitsSlider.setTooltip(getTooltipText("bits"));
-    rightTopControls.downsampleSlider.setTooltip(getTooltipText("downsample"));  // NUEVO - tooltip para DECI slider
-    rightTopControls.downsampleButton.setTooltip(getTooltipText("downsampleon"));  // NUEVO - tooltip para DOWNSAMPLE button
-    */
-    
-    // Perillas - superiores derechas
-    // MAXIMIZER: h_RANGE no existe - comentado según CONTEXTO.txt
-    // rightTopControls.rangeSlider.setTooltip(getTooltipText("range"));
-    // MAXIMIZER: g_REACT no existe - comentado según CONTEXTO.txt
-    // rightTopControls.reactSlider.setTooltip(getTooltipText("react"));
-    // MAXIMIZER: z_SMOOTH no existe - comentado según CONTEXTO.txt
-    // rightTopControls.smoothSlider.setTooltip(getTooltipText("smooth"));
-    // COMENTADO: Más tooltips de controles inexistentes
-    /*
-    rightTopControls.tiltSlider.setTooltip(getTooltipText("tilt"));  // NUEVO - tooltip para TILT slider
-    rightTopControls.tiltOnButton.setTooltip(getTooltipText("tilton"));  // NUEVO - tooltip para TILT ON button
-    rightTopControls.tiltPosButton.setTooltip(getTooltipText("tiltpos"));  // NUEVO - tooltip para TILT POS button
-    
-    // Perillas - inferiores derechas
-    rightBottomKnobs.driveSlider.setTooltip(getTooltipText("drive"));
-    rightBottomKnobs.modeSlider.setTooltip(getTooltipText("mode"));
-    rightBottomKnobs.distOnButton.setTooltip(getTooltipText("diston"));  // NUEVO - tooltip para DIST ON button
-    rightBottomKnobs.bitButton.setTooltip(getTooltipText("bitcrusher"));    // NUEVO - tooltip para BIT CRUSHER button
-    rightBottomKnobs.dcSlider.setTooltip(getTooltipText("even"));  // NUEVO - tooltip para EVEN slider
-    // MAXIMIZER: f_HOLD no existe - comentado según CONTEXTO.txt
-    // rightBottomKnobs.holdSlider.setTooltip(getTooltipText("hold"));
-    // speedButton removed
-    
-    // Sliders de trim y makeup
+
     trimSlider.setTooltip(getTooltipText("trim"));
-    // RESTAURADO: i_MAKEUP tooltip
     makeupSlider.setTooltip(getTooltipText("makeup"));
-    */
-    
-    // Sliders de trim de sidechain
-    // scTrimSlider.setTooltip(getTooltipText("sctrim"));
-    
-    // Controles de filtro de entrada (no aplican en esta UI de reverb)
-    // Tooltips deshabilitados hasta que se integre la UI específica
-    // sidechainControls.keyButton.setTooltip(getTooltipText("extkey"));
-    // sidechainControls.soloScButton.setTooltip(getTooltipText("solosc"));
-    
+
+    sidechainControls.hpfSlider.setTooltip(getTooltipText("hpf"));
+    sidechainControls.lpfSlider.setTooltip(getTooltipText("lpf"));
+    sidechainControls.scButton.setTooltip(getTooltipText("sc"));
+
+    leftTopKnobs.reflectSlider.setTooltip(getTooltipText("reflect"));
+    leftTopKnobs.sizeSlider.setTooltip(getTooltipText("size"));
+    leftTopKnobs.dampSlider.setTooltip(getTooltipText("damp"));
+    leftTopKnobs.drywetSlider.setTooltip(getTooltipText("drywet"));
+    leftTopKnobs.stSlider.setTooltip(getTooltipText("stereo"));
+    leftTopKnobs.freezeButton.setTooltip(getTooltipText("freeze"));
+
+
     // Área de presets
     presetArea.saveButton.setTooltip(getTooltipText("save"));
     presetArea.saveAsButton.setTooltip(getTooltipText("saveas"));
@@ -4116,20 +3017,11 @@ void JCBReverbAudioProcessorEditor::updateAllTooltips()
     // Botones de parámetros
     parameterButtons.bypassButton.setTooltip(getTooltipText("bypass"));
 
-    
-    // Actualizar tooltips de botones TODO
+    // Actualizar tooltips de botones "por hacer"
     updateTodoButtonTexts();
-    
-    
+
     // Botones de utilidad - fila inferior
     utilityButtons.stereoLinkedButton.setTooltip(getTooltipText("link"));
-    
-    // Tooltip para el analizador FFT (usa setHelpText porque hereda de TooltipClient)
-    // spectrumAnalyzer.setHelpText(getTooltipText("spectrum"));
-    
-    // Tooltip para el visualizador de curvas de distorsión (usa setHelpText porque hereda de TooltipClient)
-    // distortionCurveDisplay.setHelpText(getTooltipText("curves"));
-    // CODE button removed
 }
 
 juce::String JCBReverbAudioProcessorEditor::getTooltipText(const juce::String& key)
@@ -4137,34 +3029,38 @@ juce::String JCBReverbAudioProcessorEditor::getTooltipText(const juce::String& k
     if (currentLanguage == TooltipLanguage::Spanish)
     {
         // Spanish tooltips
-        if (key == "title") return JUCE_UTF8("JCBDistortion: distorsionador multimodal v1.0.0-alpha.1\nPlugin de audio open source\nClick para créditos");
+        if (key == "trim") return JUCE_UTF8("TRIM: ganancia de entrada a la reverb\nAjusta el nivel antes del procesamiento\nRango: -12 a +12 dB | Por defecto: 0 dB");
+        if (key == "makeup") return JUCE_UTF8("OUTPUT: ganancia de salida (sólo WET)\nNo afecta la rama DRY/Dry-Wet\nRango: -12 a +12 dB | Por defecto: 0 dB");
+
+        if (key == "hpf") return JUCE_UTF8("HPF: filtro paso alto 12 dB/oct\nAtenúa frecuencias por debajo del corte\nRango: 20 a 1000 Hz | Por defecto: 250 Hz");
+        if (key == "lpf") return JUCE_UTF8("LPF: filtro paso bajo 12 dB/oct\nAtenúa frecuencias por encima del corte\nRango: 100 Hz a 20 kHz | Por defecto: 20 kHz");
+        if (key == "sc") return JUCE_UTF8("FILTERS: activa/desactiva los filtros HPF/LPF (12 dB/oct).\nHPF y LPF se aplican según sus controles dedicados.\nValor por defecto: OFF");
+
+        if (key == "reflect") return JUCE_UTF8("REFLECT: cantidad de reflexiones\nControla la retroalimentación/densidad de la reverb\nRango: 0% a 100% | Por defecto: 100%");
+        if (key == "size") return JUCE_UTF8("SIZE: tamaño del tanque de filtros peine\nSimula el tamaño del espacio\nRango: 0.1 a 4 | Por defecto: 1");
+
         if (key == "drywet") return JUCE_UTF8("DRY/WET: mezcla entre señal original y procesada\nControla el balance final de salida\nRango: 0 a 100% | Por defecto: 100%");
-        if (key == "lookahead") return JUCE_UTF8("LOOKAHEAD: anticipación para evitar distorsión\nEvita overshooting en transitorios rápidos\nRango: 0 a 5 ms | Por defecto: 0 ms");
-        if (key == "drive") return JUCE_UTF8("DRIVE: intensidad de distorsión\nControla la ganancia antes de la saturación\nRango: 1 a 50 | Por defecto: 1");
-        if (key == "tilt") return JUCE_UTF8("TILT: filtro de balance tonal\nControla el equilibrio entre graves y agudos\nRango: -6 a +6 dB | Por defecto: 0 dB");
-        if (key == "ceiling") return JUCE_UTF8("CEILING: techo de salida con limitador suave\nProtege contra saturación excesiva\nRango: -20 a +6 dB | Por defecto: 0 dB");
-        if (key == "bitcrusher") return JUCE_UTF8("BIT CRUSHER: activa la cuantización digital\nReduce la resolución de bits para distorsión digital\nRango: OFF/ON | Por defecto: OFF");
-        if (key == "bits") return JUCE_UTF8("BITS: resolución del bit crusher\nControla la cuantización digital de bits\nRango: 3 a 16 bits | Por defecto: 16 bits");
-        if (key == "even") return JUCE_UTF8("EVEN: asimetría DC para armónicos pares\nAñade componente continua para generar armónicos pares\nRango: 0 a 1 | Por defecto: 0");
-        if (key == "downsample") return JUCE_UTF8("DECI: factor de decimación\nReduce el sample rate para distorsión aliasing\nRango: 0 a 100% | Por defecto: 0%");
-        if (key == "downsampleon") return JUCE_UTF8("DOWNSAMPLE: activa la decimación\nActiva el efecto de reducción de sample rate\nRango: OFF/ON | Por defecto: OFF");
-        if (key == "tiltpos") return JUCE_UTF8("TILT POSITION: posición del filtro tilt\nPRE: antes de la distorsión | POST: después de la distorsión\nRango: PRE/POST | Por defecto: PRE");
-        if (key == "mode") return JUCE_UTF8("MODE: algoritmo de distorsión\n8 tipos diferentes: Soft Clip, Sigmoid, Rectifier, etc.\nRango: 1 a 8 (mostrado) | Por defecto: 1");
-        if (key == "diston") return JUCE_UTF8("DIST: activa/desactiva el bloque de distorsión\nON: distorsión activa | OFF: bypass del bloque distorsión\nRango: ON/OFF | Por defecto: ON");
-        if (key == "trim") return JUCE_UTF8("TRIM: ganancia de entrada al distorsionador\nAjusta el nivel antes del procesamiento\nRango: -12 a +12 dB | Por defecto: 0 dB");
-        if (key == "makeup") return JUCE_UTF8("MAKEUP: ganancia de salida de la cadena WET\nAjusta el nivel solo del procesamiento (no afecta dry/wet)\nRango: -24 a +12 dB | Por defecto: 0 dB");
-        if (key == "sc") return JUCE_UTF8("FILTERS: activa el crossover de 3 bandas.\nDivide la señal en Low/Mid/High para procesamiento selectivo.\nValor por defecto: OFF");
-        //if (key == "solosc") return JUCE_UTF8("SOLO SC: escucha filtros sidechain int/ext\nParámetro global, no automatizable\nRango: OFF/ON | Por defecto: OFF");
-        if (key == "hpf") return JUCE_UTF8("XLow: punto de cruce bajo del crossover\nDefine la frecuencia de separación entre bandas Low y Mid\nRango: 20 a 1000 Hz | Por defecto: 250 Hz");
-        if (key == "band") return JUCE_UTF8("BAND: selector de banda del crossover\nElige qué banda de frecuencia procesar (Low/Mid/High)\nRango: Low-Mid-High (interpolable) | Por defecto: Mid");
-        if (key == "lpf") return JUCE_UTF8("XHigh: punto de cruce alto del crossover\nDefine la frecuencia de separación entre bandas Mid y High\nRango: 1000 Hz a 20 kHz | Por defecto: 5 kHz");
-        if (key == "bandsolo") return JUCE_UTF8("SOLO BAND: solea la banda de filtro activa\nPermite escuchar solo la banda seleccionada (Low/Mid/High) a través de la cadena de procesamiento\nRango: OFF/ON | Por defecto: OFF");
-        if (key == "safelimit") return JUCE_UTF8("LIM: limitador brickwall de protección\nLimitador ajustado a -0.1 dBFS para evitar sobremodulación en la salida del plugin (post dry/wet)\nRango: OFF/ON | Por defecto: OFF");
-        if (key == "tonelpf") return JUCE_UTF8("RLPF: filtro paso bajo resonante de tono\nSe puede usar PRE/POST distorsionador, compensado de fase\nRango: OFF/ON | Por defecto: OFF");
-        if (key == "tonefreq") return JUCE_UTF8("RLPF: filtro paso bajo resonante (2nd order RBJ)\nFrecuencia de corte ajustable para control tonal\nRango: 20 Hz a 20 kHz | Por defecto: 15 kHz");
-        if (key == "toneq") return JUCE_UTF8("Q: resonancia del filtro RLPF\n0% = Butterworth (Q=0.7071) | 100% = máxima resonancia (Q=16)\nRango: 0 a 100% | Por defecto: 0%");
-        if (key == "tonepos") return JUCE_UTF8("RLPF POSITION: posición del filtro RLPF\nPRE: antes del distorsionador | POST: después del distorsionador\nRango: PRE/POST | Por defecto: POST");
-        if (key == "tilton") return JUCE_UTF8("TILT: activación del filtro tilt compensado de fase\nBalance tonal de ±6dB entre graves y agudos\nRango: OFF/ON | Por defecto: ON");
+        //if (key == "lookahead") return JUCE_UTF8("LOOKAHEAD: anticipación para evitar distorsión\nEvita overshooting en transitorios rápidos\nRango: 0 a 5 ms | Por defecto: 0 ms");
+
+        if (key == "damp") return JUCE_UTF8("DAMP: filtro en los feedback de los tanques de comb\nLPF 1er orden dentro del feedback\nRango: 0 a 100% | Por defecto: 25%");
+        if (key == "stereo") return JUCE_UTF8("STEREO: stereo image width\nMS matrix with delay on right channel\nRange: 0% to 100% | Default: 50%");
+
+        //if (key == "tilt") return JUCE_UTF8("TILT: filtro de balance tonal\nControla el equilibrio entre graves y agudos\nRango: -6 a +6 dB | Por defecto: 0 dB");
+        //if (key == "bitcrusher") return JUCE_UTF8("BIT CRUSHER: activa la cuantización digital\nReduce la resolución de bits para distorsión digital\nRango: OFF/ON | Por defecto: OFF");
+        //if (key == "bits") return JUCE_UTF8("BITS: resolución del bit crusher\nControla la cuantización digital de bits\nRango: 3 a 16 bits | Por defecto: 16 bits");
+        //if (key == "downsample") return JUCE_UTF8("DECI: factor de decimación\nReduce el sample rate para distorsión aliasing\nRango: 0 a 100% | Por defecto: 0%");
+        //if (key == "downsampleon") return JUCE_UTF8("DOWNSAMPLE: activa la decimación\nActiva el efecto de reducción de sample rate\nRango: OFF/ON | Por defecto: OFF");
+        //if (key == "tiltpos") return JUCE_UTF8("TILT POSITION: posición del filtro tilt\nPRE: antes de la distorsión | POST: después de la distorsión\nRango: PRE/POST | Por defecto: PRE");
+        //if (key == "diston") return JUCE_UTF8("DIST: activa/desactiva el bloque de distorsión\nON: distorsión activa | OFF: bypass del bloque distorsión\nRango: ON/OFF | Por defecto: ON");
+
+        //if (key == "safelimit") return JUCE_UTF8("LIM: limitador brickwall de protección\nLimitador ajustado a -0.1 dBFS para evitar sobremodulación en la salida del plugin (post dry/wet)\nRango: OFF/ON | Por defecto: OFF");
+        //if (key == "tonelpf") return JUCE_UTF8("RLPF: filtro paso bajo resonante de tono\nSe puede usar PRE/POST distorsionador, compensado de fase\nRango: OFF/ON | Por defecto: OFF");
+        //if (key == "tonefreq") return JUCE_UTF8("RLPF: filtro paso bajo resonante (2nd order RBJ)\nFrecuencia de corte ajustable para control tonal\nRango: 20 Hz a 20 kHz | Por defecto: 15 kHz");
+        //if (key == "toneq") return JUCE_UTF8("Q: resonancia del filtro RLPF\n0% = Butterworth (Q=0.7071) | 100% = máxima resonancia (Q=16)\nRango: 0 a 100% | Por defecto: 0%");
+        //if (key == "tonepos") return JUCE_UTF8("RLPF POSITION: posición del filtro RLPF\nPRE: antes del distorsionador | POST: después del distorsionador\nRango: PRE/POST | Por defecto: POST");
+        //if (key == "tilton") return JUCE_UTF8("TILT: activación del filtro tilt compensado de fase\nBalance tonal de ±6dB entre graves y agudos\nRango: OFF/ON | Por defecto: ON");
+
+        if (key == "title") return JUCE_UTF8("JCBReverb: reverb tipo Schoroeder v0.9.1\nPlugin de audio open source\nClick para créditos");
         if (key == "save") return JUCE_UTF8("SAVE: guarda el preset actual\nSobrescribe el preset seleccionado con valores actuales\nNo funciona con DEFAULT");
         if (key == "saveas") return JUCE_UTF8("SAVE AS: guarda como nuevo preset\nCrea un nuevo archivo de preset con los valores actuales\nPermite crear presets personalizados");
         if (key == "delete") return JUCE_UTF8("BORRAR: elimina el preset seleccionado\nRequiere confirmación antes de borrar");
@@ -4187,64 +3083,65 @@ juce::String JCBReverbAudioProcessorEditor::getTooltipText(const juce::String& k
         if (key == "midilearn") return JUCE_UTF8("POR HACER: Asigna control MIDI.");
         if (key == "abcopyatob") return JUCE_UTF8("Copiar A a B");
         if (key == "abcopybtoa") return JUCE_UTF8("Copiar B a A");
-        if (key == "spectrum") return JUCE_UTF8("ANALIZADOR FFT: visualización del espectro de frecuencias\nMuestra análisis en tiempo real de 20Hz a 20kHz\nUsar botón ZOOM para cambiar escala");
-        if (key == "curves") return JUCE_UTF8("CURVAS DE DISTORSIÓN: visualización de función de transferencia\nMuestra cómo el algoritmo seleccionado transforma la señal\nTILT colorea el fondo según balance tonal");
     }
     else
     {
         // English tooltips
-        if (key == "title") return "JCBDistortion: multimodal distortion v1.0.0-alpha.1\nOpen source audio plugin\nClick for credits";
-        if (key == "drywet") return "DRY/WET: mix between original and processed signal\nControls final output balance\nRange: 0 to 100% | Default: 100%";
-        if (key == "lookahead") return "LOOKAHEAD: anticipation to prevent distortion\nPrevents overshooting on fast transients\nRange: 0 to 5 ms | Default: 0 ms";
-        if (key == "drive") return "DRIVE: distortion intensity\nControls gain before saturation\nRange: 1 to 50 | Default: 1";
-        if (key == "tilt") return "TILT: tonal balance filter\nControls bass/treble balance\nRange: -6 to +6 dB | Default: 0 dB";
-        if (key == "ceiling") return "CEILING: maximum output level\nControls the maximizer's limiting ceiling\nRange: -60 to 0 dB | Default: -0.3 dB";
-        if (key == "bitcrusher") return "BIT CRUSHER: enables digital quantization\nReduces bit resolution for digital distortion\nRange: OFF/ON | Default: OFF";
-        if (key == "bits") return "BITS: bit crusher resolution\nControls digital bit quantization\nRange: 3 to 16 bits | Default: 16 bits";
-        if (key == "even") return "EVEN: DC asymmetry for even harmonics\nAdds DC component to generate even harmonics\nRange: 0 to 1 | Default: 0";
-        if (key == "downsample") return "DECI: decimation factor\nReduces sample rate for aliasing distortion\nRange: 0 to 100% | Default: 0%";
-        if (key == "downsampleon") return "DOWNSAMPLE: enables decimation\nActivates sample rate reduction effect\nRange: OFF/ON | Default: OFF";
-        if (key == "tiltpos") return "TILT POSITION: tilt filter position\nPRE: before distortion | POST: after distortion\nRange: PRE/POST | Default: PRE";
-        if (key == "mode") return "MODE: distortion algorithm\n8 different types: Soft Clip, Sigmoid, Rectifier, etc.\nRange: 1 to 8 (displayed) | Default: 1";
-        if (key == "diston") return "DIST: enables/disables distortion block\nON: distortion active | OFF: distortion bypassed\nRange: ON/OFF | Default: ON";
-        if (key == "trim") return "TRIM: distortion input gain\nAdjusts level before processing\nRange: -12 to +12 dB | Default: 0 dB";
-        if (key == "makeup") return "MAKEUP: WET chain output gain\nAdjusts only the processed signal level (doesn't affect dry/wet)\nRange: -24 to +12 dB | Default: 0 dB";
-        if (key == "sc") return "FILTERS: activates the 3-band crossover.\nSplits signal into Low/Mid/High for selective processing.\nDefault: OFF";
-        //if (key == "solosc") return "SOLO SC: listen to int/ext sidechain filters\nGlobal parameter, non-automatable\nRange: OFF/ON | Default: OFF";
-        if (key == "hpf") return "XLow: crossover low frequency point\nDefines the separation frequency between Low and Mid bands\nRange: 20 to 1000 Hz | Default: 250 Hz";
-        if (key == "band") return "BAND: crossover band selector\nChoose which frequency band to process (Low/Mid/High)\nRange: Low-Mid-High (interpolatable) | Default: Mid";
-        if (key == "lpf") return "XHigh: crossover high frequency point\nDefines the separation frequency between Mid and High bands\nRange: 1000 Hz to 20 kHz | Default: 5 kHz";
-        if (key == "save") return "SAVE: save or overwrite preset\nSave new or update current preset";
-        if (key == "saveas") return "SAVE AS: save as new preset.\nCreates new preset file with current values.\nAllows creating custom presets";
-        if (key == "delete") return "DELETE: remove selected preset\nRequires confirmation before deleting";
-        if (key == "back") return "PREVIOUS: select previous preset\nNavigate backwards through preset list";
-        if (key == "next") return "NEXT: select next preset\nNavigate forward through preset list";
-        if (key == "undo") return "UNDO: revert last change\nUndo modification made manually by the user\nHistory: up to 20 steps";
-        if (key == "redo") return "REDO: reapply undone change\nRedo manually made modification previously reverted\nHistory: up to 20 steps";
-        if (key == "resetgui") return JUCE_UTF8("SIZE: cycles through window sizes\nCurrent → Maximum → Minimum → Current\nQuick plugin size adjustment");
-        if (key == "bypass") return "BYPASS: disables plugin processing\nGlobal parameter, non-automatable. Smooth transition\nRange: OFF/ON | Default: OFF";
-        if (key == "graphics") return "GRAPHICS: toggles between FFT and distortion curves\nFFT: spectrum analyzer | curves: curve visualizer\nClick to switch between modes";
-        if (key == "zoom") return "ZOOM: cycles between normal and zoomed FFT view\nNormal: -80 to 0dB | x2: -48 to 0dB\nOnly active in FFT mode";
-        if (key == "diagram") return "DIAGRAM: shows processor block diagram\nDisplays menu with GenExpr code per block for copying";
-        if (key == "tooltiptoggle") return "TOOLTIP: show/hide help tooltips.\nEnables or disables popup help windows.";
-        if (key == "tooltiplang") return "LANGUAGE: switch between Spanish and English.\nToggles tooltip language.";
-        if (key == "link") return "STEREO LINKED: always active.\nPlugin only works in stereo linked mode.\nBoth channels are always linked";
-        if (key == "hq") return "TODO: Enables oversampling for higher quality.";
-        if (key == "dualmono") return "TODO: Processes L/R channels independently.";
-        if (key == "ms") return "TODO: Processes in M/S format.";
-        if (key == "abstate") return "Switches between two A/B configurations to compare settings.";
-        if (key == "midilearn") return "TODO: Assigns MIDI control.";
-        if (key == "abcopyatob") return "Copy A to B";
-        if (key == "abcopybtoa") return "Copy B to A";
-        if (key == "spectrum") return "FFT ANALYZER: frequency spectrum visualization\nShows real-time analysis from 20Hz to 20kHz\nUse ZOOM button to change scale";
-        if (key == "curves") return "DISTORTION CURVES: transfer function visualization\nShows how the selected algorithm transforms the signal\nTILT colors background based on tonal balance";
-        if (key == "bandsolo") return "SOLO BAND: solos the active filter band\nAllows listening only to the selected band (Low/Mid/High) through the processing chain\nRange: OFF/ON | Default: OFF";
-        if (key == "safelimit") return "LIM: protection brickwall limiter\nLimiter set to -0.1 dBFS to prevent overmodulation at plugin output (post dry/wet)\nRange: OFF/ON | Default: OFF";
-        if (key == "tonelpf") return "RLPF: resonant low-pass filter for tone\nCan be used PRE/POST distortion, phase compensated\nRange: OFF/ON | Default: OFF";
-        if (key == "tonefreq") return "RLPF: resonant low-pass filter (2nd order RBJ)\nAdjustable cutoff frequency for tonal control\nRange: 20 Hz to 20 kHz | Default: 15 kHz";
-        if (key == "toneq") return "Q: RLPF filter resonance\n0% = Butterworth (Q=0.7071) | 100% = maximum resonance (Q=16)\nRange: 0 to 100% | Default: 0%";
-        if (key == "tonepos") return "RLPF POSITION: RLPF filter position\nPRE: before distortion | POST: after distortion\nRange: PRE/POST | Default: POST";
-        if (key == "tilton") return "TILT: phase-compensated tilt filter activation\n±6dB tonal balance between bass and treble\nRange: OFF/ON | Default: ON";
+        if (key == "trim") return JUCE_UTF8("TRIM: input gain to the reverb\nAdjusts the level before processing\nRange: -12 to +12 dB | Default: 0 dB");
+        if (key == "makeup") return JUCE_UTF8("OUTPUT: output gain (WET only)\nDoes not affect the DRY/Dry-Wet path\nRange: -12 to +12 dB | Default: 0 dB");
+
+        if (key == "hpf") return JUCE_UTF8("HPF: high-pass filter 12 dB/oct\nAttenuates frequencies below the cutoff\nRange: 20 to 1000 Hz | Default: 250 Hz");
+        if (key == "lpf") return JUCE_UTF8("LPF: low-pass filter 12 dB/oct\nAttenuates frequencies above the cutoff\nRange: 100 Hz to 20 kHz | Default: 20 kHz");
+        if (key == "sc") return JUCE_UTF8("FILTERS: enable/disable HPF/LPF (12 dB/oct)\nHPF and LPF are applied according to their dedicated controls\nDefault: OFF");
+
+        if (key == "reflect") return JUCE_UTF8("REFLECT: amount of reflections\nControls reverb feedback/density\nRange: 0% to 100% | Default: 100%");
+        if (key == "size") return JUCE_UTF8("SIZE: comb filter tank size\nSimulates the size of the space\nRange: 0.1 to 4 | Default: 1");
+
+        if (key == "drywet") return JUCE_UTF8("DRY/WET: mix between original and processed signal\nControls the final output balance\nRange: 0 to 100% | Default: 100%");
+        if (key == "damp") return JUCE_UTF8("DAMP: damping filter in the comb tank feedback\n1st-order LPF inside the feedback loop\nRange: 0 to 100% | Default: 25%");
+        if (key == "stereo") return JUCE_UTF8("STEREO: stereo image width\nMS matrix with delay on right channel\nRange: 0% to 100% | Default: 50%");
+
+        //if (key == "lookahead") return JUCE_UTF8("LOOKAHEAD: anticipation to avoid distortion\nPrevents overshoot on fast transients\nRange: 0 to 5 ms | Default: 0 ms");
+
+        //if (key == "ceiling") return JUCE_UTF8("CEILING: soft limiter output ceiling\nProtects against excessive saturation\nRange: -20 to +6 dB | Default: 0 dB");
+        //if (key == "tilt") return JUCE_UTF8("TILT: tonal balance filter\nControls the balance between lows and highs\nRange: -6 to +6 dB | Default: 0 dB");
+        //if (key == "bitcrusher") return JUCE_UTF8("BIT CRUSHER: enable digital quantization\nReduces bit resolution for digital distortion\nRange: OFF/ON | Default: OFF");
+        //if (key == "bits") return JUCE_UTF8("BITS: bit crusher resolution\nControls digital bit quantization\nRange: 3 to 16 bits | Default: 16 bits");
+        //if (key == "even") return JUCE_UTF8("EVEN: DC asymmetry for even harmonics\nAdds DC component to generate even harmonics\nRange: 0 to 1 | Default: 0");
+        //if (key == "downsample") return JUCE_UTF8("DECI: decimation factor\nReduces sample rate for aliasing distortion\nRange: 0 to 100% | Default: 0%");
+        //if (key == "downsampleon") return JUCE_UTF8("DOWNSAMPLE: enable decimation\nActivates sample rate reduction effect\nRange: OFF/ON | Default: OFF");
+        //if (key == "tiltpos") return JUCE_UTF8("TILT POSITION: tilt filter placement\nPRE: before distortion | POST: after distortion\nRange: PRE/POST | Default: PRE");
+        //if (key == "diston") return JUCE_UTF8("DIST: enable/disable distortion block\nON: distortion active | OFF: distortion bypass\nRange: ON/OFF | Default: ON");
+
+        //if (key == "safelimit") return JUCE_UTF8("LIM: brickwall safety limiter\nLimiter set to -0.1 dBFS to prevent output overload (post dry/wet)\nRange: OFF/ON | Default: OFF");
+        //if (key == "tonelpf") return JUCE_UTF8("RLPF: resonant low-pass tone filter\nCan be used PRE/POST distortion, phase-compensated\nRange: OFF/ON | Default: OFF");
+        //if (key == "toneq") return JUCE_UTF8("Q: resonance of the RLPF filter\n0% = Butterworth (Q=0.7071) | 100% = max resonance (Q=16)\nRange: 0 to 100% | Default: 0%");
+        //if (key == "tonepos") return JUCE_UTF8("RLPF POSITION: RLPF filter placement\nPRE: before distortion | POST: after distortion\nRange: PRE/POST | Default: POST");
+        //if (key == "tilton") return JUCE_UTF8("TILT: phase-compensated tilt filter activation\n±6dB tonal balance between lows and highs\nRange: OFF/ON | Default: ON");
+
+        if (key == "title") return JUCE_UTF8("JCBReverb: Schroeder-type reverb v0.9.1\nOpen source audio plugin\nClick for credits");
+        if (key == "save") return JUCE_UTF8("SAVE: overwrite current preset\nReplaces the selected preset with current values\nNot available for DEFAULT");
+        if (key == "saveas") return JUCE_UTF8("SAVE AS: save as new preset\nCreates a new preset file with current values\nAllows creating custom presets");
+        if (key == "delete") return JUCE_UTF8("DELETE: remove selected preset\nRequires confirmation before deletion");
+        if (key == "back") return JUCE_UTF8("PREVIOUS: select previous preset\nNavigate backwards in preset list");
+        if (key == "next") return JUCE_UTF8("NEXT: select next preset\nNavigate forwards in preset list");
+        if (key == "undo") return JUCE_UTF8("UNDO: revert last change\nUndoes manual user modification\nHistory: up to 20 steps");
+        if (key == "redo") return JUCE_UTF8("REDO: apply reverted change\nReapplies previously undone modification\nHistory: up to 20 steps");
+        if (key == "resetgui") return JUCE_UTF8("SIZE: cycle window size\nCurrent → Maximum → Minimum → Current\nQuick adjustment of plugin window size");
+        if (key == "bypass") return JUCE_UTF8("BYPASS: disables plugin processing\nGlobal parameter, not automatable. Smooth transition\nRange: OFF/ON | Default: OFF");
+        if (key == "graphics") return JUCE_UTF8("GRAPHICS: toggle between FFT and distortion curves\nFFT: spectrum analyzer | curves: curve visualizer\nClick to switch modes");
+        if (key == "zoom") return JUCE_UTF8("ZOOM: cycle FFT zoom view\nNormal: -80 to 0 dB | x2: -48 to 0 dB\nOnly active in FFT mode");
+        if (key == "diagram") return JUCE_UTF8("DIAGRAM: show processor block diagram\nDisplays menu with GenExpr code per block for copy");
+        if (key == "tooltiptoggle") return JUCE_UTF8("TOOLTIP: show/hide help tooltips\nEnable or disable popup help windows");
+        if (key == "tooltiplang") return JUCE_UTF8("LANGUAGE: switch between Spanish and English\nToggles tooltip language");
+        if (key == "link") return JUCE_UTF8("STEREO LINKED: always active\nThe plugin only works in stereo linked mode\nBoth channels are always coupled");
+        if (key == "hq") return JUCE_UTF8("TODO: Enable oversampling for higher quality");
+        if (key == "dualmono") return JUCE_UTF8("TODO: Process L/R channels independently");
+        if (key == "ms") return JUCE_UTF8("TODO: Process in Mid/Side format");
+        if (key == "abstate") return JUCE_UTF8("Toggle between two A/B states to compare settings");
+        if (key == "midilearn") return JUCE_UTF8("TODO: Assign MIDI control");
+        if (key == "abcopyatob") return JUCE_UTF8("Copy A to B");
+        if (key == "abcopybtoa") return JUCE_UTF8("Copy B to A");
     }
 
     return "";
@@ -4504,22 +3401,22 @@ int JCBReverbAudioProcessorEditor::getControlParameterIndex(juce::Component& con
     
     // Perillas Inferiores Derechas (attack, release, hold)
     else if (&control == &rightBottomKnobs.driveSlider) parameterID = "b_DRIVE";
-    else if (&control == &rightBottomKnobs.modeSlider) parameterID = "d_MODE";
+    else if (&control == &leftTopKnobs.reflectSlider) parameterID = "c_REFLECT";
     // else if (&control == &rightBottomKnobs.holdSlider) parameterID = "f_HOLD";
     
     // Controles de filtro de entrada
-    else if (&control == &sidechainControls.xLowSlider) parameterID = "j_HPF";
+    else if (&control == &sidechainControls.hpfSlider) parameterID = "l_HPF";
     else if (&control == &sidechainControls.bandSlider) parameterID = "o_BAND";
-    else if (&control == &sidechainControls.xHighSlider) parameterID = "k_LPF";
+    else if (&control == &sidechainControls.lpfSlider) parameterID = "k_LPF";
     // else if (&control == &sidechainControls.keyButton) parameterID = "r_KEY";
     
     // Sliders de Trim
-    else if (&control == &trimSlider) parameterID = "k_INPUT";
-    else if (&control == &makeupSlider) parameterID = "l_OUTPUT";
+    else if (&control == &trimSlider) parameterID = "a_INPUT";
+    else if (&control == &makeupSlider) parameterID = "m_OUTPUT";
     // else if (&control == &scTrimSlider) parameterID = "y_SCTRIM";
     
     // Botones Automatizables
-    else if (&control == &sidechainControls.scButton) parameterID = "l_SC";
+    else if (&control == &sidechainControls.scButton) parameterID = "y_FILTERS";
     
     // Parámetros no automatizables (retornar -1)
     // Estos son parámetros globales/utility que no deberían mostrar carriles de automatización

@@ -97,30 +97,9 @@ public:
             else if (name == "drywet" || id == "drywet" || name == "trim" || id == "trim") {
                 accentColour = juce::Colour(0xFFB1CAF6);
             }
-            // TILT (Verde agua pálido) - #A6DAD5
-            else if (name == "tilt" || id == "tilt") {
-                accentColour = juce::Colour(0xFFA6DAD5);
-            }
-            // TONE LPF (Azul claro) - #6EB8F6
-            else if (name == "tonefreq" || id == "tonefreq" || name == "tone" || id == "tone" ||
-                     name == "toneq" || id == "toneq" || id == "t_toneq") {
-                accentColour = juce::Colour(0xFF6EB8F6);
-            }
-            // BIT CRUSHER (Verde pálido) - #B2FFB3
-            else if (name == "bit" || id == "bit") {
-                accentColour = juce::Colour(0xFFB2FFB3);
-            }
-            // DOWNSAMPLER (Púrpura pálido) - #D9B2FF
-            else if (name == "deci" || id == "deci") {
-                accentColour = juce::Colour(0xFFD9B2FF);
-            }
-            // DISTORTION CONTROLS - Todos rosa pálido - #FEB2B2
-            else if (name == "mode" || id == "mode" ||
-                     name == "dc" || id == "dc" || name == "even" || id == "even" ||
-                     name == "drive" || id == "drive" || 
-                     name == "ceiling" || id == "ceiling" || name == "ceil" || id == "ceil") {
-                accentColour = juce::Colour(0xFFFEB2B2);
-            }
+            // STEREO WIDTH (Azul pálido) - #B1CAF6
+            else if (name == "stereo" || id == "stereo") {
+                 accentColour = juce::Colour(0xFFB1CAF6);                                                                                                                                                               }
             
             // Dibujar cuerpo del knob - estilos diferentes para grande vs pequeño
             if (!isSmall)
@@ -262,21 +241,15 @@ public:
             juce::String name = slider.getName().toLowerCase();
             juce::String id = slider.getComponentID().toLowerCase();
             
-            if (name == "hpf" || id == "hpf" || name == "xlow" || id == "xlow") return "XLow";  // Crossover Low
-            if (name == "band" || id == "band") return "BAND";  // Crossover Band selector
-            if (name == "lpf" || id == "lpf" || name == "xhigh" || id == "xhigh") return "XHigh";  // Crossover High
+            if (name == "hpf" || id == "hpf" || name == "xlow" || id == "xlow") return "HPF";   // High-Pass Filter
+            if (name == "lpf" || id == "lpf" || name == "xhigh" || id == "xhigh") return "LPF";  // Low-Pass Filter
             if (name == "trim" || id == "trim") return "TRIM";
+            if (name == "reflect" || id == "reflect") return "RFLT";
+            if (name == "size" || id == "size") return "SIZE";
             if (name == "drywet" || id == "drywet") return "D/W";
-            if (name == "ceiling" || id == "ceiling") return "CEIL";
-            if (name == "tilt" || id == "tilt") return "TILT";
-            if (name == "tonefreq" || id == "tonefreq" || name == "tone" || id == "tone") return "RLPF";  // RLPF label
-            if (name == "toneq" || id == "toneq" || id == "t_toneq") return "Q";  // TONE Q label
-            if (name == "bit" || id == "bit") return "BITS";
-            if (name == "deci" || id == "deci") return "DECI";
-            if (name == "drive" || id == "drive") return "DRIVE";
-            if (name == "mode" || id == "mode") return "MODE";
-            if (name == "dc" || id == "dc") return "EVEN";
-            
+            if (name == "damp" || id == "damp") return "DAMP";
+            if (name == "stereo" || id == "stereo" || name == "stereo" || id == "stereo") return "M/S";  // RLPF label
+
             return "";
         }
     };
