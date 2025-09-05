@@ -1455,12 +1455,22 @@ void JCBReverbAudioProcessor::captureInputWaveformData(const juce::AudioBuffer<f
     const int countIn = juce::jmin(numSamples, capIn);
     if (countIn <= 0) return;
 
-    // Para la visualización de entrada, preferir outs post-TRIM (Gen out3/out4 => idx [2]/[3) si existen
-    if (JCBReverb::num_outputs() >= 4)
+    // Preferir el tap post‑TRIM copiado a trimInputBuffer (thread‑safe),
+    // y si no está disponible, hacer fallback al buffer de entrada del host.
+    const int trimCh = trimInputBuffer.getNumChannels();
+    const int trimNs = trimInputBuffer.getNumSamples();
+    if (trimCh >= 1 && trimNs >= countIn)
     {
-        for (int i = 0; i < countIn; ++i)
+        const float* tL = trimInputBuffer.getReadPointer(0);
+        if (trimCh >= 2)
         {
-            currentInputSamples[i] = static_cast<float>((m_OutputBuffers[2][i] + m_OutputBuffers[3][i]) * 0.5);
+            const float* tR = trimInputBuffer.getReadPointer(1);
+            for (int i = 0; i < countIn; ++i)
+                currentInputSamples[i] = 0.5f * (tL[i] + tR[i]);
+        }
+        else
+        {
+            std::memcpy(currentInputSamples.data(), tL, sizeof(float) * static_cast<size_t>(countIn));
         }
     }
     else
@@ -1469,10 +1479,12 @@ void JCBReverbAudioProcessor::captureInputWaveformData(const juce::AudioBuffer<f
         const int chs = inputBuffer.getNumChannels();
         if (chs > 1)
         {
+            const float* inL = inputBuffer.getReadPointer(0);
+            const float* inR = inputBuffer.getReadPointer(1);
             for (int i = 0; i < countIn; ++i)
-                currentInputSamples[i] = 0.5f * (inputBuffer.getReadPointer(0)[i] + inputBuffer.getReadPointer(1)[i]);
+                currentInputSamples[i] = 0.5f * (inL[i] + inR[i]);
         }
-        else
+        else if (chs == 1)
         {
             const float* src = inputBuffer.getReadPointer(0);
             std::memcpy(currentInputSamples.data(), src, sizeof(float) * static_cast<size_t>(countIn));
