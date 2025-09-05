@@ -95,16 +95,22 @@ public:
         // Cargar nivel suavizado actual
         float currentSmoothedLevel = smoothedLevel.load(std::memory_order_relaxed);
         
-        // Ballística RMS: attack rápido, release lento
+        // Ballística RMS (output): attack rápido, release más rápido (más cercano a host)
         if (currentLevel > currentSmoothedLevel) {
             // Attack - respuesta más rápida cuando el nivel aumenta
             currentSmoothedLevel += (currentLevel - currentSmoothedLevel) * 0.7f;
         } else {
-            // Release - decay más lento cuando el nivel disminuye
-            currentSmoothedLevel += (currentLevel - currentSmoothedLevel) * 0.1f;
+            // Release - decay más rápido cuando el nivel disminuye
+            currentSmoothedLevel += (currentLevel - currentSmoothedLevel) * 0.25f; // was 0.1f
         }
         
-        // Almacenar nivel suavizado actualizado
+        // Aplicar floor visual para evitar colas muy largas y emparejar con host
+        if (currentSmoothedLevel < -72.0f)
+            currentSmoothedLevel = -100.0f; // caer rápido bajo -72 dB
+
+        // Aplicar floor visual para emparejar con host (Reaper)
+        if (currentSmoothedLevel < -72.0f)
+            currentSmoothedLevel = -100.0f;
         smoothedLevel.store(currentSmoothedLevel, std::memory_order_relaxed);
         
         // Manejo de nivel peak - attack instantáneo, hold, luego decay lento
@@ -112,12 +118,12 @@ public:
         
         if (currentLevel > currentPeakLevel) {
             peakLevel.store(currentLevel, std::memory_order_relaxed);
-            peakHoldTimer = 30; // Hold por 0.5 segundos a 60Hz
+            peakHoldTimer = 12; // Hold más corto (~0.2 s a 60Hz)
         } else if (peakHoldTimer > 0) {
             peakHoldTimer--;
         } else {
-            // Decay del nivel peak lentamente después del tiempo de hold
-            currentPeakLevel += (currentLevel - currentPeakLevel) * 0.02f;
+            // Decay del nivel peak más rápido tras el hold
+            currentPeakLevel += (currentLevel - currentPeakLevel) * 0.10f; // was 0.02f
             peakLevel.store(currentPeakLevel, std::memory_order_relaxed);
         }
         
@@ -153,20 +159,20 @@ public:
         g.setColour(DarkTheme::backgroundDark.withAlpha(0.4f));
         g.drawRoundedRectangle(bounds.reduced(0.5f), 1.5f, 1.0f);
         
-        // Solo mostrar el gradiente si hay señal por encima del umbral (-95 dB)
+        // Solo mostrar el gradiente si hay señal por encima del umbral (-72 dB)
         const float currentSmoothedLevel = smoothedLevel.load(std::memory_order_relaxed);
-        if (currentSmoothedLevel > -95.0f) {
+        if (currentSmoothedLevel > -72.0f) {
             // Relleno del medidor RMS con gradiente del tema oscuro
             g.setGradientFill(gradient);
-            const auto scaledY = juce::jmap(currentSmoothedLevel, -100.f, 0.f, 0.f, static_cast<float>(getHeight() - 3));
+            const auto scaledY = juce::jmap(currentSmoothedLevel, -72.f, 0.f, 0.f, static_cast<float>(getHeight() - 3));
             auto fillBounds = bounds.reduced(1.0f);
             g.fillRoundedRectangle(fillBounds.removeFromBottom(scaledY), 1.5f);
         }
         
         // Indicador de peak - línea delgada en la posición del peak
         const float currentPeakLevel = peakLevel.load(std::memory_order_relaxed);
-        if (currentPeakLevel > -95.0f) {
-            const auto peakY = getHeight() - 3 - juce::jmap(currentPeakLevel, -100.f, 0.f, 0.f, static_cast<float>(getHeight() - 3));
+        if (currentPeakLevel > -72.0f) {
+            const auto peakY = getHeight() - 3 - juce::jmap(currentPeakLevel, -72.f, 0.f, 0.f, static_cast<float>(getHeight() - 3));
             g.setColour(DarkTheme::accent.brighter(0.3f).withAlpha(0.8f));
             g.fillRect(bounds.getX() + 1, peakY - 1, bounds.getWidth() - 2, 2.0f);
         }
@@ -608,14 +614,18 @@ public:
         // Cargar nivel suavizado actual
         float currentSmoothedLevel = smoothedLevel.load(std::memory_order_relaxed);
         
-        // Ballística RMS: attack rápido, release lento
+        // Ballística RMS: attack rápido, release moderado
         if (currentLevel > currentSmoothedLevel) {
             // Attack - respuesta más rápida cuando el nivel aumenta
             currentSmoothedLevel += (currentLevel - currentSmoothedLevel) * 0.7f;
         } else {
-            // Release - decay más lento cuando el nivel disminuye
-            currentSmoothedLevel += (currentLevel - currentSmoothedLevel) * 0.1f;
+            // Release - decay más rápido para emparejar con host
+            currentSmoothedLevel += (currentLevel - currentSmoothedLevel) * 0.25f;
         }
+
+        // Floor rápido bajo -72 dB para reducir colas visibles
+        if (currentSmoothedLevel < -72.0f)
+            currentSmoothedLevel = -100.0f;
         
         // Almacenar nivel suavizado actualizado
         smoothedLevel.store(currentSmoothedLevel, std::memory_order_relaxed);
@@ -666,20 +676,20 @@ public:
         g.setColour(DarkTheme::backgroundDark.withAlpha(0.4f));
         g.drawRoundedRectangle(bounds.reduced(0.5f), 1.5f, 1.0f);
         
-        // Solo mostrar el gradiente si hay señal por encima del umbral (-95 dB)
+        // Solo mostrar el gradiente si hay señal por encima del umbral (-72 dB)
         const float currentSmoothedLevel = smoothedLevel.load(std::memory_order_relaxed);
-        if (currentSmoothedLevel > -95.0f) {
+        if (currentSmoothedLevel > -72.0f) {
             // Relleno del medidor RMS con gradiente invertido (violeta arriba, azul abajo)
             g.setGradientFill(gradient);
-            const auto scaledY = juce::jmap(currentSmoothedLevel, -100.f, 0.f, 0.f, static_cast<float>(getHeight() - 3));
+            const auto scaledY = juce::jmap(currentSmoothedLevel, -72.f, 0.f, 0.f, static_cast<float>(getHeight() - 3));
             auto fillBounds = bounds.reduced(1.0f);
             g.fillRoundedRectangle(fillBounds.removeFromBottom(scaledY), 1.5f);
         }
         
         // Indicador de peak - línea delgada en la posición del peak
         const float currentPeakLevel = peakLevel.load(std::memory_order_relaxed);
-        if (currentPeakLevel > -95.0f) {
-            const auto peakY = getHeight() - 3 - juce::jmap(currentPeakLevel, -100.f, 0.f, 0.f, static_cast<float>(getHeight() - 3));
+        if (currentPeakLevel > -72.0f) {
+            const auto peakY = getHeight() - 3 - juce::jmap(currentPeakLevel, -72.f, 0.f, 0.f, static_cast<float>(getHeight() - 3));
             g.setColour(DarkTheme::accentSecondary.brighter(0.3f).withAlpha(0.8f));
             g.fillRect(bounds.getX() + 1, peakY - 1, bounds.getWidth() - 2, 2.0f);
         }
