@@ -79,33 +79,48 @@ JCBReverbAudioProcessor::JCBReverbAudioProcessor()
         if (auto* param = apvts.getRawParameterValue(paramName)) {
             float value = param->load();
 
-            // Aplicar misma validación que en parameterChanged() (REVERB)
+            // Clamp to current Gen param ranges in use
             if (paramName == "a_INPUT" || paramName == "m_OUTPUT") {
                 value = juce::jlimit(-12.0f, 12.0f, value);
             }
-            else if (paramName == "b_DRYWET" || paramName == "c_REFLECT" ||
-                     paramName == "d_DAMP" || paramName == "e_SIZE" ||
-                     paramName == "f_ST") {
+            else if (paramName == "b_DRYWET") {
                 value = juce::jlimit(0.0f, 1.0f, value);
             }
-            else if (paramName == "g_FREEZE" || paramName == "q_ONOFFEQ" ||
-                     paramName == "r_ONOFFCOMP" || paramName == "x_PREPOST" ||
-                     paramName == "aa_DUCK_ON" || paramName == "ae_WOBBLE_ON") {
+            else if (paramName == "cREFLECT" || paramName == "c_REFLECT") {
+                value = juce::jlimit(0.1f, 0.95f, value);
+            }
+            else if (paramName == "d_DAMP") {
+                value = juce::jlimit(0.1f, 0.95f, value);
+            }
+            else if (paramName == "e_SIZE") {
+                value = juce::jlimit(0.1f, 4.0f, value);
+            }
+            else if (paramName == "f_ST") {
+                value = juce::jlimit(0.0f, 0.8f, value);
+            }
+            else if (paramName == "g_FREEZE" || paramName == "q_ONOFFEQ" || paramName == "r_ONOFFCOMP" || paramName == "z_BYPASS") {
                 value = juce::jlimit(0.0f, 1.0f, value);
             }
-            else if (paramName == "h_LOWGAIN" || paramName == "i_PEAKGAIN" ||
-                     paramName == "j_HIGAIN" || paramName == "w_MAKEUP") {
-                value = juce::jlimit(-12.0f, 12.0f, value);
+            else if (paramName == "h_LOWGAIN" || paramName == "i_PEAKGAIN" || paramName == "j_HIGAIN") {
+                value = juce::jlimit(-30.0f, 30.0f, value);
             }
             else if (paramName == "k_LPF") {
-                value = juce::jlimit(20.0f, 20000.0f, value);
+                value = juce::jlimit(100.0f, 20000.0f, value);
             }
             else if (paramName == "l_HPF") {
-                value = juce::jlimit(20.0f, 20000.0f, value);
+                value = juce::jlimit(20.0f, 5000.0f, value);
             }
-            else if (paramName == "n_LOWFREQ" || paramName == "o_PEAKFREQ" ||
-                     paramName == "p_HIFREQ") {
-                value = juce::jlimit(20.0f, 20000.0f, value);
+            else if (paramName == "m_OUTPUT") {
+                value = juce::jlimit(-12.0f, 12.0f, value);
+            }
+            else if (paramName == "n_LOWFREQ") {
+                value = juce::jlimit(20.0f, 800.0f, value);
+            }
+            else if (paramName == "o_PEAKFREQ") {
+                value = juce::jlimit(100.0f, 2500.0f, value);
+            }
+            else if (paramName == "p_HIFREQ") {
+                value = juce::jlimit(800.0f, 15000.0f, value);
             }
             else if (paramName == "s_THD") {
                 value = juce::jlimit(-60.0f, 0.0f, value);
@@ -114,28 +129,10 @@ JCBReverbAudioProcessor::JCBReverbAudioProcessor()
                 value = juce::jlimit(1.0f, 20.0f, value);
             }
             else if (paramName == "u_ATK") {
-                value = juce::jlimit(0.0f, 100.0f, value);
+                value = juce::jlimit(1.0f, 500.0f, value);
             }
             else if (paramName == "v_REL") {
-                value = juce::jlimit(0.0f, 1000.0f, value);
-            }
-            // else if (paramName == "y_IOMODE") {
-            //     value = juce::jlimit(0.0f, 3.0f, value);
-            // }
-            else if (paramName == "z_BYPASS") {
-                value = juce::jlimit(0.0f, 1.0f, value);
-            }
-            else if (paramName == "ab_DUCK_DB") {
-                value = juce::jlimit(-60.0f, 0.0f, value);
-            }
-            else if (paramName == "ac_DUCK_ATK" || paramName == "ad_DUCK_REL") {
-                value = juce::jlimit(0.0f, 1000.0f, value);
-            }
-            else if (paramName == "af_WOBBLE_AMT") {
-                value = juce::jlimit(0.0f, 1.0f, value);
-            }
-            else if (paramName == "ag_WOBBLE_RATE") {
-                value = juce::jlimit(0.1f, 10.0f, value);
+                value = juce::jlimit(5.0f, 1000.0f, value);
             }
 
             JCBReverb::setparameter(m_PluginState, i, value, nullptr);
@@ -369,6 +366,8 @@ void JCBReverbAudioProcessor::processBlockCommon(juce::AudioBuffer<float>& buffe
     // === 1.b APLICAR AQUÍ: drenar cambios de parámetros pendientes ===
     drainPendingParamsToGen();
 
+    // Host bypass handled via FSM mix below (mirrors JCBDistortion). No early return.
+
     // === 2. Sincronizar y_IOMODE con el layout de buses ===
     // if (genIdxIoMode >= 0)
     // {
@@ -495,9 +494,7 @@ void JCBReverbAudioProcessor::processBlockCommon(juce::AudioBuffer<float>& buffe
     auto* wetL = buffer.getWritePointer(0);
     auto* wetR = (numChannels > 1) ? buffer.getWritePointer(1) : wetL;
 
-    #if !defined(JCB_DISABLE_SANITIZER)
-    sanitizeStereo(wetL, (numChannels > 1 ? wetR : nullptr), numSamples, nanTripped);
-    #endif
+    // Sanitizer is applied after bypass mixing below
 
 #if defined(JCB_DEBUG_AUDIO_WATCH)
     {
@@ -726,11 +723,142 @@ void JCBReverbAudioProcessor::processBlockCommon(juce::AudioBuffer<float>& buffe
     float* dryR = scratchDry.getWritePointer(1);
     // DRY = entrada capturada (sin delay porque no hay latencia)
     // Si el layout es 1->2, duplicar L en R para el mix
-    const int mainInputChannels = getMainBusNumInputChannels();
-    for (int n = 0; n < numSamples; ++n) {
-        dryL[n] = inL[n];
-        dryR[n] = (mainInputChannels > 1 ? inR[n] : inL[n]);
+    {
+        const int mainInputChannels = getMainBusNumInputChannels();
+        for (int n = 0; n < numSamples; ++n) {
+            dryL[n] = inL[n];
+            dryR[n] = (mainInputChannels > 1 ? inR[n] : inL[n]);
+        }
     }
+
+    // === 5. FSM de Bypass y mezcla equal-power (mirroring JCBDistortion) ===
+    const bool wantsBypass = hostWantsBypass;
+    hostBypassMirror.store(wantsBypass, std::memory_order_relaxed);
+    const bool bypassEdge = (wantsBypass != lastWantsBypass);
+    lastWantsBypass = wantsBypass;
+
+    switch (bypassState)
+    {
+        case BypassState::Active:
+            if (bypassEdge && wantsBypass) {
+                bypassState = BypassState::FadingToBypass;
+                bypassFadePos = 0;
+            }
+            break;
+
+        case BypassState::Bypassed:
+            if (bypassEdge && !wantsBypass) {
+                bypassState = BypassState::FadingToActive;
+                bypassFadePos = 0;
+            }
+            break;
+
+        case BypassState::FadingToBypass:
+            if (bypassEdge && !wantsBypass) {
+                bypassState = BypassState::FadingToActive;
+                bypassFadePos = juce::jmax(0, bypassFadeLen - bypassFadePos);
+            }
+            break;
+
+        case BypassState::FadingToActive:
+            if (bypassEdge && wantsBypass) {
+                bypassState = BypassState::FadingToBypass;
+                bypassFadePos = juce::jmax(0, bypassFadeLen - bypassFadePos);
+            }
+            break;
+    }
+
+    const bool fading = (bypassState == BypassState::FadingToBypass ||
+                         bypassState == BypassState::FadingToActive);
+
+    if (!fading)
+    {
+        if (bypassState == BypassState::Active)
+        {
+            // WET tal cual (ya está en buffer)
+        }
+        else // Bypassed
+        {
+            for (int n = 0; n < numSamples; ++n) {
+                wetL[n] = dryL[n];
+                if (numChannels > 1) wetR[n] = dryR[n];
+            }
+        }
+    }
+    else
+    {
+        int fadeStartOffset = 0;
+        const bool startingFadeThisBlock =
+            ((bypassEdge && wantsBypass && bypassState == BypassState::FadingToBypass) ||
+             (bypassEdge && !wantsBypass && bypassState == BypassState::FadingToActive)) &&
+            (bypassFadePos == 0);
+
+        if (startingFadeThisBlock)
+        {
+            const float* refL = (bypassState == BypassState::FadingToBypass) ? dryL : wetL;
+            const float* refR = (numChannels > 1) ?
+                               ((bypassState == BypassState::FadingToBypass) ? dryR : wetR) : refL;
+
+            auto nearZero = [](float x) noexcept { return std::abs(x) < 1.0e-5f; };
+            const int searchMax = juce::jmin(32, numSamples - 1);
+
+            for (int i = 1; i <= searchMax; ++i)
+            {
+                const float l0 = refL[i-1], l1 = refL[i];
+                const float r0 = refR[i-1], r1 = refR[i];
+                const bool zcL = (nearZero(l0) || nearZero(l1) || (l0 * l1 <= 0.0f));
+                const bool zcR = (nearZero(r0) || nearZero(r1) || (r0 * r1 <= 0.0f));
+                if (zcL || zcR) { fadeStartOffset = i; break; }
+            }
+        }
+
+        for (int n = 0; n < numSamples; ++n)
+        {
+            float wWet = 0.0f, wDry = 0.0f;
+
+            if (n < fadeStartOffset)
+            {
+                if (bypassState == BypassState::FadingToBypass) { wWet = 1.0f; wDry = 0.0f; }
+                else                                            { wWet = 0.0f; wDry = 1.0f; }
+                const float outL = wWet * wetL[n] + wDry * dryL[n];
+                const float outR = wWet * wetR[n] + wDry * (numChannels > 1 ? dryR[n] : dryL[n]);
+                wetL[n] = outL; if (numChannels > 1) wetR[n] = outR;
+                continue;
+            }
+
+            const float t = juce::jlimit(0.0f, 1.0f,
+                                         static_cast<float>(bypassFadePos) /
+                                         static_cast<float>(juce::jmax(1, bypassFadeLen)));
+
+            const float s = std::sin(t * juce::MathConstants<float>::halfPi);
+            const float c = std::cos(t * juce::MathConstants<float>::halfPi);
+
+            if (bypassState == BypassState::FadingToBypass) { wWet = c * c; wDry = s * s; }
+            else                                            { wWet = s * s; wDry = c * c; }
+
+            const float outL = wWet * wetL[n] + wDry * dryL[n];
+            const float outR = wWet * wetR[n] + wDry * (numChannels > 1 ? dryR[n] : dryL[n]);
+            wetL[n] = outL; if (numChannels > 1) wetR[n] = outR;
+
+            ++bypassFadePos;
+            if (bypassFadePos >= bypassFadeLen)
+            {
+                bypassState = (bypassState == BypassState::FadingToBypass) ? BypassState::Bypassed : BypassState::Active;
+                if (bypassState == BypassState::Bypassed)
+                {
+                    for (int k = n + 1; k < numSamples; ++k) {
+                        wetL[k] = dryL[k]; if (numChannels > 1) wetR[k] = dryR[k];
+                    }
+                }
+                break;
+            }
+        }
+    }
+
+    // Safety: sanitize final output and react to trips
+    #if !defined(JCB_DISABLE_SANITIZER)
+    sanitizeStereo(wetL, (numChannels > 1 ? wetR : nullptr), numSamples, nanTripped);
+    #endif
 
     if (nanTripped.exchange(false, std::memory_order_acq_rel))
     {
@@ -1059,7 +1187,7 @@ bool JCBReverbAudioProcessor::isBusesLayoutSupported(const juce::AudioProcessor:
  */
 juce::AudioProcessorValueTreeState::ParameterLayout JCBReverbAudioProcessor::createParameterLayout()
 {
-   const int versionHint = 1;  // Nueva versión para JCBReverb
+   const int versionHint = 2;  // Bump to refresh host-cached ranges
    std::vector<std::unique_ptr<juce::RangedAudioParameter>> params;
 
    // === PARÁMETROS DEL REVERB ===
@@ -1094,14 +1222,14 @@ juce::AudioProcessorValueTreeState::ParameterLayout JCBReverbAudioProcessor::cre
    params.push_back(std::make_unique<juce::AudioParameterFloat>(
        juce::ParameterID("d_DAMP", versionHint),
        "Damping",
-       juce::NormalisableRange<float>(0.1f, 0.9f, 0.01f),
-       0.5f));
+       juce::NormalisableRange<float>(0.1f, 0.95f, 0.01f),
+       0.25f));
 
    // e_SIZE - Room size
    params.push_back(std::make_unique<juce::AudioParameterFloat>(
        juce::ParameterID("e_SIZE", versionHint),
        "Size",
-       juce::NormalisableRange<float>(0.1f, 2.f, 0.01f),
+       juce::NormalisableRange<float>(0.1f, 4.f, 0.01f),
        1.0f));
 
    // f_ST - Stereo width
@@ -1209,7 +1337,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout JCBReverbAudioProcessor::cre
    params.push_back(std::make_unique<juce::AudioParameterFloat>(
        juce::ParameterID("s_THD", versionHint),
        "Threshold",
-       juce::NormalisableRange<float>(-36.f, 0.f, 0.1f),
+       juce::NormalisableRange<float>(-60.f, 0.f, 0.1f),
        -12.f,
        "dB"));
 
@@ -1225,7 +1353,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout JCBReverbAudioProcessor::cre
    params.push_back(std::make_unique<juce::AudioParameterFloat>(
        juce::ParameterID("u_ATK", versionHint),
        "Attack",
-       juce::NormalisableRange<float>(5.f, 250.f, 0.1f, 0.3f),
+       juce::NormalisableRange<float>(1.f, 500.f, 0.1f, 0.3f),
        10.f,
        "ms"));
 
@@ -1233,7 +1361,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout JCBReverbAudioProcessor::cre
    params.push_back(std::make_unique<juce::AudioParameterFloat>(
        juce::ParameterID("v_REL", versionHint),
        "Release",
-       juce::NormalisableRange<float>(5.f, 500.f, 1.f, 0.3f),
+       juce::NormalisableRange<float>(5.f, 1000.f, 1.f, 0.3f),
        100.f,
        "ms"));
 

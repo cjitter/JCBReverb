@@ -1,17 +1,10 @@
 **/.DS_Store
-**/Assets
-**/JuceLibraryCode
-**/Builds/MacOSX/build/Debug
-**/Builds/MacOSX/build/Release
+
 **/zVar
 zOlds/
-AGENTS.md
-CLAUDE.md
-.idea/
-Docs/
+
 # Local-only
 AGENTS.md
 CLAUDE.md
 .idea/
 Docs/
-/Assets/.DS_Store
