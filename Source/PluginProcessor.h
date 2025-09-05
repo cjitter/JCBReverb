@@ -139,13 +139,10 @@ public:
     // Medidores de audio
     float getRmsInputValue(const int channel) const noexcept;
     float getRmsOutputValue(const int channel) const noexcept;
-    // DISTORTION: No requiere getGainReductionValue - eliminada
-    // MAXIMIZER: No sidechain - removed getSCValue
     
     // Detección de clipping
     bool getInputClipDetected(const int channel) const noexcept;
     bool getOutputClipDetected(const int channel) const noexcept;
-    // MAXIMIZER: No sidechain - removed getSidechainClipDetected
     void resetClipIndicators();
 
     // Datos de forma de onda
@@ -187,7 +184,6 @@ private:
     // Integración Gen~
     void assureBufferSize(long bufferSize);
     void fillGenInputBuffers(const juce::AudioBuffer<float>& buffer);
-    void fillGenInputBuffersFromScratch (int numSamples); // nueva inventada de gpt-5
     void processGenAudio(int numSamples);
     void fillOutputBuffers(juce::AudioBuffer<float>& buffer);
 
@@ -395,7 +391,6 @@ public:
     int currentLatency = 0;
 
     // Cachear índices de gen (evitar bubles por nombre)
-    // int genIdxIoMode   { -1 }; // y_IOMODE index in Gen
     int genIdxZBypass  { -1 }; // z_BYPASS index in Gen (internal)
     int genIdxDryWet   { -1 }; // b_DRYWET index in Gen (debug force wet)
     int genIdxFreeze   { -1 }; //
