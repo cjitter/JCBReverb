@@ -147,14 +147,10 @@ public:
     bool getOutputClipDetected(const int channel) const noexcept;
     // MAXIMIZER: No sidechain - removed getSidechainClipDetected
     void resetClipIndicators();
-    
-    // DISTORTION: No requiere getGainReductionForHost - eliminada
-    
+
     // Datos de forma de onda
     void getWaveformData(std::vector<float>& inputSamples, std::vector<float>& processedSamples) const;
-    // DISTORTION: getWaveformDataWithGR eliminada - no hay gain reduction
-    // DISTORTION: No requiere getMaxGainReduction - eliminada
-    
+
     // Sistema híbrido: timestamp + playhead para detección más robusta
     bool isPlaybackActive() const noexcept;
     
@@ -190,10 +186,13 @@ private:
     //==============================================================================
     // Integración Gen~
     void assureBufferSize(long bufferSize);
-    void processBlockCommon(juce::AudioBuffer<float>& buffer, bool hostWantsBypass);
     void fillGenInputBuffers(const juce::AudioBuffer<float>& buffer);
+    void fillGenInputBuffersFromScratch (int numSamples); // nueva inventada de gpt-5
     void processGenAudio(int numSamples);
     void fillOutputBuffers(juce::AudioBuffer<float>& buffer);
+
+    //==============================================================================
+    void processBlockCommon(juce::AudioBuffer<float>& buffer, bool hostWantsBypass);
 
     // Safety: sanitize audio to avoid NaN/Inf blasts (hard limiter + finite check)
     // COMMENTED OUT - Gen~ issue fixed, no longer needed
@@ -228,12 +227,27 @@ private:
         }
     }
     */
-    
+
+    inline void sanitizeStereo (float* L, float* R, int n, std::atomic<bool>& tripped) noexcept
+    {
+        bool localTrip = false;
+        for (int i = 0; i < n; ++i)
+        {
+            float xL = L[i];
+            float xR = R ? R[i] : xL;
+
+            if (!std::isfinite(xL) || xL > 8.f || xL < -8.f) { xL = 0.f; localTrip = true; }
+            if (!std::isfinite(xR) || xR > 8.f || xR < -8.f) { xR = 0.f; localTrip = true; }
+
+            L[i] = xL; if (R) R[i] = xR;
+        }
+        if (localTrip) tripped.store(true, std::memory_order_release);
+    }
+
     // Actualizaciones de medidores
     void updateInputMeters(const juce::AudioBuffer<float>& buffer);
     void updateOutputMeters(const juce::AudioBuffer<float>& buffer);
-    // DISTORTION: updateGainReductionMeter eliminada - no hay gain reduction
-    // MAXIMIZER: updateSidechainMeters eliminada - no hay sidechain
+
     void captureInputWaveformData(const juce::AudioBuffer<float>& inputBuffer, int numSamples);
     void captureOutputWaveformData(const juce::AudioBuffer<float>& outputBuffer, int numSamples);
     
@@ -256,19 +270,13 @@ private:
     std::atomic<float> rightInputRMS{-100.0f};
     std::atomic<float> leftOutputRMS{-100.0f};
     std::atomic<float> rightOutputRMS{-100.0f};
-    // DISTORTION: gainReduction eliminado - no hay gain reduction
-    
-    // DISTORTION: grMovingAverage eliminado - no hay gain reduction
-    // MAXIMIZER: No sidechain - removed leftSC, rightSC, sidechainBuffer
-    
+
     // Buffers auxiliares
-    // DISTORTION: grBuffer eliminado - no hay gain reduction
     juce::AudioBuffer<float> trimInputBuffer;
     
     // Buffers para forma de onda
     mutable std::vector<float> currentInputSamples;
     mutable std::vector<float> currentProcessedSamples;
-    // DISTORTION: currentGainReductionSamples eliminado - no hay gain reduction
     mutable std::mutex waveformMutex;
     
     // Gestión de estado
@@ -287,15 +295,10 @@ private:
     // Estado de detección de clipping
     std::atomic<bool> inputClipDetected[2] = {false, false};
     std::atomic<bool> outputClipDetected[2] = {false, false};
-    // MAXIMIZER: No sidechain - removed sidechainClipDetected
-    
-    // DISTORTION: No requiere variables de gain reduction - eliminadas
-    
-    
+
     // Flag para indicar destrucción del plugin
     std::atomic<bool> isBeingDestroyed{false};
-    
-    
+
     //==============================================================================
     // Timer callback para actualizaciones fuera del audio thread
     void timerCallback() override;
@@ -352,21 +355,21 @@ private:
     // --- FSM de Bypass con Fade ---
     enum class BypassState { Active, FadingToBypass, Bypassed, FadingToActive };
     BypassState bypassState { BypassState::Active };  // Estado actual del bypass
-    int bypassFadeLen { 384 };                        // Longitud del fade en samples (~7ms @ 48kHz)
+    int bypassFadeLen  { 384 };                        // Longitud del fade en samples (~7ms @ 48kHz)
     float bypassFadeMs { 7.0f };                      // Duración del fade en ms
-    int bypassFadePos { 0 };                          // Posición actual del fade (0 a bypassFadeLen)
+    int bypassFadePos  { 0 };                          // Posición actual del fade (0 a bypassFadeLen)
     
     // --- Control y sincronización ---
-    std::atomic<bool> hostBypassMirror { false };     // Espejo atómico del estado de bypass del host
+    std::atomic<bool> hostBypassMirror { false };   // Espejo atómico del estado de bypass del host
     bool lastWantsBypass { false };                   // Estado anterior para detección de flancos
-    int consecutiveWetSilent { 0 };                   // Contador de bloques con WET ~0 y entrada con señal
+    //int consecutiveWetSilent { 0 };                   // Contador de bloques con WET ~0 y entrada con señal
     bool lastHostIsPlaying { false };                 // Estado previo del transporte
     int playStartWarmupBlocks { 0 };                  // Ventana breve tras start
 
     // Diagnóstico: contadores de failsafe y resets
     std::atomic<int> diagFailsafeCount { 0 };
     std::atomic<int> diagGenResets { 0 };
-
+    std::atomic<int> silentL{0}, silentR{0};
 public:
     int getDiagFailsafeCount() const noexcept { return diagFailsafeCount.load(std::memory_order_relaxed); }
     int getDiagGenResets() const noexcept { return diagGenResets.load(std::memory_order_relaxed); }
@@ -375,7 +378,7 @@ public:
     // Helper para leer el parámetro de bypass del host
     inline bool isHostBypassed() const noexcept
     {
-        if (auto* p = getBypassParameter())          // JUCE crea un parámetro estándar de bypass
+        if (auto* p = getBypassParameter())  // JUCE crea un parámetro estándar de bypass
             return p->getValue() >= 0.5f;            // 0..1
         return false;
     }
@@ -393,9 +396,55 @@ public:
     int currentLatency = 0;
 
     // Cachear índices de gen (evitar bubles por nombre)
-    int genIdxIoMode   { -1 }; // y_IOMODE index in Gen
-    int genIdxZBypass  { -1 }; // z_BYPASSS index in Gen (internal)
+    // int genIdxIoMode   { -1 }; // y_IOMODE index in Gen
+    int genIdxZBypass  { -1 }; // z_BYPASS index in Gen (internal)
     int genIdxDryWet   { -1 }; // b_DRYWET index in Gen (debug force wet)
+    int genIdxFreeze   { -1 }; //
+
+
+    // Especial para la reverb
+
+    // --- Cola lock-free de cambios de parámetro (SP/MP -> AudioThread) ---
+    struct PendingParam { int idx; float v; };
+
+    static constexpr uint32_t kQSize = 256;           // potencia de 2
+    static constexpr uint32_t kQMask = kQSize - 1;
+
+    std::atomic<uint32_t> paramQHead { 0 };           // escribe MT
+    std::atomic<uint32_t> paramQTail { 0 };           // consume AT
+    PendingParam          paramQ[kQSize];             // buffer circular
+
+    inline void pushParamToAudioThread (int idx, float v) noexcept
+    {
+        uint32_t h  = paramQHead.load(std::memory_order_relaxed);
+        uint32_t nh = (h + 1u) & kQMask;
+
+        // Si está llena, descarta el más viejo (avanza tail) para no bloquear
+        if (nh == paramQTail.load(std::memory_order_acquire))
+            paramQTail.store((paramQTail.load(std::memory_order_relaxed) + 1u) & kQMask,
+                             std::memory_order_release);
+
+        paramQ[h] = { idx, v };
+        paramQHead.store(nh, std::memory_order_release);
+    }
+
+    inline void drainPendingParamsToGen() noexcept
+    {
+        uint32_t t = paramQTail.load(std::memory_order_relaxed);
+        const uint32_t h = paramQHead.load(std::memory_order_acquire);
+
+        while (t != h)
+        {
+            const PendingParam pp = paramQ[t];
+            // Aplicar de forma atómica en el audio thread
+            JCBReverb::setparameter(m_PluginState, pp.idx, pp.v, nullptr);
+            t = (t + 1u) & kQMask;
+        }
+        paramQTail.store(t, std::memory_order_release);
+    }
+
+    std::atomic<bool> nanTripped { false };
+    std::atomic<int> consecutiveWetSilent { 0 };
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(JCBReverbAudioProcessor)
 };

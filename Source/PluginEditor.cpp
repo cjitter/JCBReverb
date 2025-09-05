@@ -1138,7 +1138,7 @@ void JCBReverbAudioProcessorEditor::buttonClicked(juce::Button* button)
         }
         updateButtonStates();
 
-        // Reactivar control de bypass interno de Gen: z_BYPASSS (sin smoothing en Gen)
+        // Reactivar control de bypass interno de Gen: z_BYPASS (sin smoothing en Gen)
         if (auto* st = processor.getPluginState())
         {
             for (int i = 0; i < JCBReverb::num_params(); ++i)
@@ -3442,14 +3442,14 @@ void JCBReverbAudioProcessorEditor::updateButtonValues()
     // Actualizar todos los botones con los valores actuales del APVTS
     // Esta función es crucial para que los presets Factory/User actualicen correctamente los botones
     
-    // Bypass button (interno Gen: z_BYPASSS)
+    // Bypass button (interno Gen: z_BYPASS)
     {
         bool toggleState = false;
         if (auto* st = processor.getPluginState())
         {
             for (int i = 0; i < JCBReverb::num_params(); ++i)
             {
-                if (juce::String(JCBReverb::getparametername(st, i)) == "z_BYPASSS")
+                if (juce::String(JCBReverb::getparametername(st, i)) == "z_BYPASS")
                 {
                     t_param v = 0;
                     JCBReverb::getparameter(st, i, &v);
