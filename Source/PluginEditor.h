@@ -20,7 +20,7 @@
 #include "PluginProcessor.h"
 #include "BinaryData.h"
 #include "Components/UI/GradientMeter.h"
-// Componentes de visualización se añadirán más adelante para reverb
+#include "Components/UI/SpectrumAnalyzerComponent.h"
 #include "Components/UI/CustomTooltip.h"
 #include "Components/UI/TrimSlider.h"
 #include "Components/UI/CustomSlider.h"
@@ -264,7 +264,15 @@ private:
     // COMPONENTES DE DISPLAY PRINCIPALES
     //==========================================================================
     
-    // Componentes de visualización se añadirán más adelante para reverb
+    // Componente de analizador de espectro FFT
+    SpectrumAnalyzerComponent spectrumAnalyzer;
+    
+    // Estados de visualización
+    enum class DisplayMode {
+        FFT,          // Vista de espectro
+        Waveform      // Vista de forma de onda (futuro)
+    };
+    DisplayMode currentDisplayMode = DisplayMode::FFT;
     
     //==========================================================================
     // COMPONENTES DE METERS

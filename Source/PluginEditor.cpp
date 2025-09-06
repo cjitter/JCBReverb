@@ -64,17 +64,11 @@ JCBReverbAudioProcessorEditor::JCBReverbAudioProcessorEditor (JCBReverbAudioProc
     : AudioProcessorEditor (&p), 
       processor (p), 
       undoManager (um),
-      // CRASH FIX: Initialize with safe dummy functions, configure real ones later
-      // Orden corregido siguiendo declaraciones en .h (línea 235, 242-244)
-    // distortionCurveDisplay(processor.apvts),    // Declarado primero en .h (línea 235)
-      // TEMPORAL: Comentado para evitar crash - necesita reimplementación
-      // spectrumAnalyzer(processor.apvts),          // Declarado segundo en .h
+      spectrumAnalyzer(processor.apvts),          // Inicializar spectrum analyzer
       inputMeterL([]() { return -100.0f; }),      // Safe dummy value for input meters  
       inputMeterR([]() { return -100.0f; }),      // Safe dummy value for input meters
       outputMeterL([]() { return -100.0f; }),     // Safe dummy value for output meters
       outputMeterR([]() { return -100.0f; })      // Safe dummy value for output meters
-      // scMeterL([&p](){ return p.getSCValue(0); }), // SC meter L
-      // scMeterR([&p](){ return p.getSCValue(1); }) // SC meter R
 {
     // Inicializar LookAndFeel personalizado para botones
     soloButtonLAF = std::make_unique<SoloButtonLookAndFeel>();
@@ -126,6 +120,10 @@ JCBReverbAudioProcessorEditor::JCBReverbAudioProcessorEditor (JCBReverbAudioProc
     };
     
     addAndMakeVisible(titleLink);
+    
+    // Agregar analizador de espectro
+    addAndMakeVisible(spectrumAnalyzer);
+    spectrumAnalyzer.setVisible(true);
 
     // Agregar tooltip
     addAndMakeVisible(tooltipComponent);
@@ -212,6 +210,19 @@ JCBReverbAudioProcessorEditor::JCBReverbAudioProcessorEditor (JCBReverbAudioProc
     // Registrar listener para y_FILTERS (thread-safe para automatización del host)
     sidechainParameterListener = std::make_unique<SidechainParameterListener>(this);
     processor.apvts.addParameterListener("y_FILTERS", sidechainParameterListener.get());
+    
+    // Connect spectrum analyzer callback to processor
+    processor.setSpectrumAnalyzerCallback([this](float sample) {
+        spectrumAnalyzer.pushNextSampleIntoFifo(sample);
+    });
+    
+    // Connect sample rate change callback
+    processor.setSampleRateChangedCallback([this](double newSampleRate) {
+        spectrumAnalyzer.setSampleRate(newSampleRate);
+    });
+    
+    // Initialize spectrum analyzer with current sample rate
+    spectrumAnalyzer.setSampleRate(processor.getCurrentSampleRate());
 
     // CRASH FIX: Iniciar timer AL FINAL para evitar acceso prematuro a valores atómicos
     // El timer debe iniciarse después de que todo esté completamente inicializado
@@ -476,6 +487,14 @@ void JCBReverbAudioProcessorEditor::resized()
     // Medidores de salida (lado derecho)
     outputMeterL.setBounds(getScaledBounds(677, 42, 12, 117));
     outputMeterR.setBounds(getScaledBounds(687, 42, 12, 117));
+    
+    // === VISUALIZACIÓN CENTRAL (SPECTRUM ANALYZER) ===
+    // Posicionar en el centro del plugin entre knobs y medidores
+    const int spectrumX = 260;  // Después de los knobs izquierdos
+    const int spectrumY = 42;   // Alineado con los medidores
+    const int spectrumW = 180;  // Ancho del área central
+    const int spectrumH = 113;  // Altura similar a los medidores
+    spectrumAnalyzer.setBounds(getScaledBounds(spectrumX, spectrumY, spectrumW, spectrumH));
 
     // Posicionar HPF/LPF en la parte superior central + botón FILTERS - 285, 5, 36, 36
     sidechainControls.hpfSlider.setBounds(getScaledBounds(290, 3, 39, 39));
@@ -744,8 +763,7 @@ void JCBReverbAudioProcessorEditor::buttonClicked(juce::Button* button)
     }
     else if (button == &utilityButtons.runGraphicsButton)
     {
-        // COMENTADO: toggleDisplayMode no existe para reverb
-        // toggleDisplayMode();
+        toggleDisplayMode();
     }
     // Botones de gestión de presets
     else if (button == &presetArea.saveButton)
@@ -918,33 +936,21 @@ void JCBReverbAudioProcessorEditor::buttonClicked(juce::Button* button)
     }
     else if (button == &utilityButtons.zoomButton)
     {
-        // COMENTADO: DisplayMode eliminado
-        // if (currentDisplayMode == DisplayMode::FFT)
-        if (false) // Temporal: siempre false hasta implementar modo correcto
+        // FFT zoom functionality - toggle zoom range
+        bool currentZoom = spectrumAnalyzer.getZoomEnabled();
+        bool newZoom = !currentZoom;
+
+        spectrumAnalyzer.setZoomEnabled(newZoom);
+
+        if (newZoom)
         {
-            // FFT zoom functionality - toggle zoom range
-            // TEMPORAL: Deshabilitado mientras spectrumAnalyzer está comentado
-            // bool currentZoom = spectrumAnalyzer.getZoomEnabled();
-            bool currentZoom = false;
-            bool newZoom = !currentZoom;
-
-         // spectrumAnalyzer.setZoomEnabled(newZoom);
-
-            if (newZoom)
-            {
-                utilityButtons.zoomButton.setButtonText("zoom x2");
-                utilityButtons.zoomButton.setToggleState(true, juce::dontSendNotification);
-            }
-            else
-            {
-                utilityButtons.zoomButton.setButtonText("zoom");
-                utilityButtons.zoomButton.setToggleState(false, juce::dontSendNotification);
-            }
+            utilityButtons.zoomButton.setButtonText("zoom x2");
+            utilityButtons.zoomButton.setToggleState(true, juce::dontSendNotification);
         }
         else
         {
-            // Zoom no está disponible en modo CURVES
-            // El botón ya está deshabilitado en este modo
+            utilityButtons.zoomButton.setButtonText("zoom");
+            utilityButtons.zoomButton.setToggleState(false, juce::dontSendNotification);
         }
     }
     else if (button == &centerButtons.diagramButton)
@@ -3457,7 +3463,7 @@ void JCBReverbAudioProcessorEditor::toggleDisplayMode()
     processor.displayModeIsFFT = true;
     
     // Configurar visualización FFT
-    // spectrumAnalyzer.setVisible(true);
+    spectrumAnalyzer.setVisible(true);
     utilityButtons.runGraphicsButton.setButtonText("FFT");
     utilityButtons.runGraphicsButton.setColour(juce::TextButton::buttonColourId, 
                                               juce::Colours::transparentBlack);

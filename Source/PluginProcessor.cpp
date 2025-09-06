@@ -212,7 +212,7 @@ void JCBReverbAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlo
     // Pre-asignar vectors de waveform data para evitar resize en audio thread
     {
         std::lock_guard<std::mutex> lock(waveformMutex);
-        const size_t maxWaveformSize = static_cast<size_t>(juce::jmax<long>(maxExpectedBufferSize, 16384));
+        const size_t maxWaveformSize = static_cast<size_t>(juce::jmax<int>(maxExpectedBufferSize, 16384));
         currentInputSamples.assign(maxWaveformSize, 0.0f);
         currentProcessedSamples.assign(maxWaveformSize, 0.0f);
     }
@@ -276,6 +276,11 @@ void JCBReverbAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlo
             float value = param->load();
             JCBReverb::setparameter(m_PluginState, i, value, nullptr);
         }
+    }
+    
+    // Notify spectrum analyzer of sample rate change
+    if (sampleRateChangedCallback) {
+        sampleRateChangedCallback(sampleRate);
     }
 
 }
@@ -823,7 +828,15 @@ void JCBReverbAudioProcessor::processBlockCommon(juce::AudioBuffer<float>& buffe
 
     // === 6. Análisis y medición post-procesamiento ===
 
-    // Alimentar visualización cuando se implemente el display de reverb
+    // Feed spectrum analyzer con salida final
+    if (spectrumAnalyzerCallback && buffer.getNumChannels() > 0)
+    {
+        auto* outputSamples = buffer.getReadPointer(0);
+        for (int sample = 0; sample < numSamples; ++sample)
+        {
+            spectrumAnalyzerCallback(outputSamples[sample]);
+        }
+    }
 
     // Capturar formas de onda
     captureInputWaveformData(buffer, numSamples);

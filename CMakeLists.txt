@@ -104,6 +104,7 @@ target_sources(JCBReverb PRIVATE
         Source/Components/Windows/CreditsWindow.cpp
         Source/Components/UI/CustomComboBox.cpp
         Source/Components/UI/HierarchicalComboBox.cpp
+        Source/Components/UI/SpectrumAnalyzerComponent.cpp
 
         # Gen~ DSP engine
         exported-code/JCBReverb.cpp

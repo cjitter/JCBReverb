@@ -80,7 +80,11 @@ public:
     void setStateInformation(const void* data, int sizeInBytes) override;
     
     //==============================================================================
-    // Callbacks para visualización se añadirán cuando se implemente el display de reverb
+    // FFT Spectrum Analyzer Support
+    std::function<void(float)> spectrumAnalyzerCallback;
+    std::function<void(double)> sampleRateChangedCallback;
+    void setSpectrumAnalyzerCallback(std::function<void(float)> callback) { spectrumAnalyzerCallback = callback; }
+    void setSampleRateChangedCallback(std::function<void(double)> callback) { sampleRateChangedCallback = callback; }
     double getCurrentSampleRate() const noexcept { return m_PluginState ? m_PluginState->sr : 44100.0; }
     
     //==============================================================================
