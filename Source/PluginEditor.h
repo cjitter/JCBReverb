@@ -321,7 +321,7 @@ private:
         std::unique_ptr<CustomSliderAttachment> stAttachment;
         std::unique_ptr<UndoableButtonAttachment> freezeAttachment;
 
-    } leftTopKnobs;
+    } leftKnobs;
     
     //==========================================================================
     // GRUPOS DE BUTTONS (organizados por función y ubicación)
@@ -941,7 +941,9 @@ private:
     // Operaciones de archivo
     std::unique_ptr<juce::FileChooser> fileChooser;
     
-    // Listeners para parámetros de reverb se añadirán cuando se implementen los controles correctos
+    // Listeners para parámetros de reverb
+    class SidechainParameterListener;
+    std::unique_ptr<SidechainParameterListener> sidechainParameterListener;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (JCBReverbAudioProcessorEditor)
 };

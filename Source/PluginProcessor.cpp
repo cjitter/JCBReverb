@@ -1180,7 +1180,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout JCBReverbAudioProcessor::cre
    params.push_back(std::make_unique<juce::AudioParameterFloat>(
        juce::ParameterID("f_ST", versionHint),
        "Stereo",
-       juce::NormalisableRange<float>(0.f, 0.8f, 0.01f),
+       juce::NormalisableRange<float>(0.f, 0.9f, 0.01f),
        0.4f));  // Default para mostrar 50% en UI
 
    // g_FREEZE - Freeze mode
@@ -1227,7 +1227,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout JCBReverbAudioProcessor::cre
    params.push_back(std::make_unique<juce::AudioParameterFloat>(
        juce::ParameterID("l_HPF", versionHint),
        "HPF",
-       juce::NormalisableRange<float>(20.f, 1000.f, 1.f, 0.3f),
+       juce::NormalisableRange<float>(20.f, 5000.f, 1.f, 0.3f),
        100.f,
        "Hz"));
 
@@ -1243,15 +1243,15 @@ juce::AudioProcessorValueTreeState::ParameterLayout JCBReverbAudioProcessor::cre
    params.push_back(std::make_unique<juce::AudioParameterFloat>(
        juce::ParameterID("n_LOWFREQ", versionHint),
        "Low Freq",
-       juce::NormalisableRange<float>(20.f, 800.f, 1.f, 0.3f),
-       500.f,
+       juce::NormalisableRange<float>(20.f, 500.f, 1.f, 0.3f),
+       100.f,
        "Hz"));
 
    // o_PEAKFREQ - Peak frequency
    params.push_back(std::make_unique<juce::AudioParameterFloat>(
        juce::ParameterID("o_PEAKFREQ", versionHint),
        "Peak Freq",
-       juce::NormalisableRange<float>(100.f, 2500.f, 1.f, 0.3f),
+       juce::NormalisableRange<float>(500.f, 2500.f, 1.f, 0.3f),
        800.f,
        "Hz"));
 
@@ -1259,8 +1259,8 @@ juce::AudioProcessorValueTreeState::ParameterLayout JCBReverbAudioProcessor::cre
    params.push_back(std::make_unique<juce::AudioParameterFloat>(
        juce::ParameterID("p_HIFREQ", versionHint),
        "High Freq",
-       juce::NormalisableRange<float>(800.f, 15000.f, 1.f, 0.3f),
-       2000.f,
+       juce::NormalisableRange<float>(2500.f, 15000.f, 1.f, 0.3f),
+       5000.f,
        "Hz"));
 
    // q_ONOFFEQ - EQ on/off
@@ -1288,7 +1288,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout JCBReverbAudioProcessor::cre
        juce::ParameterID("s_THD", versionHint),
        "Threshold",
        juce::NormalisableRange<float>(-60.f, 0.f, 0.1f),
-       -12.f,
+       -18.f,
        "dB"));
 
    // t_RATIO - Ratio
@@ -1296,23 +1296,23 @@ juce::AudioProcessorValueTreeState::ParameterLayout JCBReverbAudioProcessor::cre
        juce::ParameterID("t_RATIO", versionHint),
        "Ratio",
        juce::NormalisableRange<float>(1.f, 20.f, 0.1f),
-       2.f,
+       4.f,
        ":1"));
 
    // u_ATK - Attack
    params.push_back(std::make_unique<juce::AudioParameterFloat>(
        juce::ParameterID("u_ATK", versionHint),
        "Attack",
-       juce::NormalisableRange<float>(1.f, 500.f, 0.1f, 0.3f),
-       10.f,
+       juce::NormalisableRange<float>(1.f, 750.f, 0.1f, 0.3f),
+       5.f,
        "ms"));
 
    // v_REL - Release
    params.push_back(std::make_unique<juce::AudioParameterFloat>(
        juce::ParameterID("v_REL", versionHint),
        "Release",
-       juce::NormalisableRange<float>(5.f, 1000.f, 1.f, 0.3f),
-       100.f,
+       juce::NormalisableRange<float>(15.f, 2000.f, 1.f, 0.3f),
+       150.f,
        "ms"));
 
    // w_MAKEUP - Makeup gain
@@ -1322,6 +1322,12 @@ juce::AudioProcessorValueTreeState::ParameterLayout JCBReverbAudioProcessor::cre
        juce::NormalisableRange<float>(-6.f, 6.f, 0.1f),
        0.f,
        "dB"));
+
+    // x_PUMP - Pump on/off
+    params.push_back(std::make_unique<juce::AudioParameterBool>(
+        juce::ParameterID("x_PUMP", versionHint),
+        "Pump",
+        false));
 
    // z_BYPASS - Internal bypass
    params.push_back(std::make_unique<juce::AudioParameterBool>(
