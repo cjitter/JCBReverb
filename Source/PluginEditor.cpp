@@ -124,6 +124,10 @@ JCBReverbAudioProcessorEditor::JCBReverbAudioProcessorEditor (JCBReverbAudioProc
     // Agregar analizador de espectro
     addAndMakeVisible(spectrumAnalyzer);
     spectrumAnalyzer.setVisible(true);
+    
+    // Agregar visualización de forma de onda
+    addAndMakeVisible(waveformDisplay);
+    waveformDisplay.setVisible(false);  // Inicialmente oculto, FFT es el modo por defecto
 
     // Agregar tooltip
     addAndMakeVisible(tooltipComponent);
@@ -489,19 +493,21 @@ void JCBReverbAudioProcessorEditor::resized()
     outputMeterR.setBounds(getScaledBounds(687, 42, 12, 117));
     
     // === VISUALIZACIÓN CENTRAL (SPECTRUM ANALYZER) ===
-    // Posicionar en el centro del plugin entre knobs y medidores
-    const int spectrumX = 260;  // Después de los knobs izquierdos
-    const int spectrumY = 42;   // Alineado con los medidores
-    const int spectrumW = 180;  // Ancho del área central
-    const int spectrumH = 113;  // Altura similar a los medidores
-    spectrumAnalyzer.setBounds(getScaledBounds(spectrumX, spectrumY, spectrumW, spectrumH));
+    // Posicionar componentes de visualización en el centro del plugin
+    const int displayX = 260;  // Después de los knobs izquierdos
+    const int displayY = 42;   // Alineado con los medidores
+    const int displayW = 180;  // Ancho del área central
+    const int displayH = 113;  // Altura similar a los medidores
+    
+    spectrumAnalyzer.setBounds(getScaledBounds(displayX, displayY, displayW, displayH));
+    waveformDisplay.setBounds(getScaledBounds(displayX, displayY, displayW, displayH));
 
     // Posicionar HPF/LPF en la parte superior central + botón FILTERS - 285, 5, 36, 36
     sidechainControls.hpfSlider.setBounds(getScaledBounds(290, 3, 39, 39));
     sidechainControls.lpfSlider.setBounds(getScaledBounds(383, 3, 39, 39));
     {
         const int buttonWidth = 50;
-        const int centerX = 354;
+        const int centerX = 355;
         sidechainControls.scButton.setBounds(getScaledBounds(centerX - buttonWidth/2, 14, buttonWidth, 17));
     }
 
@@ -641,6 +647,30 @@ void JCBReverbAudioProcessorEditor::timerCallback()
 
     // Sistema universal de decay para todos los DAWs
     applyMeterDecayIfNeeded();
+    
+    // Actualizar visualización de forma de onda si está en modo Waveform
+    if (currentDisplayMode == DisplayMode::Waveform)
+    {
+        std::vector<float> inputSamples, processedSamples;
+        processor.getWaveformData(inputSamples, processedSamples);
+        waveformDisplay.updateWaveformData(inputSamples, processedSamples);
+        
+        // Actualizar parámetros de visualización
+        if (auto* dryWetParam = processor.apvts.getRawParameterValue("b_DRYWET"))
+        {
+            waveformDisplay.setDryWetMix(dryWetParam->load() / 100.0f);  // Convertir de 0-100 a 0-1
+        }
+        
+        if (auto* sizeParam = processor.apvts.getRawParameterValue("e_SIZE"))
+        {
+            waveformDisplay.setReverbSize(sizeParam->load());  // Ya está en rango 0-1
+        }
+        
+        if (auto* reflectParam = processor.apvts.getRawParameterValue("c_REFLECT"))
+        {
+            waveformDisplay.setReflectAmount(reflectParam->load());  // Ya está en rango 0-1
+        }
+    }
 
     updateMeters();
 
@@ -936,21 +966,44 @@ void JCBReverbAudioProcessorEditor::buttonClicked(juce::Button* button)
     }
     else if (button == &utilityButtons.zoomButton)
     {
-        // FFT zoom functionality - toggle zoom range
-        bool currentZoom = spectrumAnalyzer.getZoomEnabled();
-        bool newZoom = !currentZoom;
-
-        spectrumAnalyzer.setZoomEnabled(newZoom);
-
-        if (newZoom)
+        // Zoom functionality depending on display mode
+        if (currentDisplayMode == DisplayMode::FFT)
         {
-            utilityButtons.zoomButton.setButtonText("zoom x2");
-            utilityButtons.zoomButton.setToggleState(true, juce::dontSendNotification);
+            // FFT zoom functionality - toggle zoom range
+            bool currentZoom = spectrumAnalyzer.getZoomEnabled();
+            bool newZoom = !currentZoom;
+
+            spectrumAnalyzer.setZoomEnabled(newZoom);
+
+            if (newZoom)
+            {
+                utilityButtons.zoomButton.setButtonText("zoom x2");
+                utilityButtons.zoomButton.setToggleState(true, juce::dontSendNotification);
+            }
+            else
+            {
+                utilityButtons.zoomButton.setButtonText("zoom");
+                utilityButtons.zoomButton.setToggleState(false, juce::dontSendNotification);
+            }
         }
-        else
+        else if (currentDisplayMode == DisplayMode::Waveform)
         {
-            utilityButtons.zoomButton.setButtonText("zoom");
-            utilityButtons.zoomButton.setToggleState(false, juce::dontSendNotification);
+            // Waveform zoom functionality - toggle vertical zoom
+            bool currentZoom = waveformDisplay.getZoomEnabled();
+            bool newZoom = !currentZoom;
+
+            waveformDisplay.setZoomEnabled(newZoom);
+
+            if (newZoom)
+            {
+                utilityButtons.zoomButton.setButtonText("zoom x2");
+                utilityButtons.zoomButton.setToggleState(true, juce::dontSendNotification);
+            }
+            else
+            {
+                utilityButtons.zoomButton.setButtonText("zoom");
+                utilityButtons.zoomButton.setToggleState(false, juce::dontSendNotification);
+            }
         }
     }
     else if (button == &centerButtons.diagramButton)
@@ -3455,22 +3508,43 @@ void JCBReverbAudioProcessorEditor::updateARButtonText()
 
 void JCBReverbAudioProcessorEditor::toggleDisplayMode()
 {
-    // Para JCBReverb, solo tenemos modo FFT disponible
-    // TODO: Implementar visualización específica para reverb cuando sea necesario
-    
-    // Mantener siempre el modo FFT activo
-    // currentDisplayMode = DisplayMode::FFT; // COMENTADO: DisplayMode eliminado
-    processor.displayModeIsFFT = true;
-    
-    // Configurar visualización FFT
-    spectrumAnalyzer.setVisible(true);
-    utilityButtons.runGraphicsButton.setButtonText("FFT");
-    utilityButtons.runGraphicsButton.setColour(juce::TextButton::buttonColourId, 
-                                              juce::Colours::transparentBlack);
-    
-    // Habilitar botón zoom para modo FFT
-    utilityButtons.zoomButton.setAlpha(1.0f);
-    utilityButtons.zoomButton.setEnabled(true);
+    // Alternar entre modos FFT y Waveform
+    if (currentDisplayMode == DisplayMode::FFT)
+    {
+        // Cambiar a modo Waveform
+        currentDisplayMode = DisplayMode::Waveform;
+        processor.displayModeIsFFT = false;
+        
+        // Configurar visualización Waveform
+        spectrumAnalyzer.setVisible(false);
+        waveformDisplay.setVisible(true);
+        utilityButtons.runGraphicsButton.setButtonText("WAVE");
+        utilityButtons.runGraphicsButton.setColour(juce::TextButton::buttonColourId, 
+                                                  DarkTheme::accent.withAlpha(0.3f));  // Color azul para Waveform
+        
+        // Botón zoom disponible para zoom vertical en modo Waveform
+        utilityButtons.zoomButton.setAlpha(1.0f);
+        utilityButtons.zoomButton.setEnabled(true);
+        utilityButtons.zoomButton.setButtonText(waveformDisplay.getZoomEnabled() ? "zoom x2" : "zoom");
+    }
+    else
+    {
+        // Cambiar a modo FFT
+        currentDisplayMode = DisplayMode::FFT;
+        processor.displayModeIsFFT = true;
+        
+        // Configurar visualización FFT
+        spectrumAnalyzer.setVisible(true);
+        waveformDisplay.setVisible(false);
+        utilityButtons.runGraphicsButton.setButtonText("FFT");
+        utilityButtons.runGraphicsButton.setColour(juce::TextButton::buttonColourId, 
+                                                  juce::Colours::transparentBlack);
+        
+        // Botón zoom para modo FFT
+        utilityButtons.zoomButton.setAlpha(1.0f);
+        utilityButtons.zoomButton.setEnabled(true);
+        utilityButtons.zoomButton.setButtonText(spectrumAnalyzer.getZoomEnabled() ? "zoom x2" : "zoom");
+    }
     
     handleParameterChange();
     repaint();

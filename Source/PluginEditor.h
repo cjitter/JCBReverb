@@ -21,6 +21,7 @@
 #include "BinaryData.h"
 #include "Components/UI/GradientMeter.h"
 #include "Components/UI/SpectrumAnalyzerComponent.h"
+#include "Components/UI/WaveformComponent.h"
 #include "Components/UI/CustomTooltip.h"
 #include "Components/UI/TrimSlider.h"
 #include "Components/UI/CustomSlider.h"
@@ -264,13 +265,14 @@ private:
     // COMPONENTES DE DISPLAY PRINCIPALES
     //==========================================================================
     
-    // Componente de analizador de espectro FFT
+    // Componentes de visualización
     SpectrumAnalyzerComponent spectrumAnalyzer;
+    WaveformComponent waveformDisplay;
     
     // Estados de visualización
     enum class DisplayMode {
         FFT,          // Vista de espectro
-        Waveform      // Vista de forma de onda (futuro)
+        Waveform      // Vista de forma de onda con reverb
     };
     DisplayMode currentDisplayMode = DisplayMode::FFT;
     

@@ -359,6 +359,9 @@ void JCBReverbAudioProcessor::processBlockCommon(juce::AudioBuffer<float>& buffe
         // Copiar R de la fuente correcta; si entrada mono, duplicar L
         std::memcpy(inR, srcR, sizeof(float) * static_cast<size_t>(numSamples));
     }
+    
+    // Capturar la señal de entrada SECA antes de cualquier procesamiento
+    captureInputWaveformData(scratchIn, numSamples);
 
 
     // === 1.b APLICAR AQUÍ: drenar cambios de parámetros pendientes ===
@@ -838,8 +841,7 @@ void JCBReverbAudioProcessor::processBlockCommon(juce::AudioBuffer<float>& buffe
         }
     }
 
-    // Capturar formas de onda
-    captureInputWaveformData(buffer, numSamples);
+    // Capturar forma de onda de salida (señal procesada con reverb)
     captureOutputWaveformData(buffer, numSamples);
 
     // Actualizar detección de clipping
