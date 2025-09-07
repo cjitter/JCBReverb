@@ -1164,7 +1164,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout JCBReverbAudioProcessor::cre
        juce::ParameterID("b_DRYWET", versionHint),
        "Dry/Wet",
        juce::NormalisableRange<float>(0.f, 1.f, 0.01f),
-       0.33f,
+       0.5f,
        "%",
        juce::AudioParameterFloat::genericParameter,
        [](float value, int) { return juce::String(static_cast<int>(value * 100)) + "%"; },
@@ -1196,7 +1196,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout JCBReverbAudioProcessor::cre
        juce::ParameterID("f_ST", versionHint),
        "Stereo",
        juce::NormalisableRange<float>(0.f, 0.9f, 0.01f),
-       0.4f));  // Default para mostrar 50% en UI
+       0.45f));
 
    // g_FREEZE - Freeze mode
    params.push_back(std::make_unique<juce::AudioParameterBool>(
@@ -1492,8 +1492,13 @@ void JCBReverbAudioProcessor::captureInputWaveformData(const juce::AudioBuffer<f
         if (trimCh >= 2)
         {
             const float* tR = trimInputBuffer.getReadPointer(1);
+            const float k = 0.70710678f; // 1/sqrt(2)
             for (int i = 0; i < countIn; ++i)
-                currentInputSamples[i] = 0.5f * (tL[i] + tR[i]);
+            {
+                const float l = tL[i];
+                const float r = tR[i];
+                currentInputSamples[i] = k * std::sqrt(l*l + r*r);
+            }
         }
         else
         {
@@ -1508,8 +1513,13 @@ void JCBReverbAudioProcessor::captureInputWaveformData(const juce::AudioBuffer<f
         {
             const float* inL = inputBuffer.getReadPointer(0);
             const float* inR = inputBuffer.getReadPointer(1);
+            const float k2 = 0.70710678f;
             for (int i = 0; i < countIn; ++i)
-                currentInputSamples[i] = 0.5f * (inL[i] + inR[i]);
+            {
+                const float l = inL[i];
+                const float r = inR[i];
+                currentInputSamples[i] = k2 * std::sqrt(l*l + r*r);
+            }
         }
         else if (chs == 1)
         {
@@ -1533,14 +1543,19 @@ void JCBReverbAudioProcessor::captureOutputWaveformData(const juce::AudioBuffer<
     const int countOut = juce::jmin(numSamples, capOut);
     if (countOut <= 0) return;
 
-    // Copiar salida procesada (promedio de canales principales L/R) desde el buffer real
+    // Copiar salida procesada evitando cancelación M/S: mezclar por energía (RMS por muestra)
     const int chs = outputBuffer.getNumChannels();
     if (chs > 1)
     {
         const float* L = outputBuffer.getReadPointer(0);
         const float* R = outputBuffer.getReadPointer(1);
+        const float k = 0.70710678f; // 1/sqrt(2)
         for (int i = 0; i < countOut; ++i)
-            currentProcessedSamples[i] = 0.5f * (L[i] + R[i]);
+        {
+            const float l = L[i];
+            const float r = R[i];
+            currentProcessedSamples[i] = k * std::sqrt(l*l + r*r);
+        }
     }
     else
     {

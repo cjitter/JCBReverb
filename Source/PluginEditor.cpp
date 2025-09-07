@@ -495,9 +495,9 @@ void JCBReverbAudioProcessorEditor::resized()
     // === VISUALIZACIÓN CENTRAL (SPECTRUM ANALYZER) ===
     // Posicionar componentes de visualización en el centro del plugin
     const int displayX = 260;  // Después de los knobs izquierdos
-    const int displayY = 42;   // Alineado con los medidores
+    const int displayY = 44;   // Alineado con los medidores
     const int displayW = 180;  // Ancho del área central
-    const int displayH = 113;  // Altura similar a los medidores
+    const int displayH = 114;  // Altura similar a los medidores
     
     spectrumAnalyzer.setBounds(getScaledBounds(displayX, displayY, displayW, displayH));
     waveformDisplay.setBounds(getScaledBounds(displayX, displayY, displayW, displayH));
@@ -512,9 +512,9 @@ void JCBReverbAudioProcessorEditor::resized()
     }
 
     // Posición leftKnobs
-    leftKnobs.reflectSlider.setBounds(getScaledBounds(52, 49, 53, 53));
-    leftKnobs.sizeSlider.setBounds(getScaledBounds(100, 49, 53, 53));
-    leftKnobs.dampSlider.setBounds(getScaledBounds(150, 49, 53, 53));
+    leftKnobs.reflectSlider.setBounds(getScaledBounds(52, 47, 53, 53));
+    leftKnobs.sizeSlider.setBounds(getScaledBounds(100, 47, 53, 53));
+    leftKnobs.dampSlider.setBounds(getScaledBounds(150, 47, 53, 53));
 
     leftKnobs.drywetSlider.setBounds(getScaledBounds(73, 102, 53, 53));
     leftKnobs.stSlider.setBounds(getScaledBounds(128, 102, 53, 53));
@@ -658,7 +658,8 @@ void JCBReverbAudioProcessorEditor::timerCallback()
         // Actualizar parámetros de visualización
         if (auto* dryWetParam = processor.apvts.getRawParameterValue("b_DRYWET"))
         {
-            waveformDisplay.setDryWetMix(dryWetParam->load() / 100.0f);  // Convertir de 0-100 a 0-1
+            // APVTS devuelve 0..1 (ya normalizado). No dividir por 100.
+            waveformDisplay.setDryWetMix(dryWetParam->load());
         }
         
         if (auto* sizeParam = processor.apvts.getRawParameterValue("e_SIZE"))
@@ -669,6 +670,18 @@ void JCBReverbAudioProcessorEditor::timerCallback()
         if (auto* reflectParam = processor.apvts.getRawParameterValue("c_REFLECT"))
         {
             waveformDisplay.setReflectAmount(reflectParam->load());  // Ya está en rango 0-1
+        }
+
+        // Indicar FREEZE para resaltar la cola en la visualización
+        if (auto* freezeParam = processor.apvts.getRawParameterValue("g_FREEZE"))
+        {
+            waveformDisplay.setFreeze(freezeParam->load() > 0.5f);
+        }
+
+        // DAMP
+        if (auto* dampParam = processor.apvts.getRawParameterValue("d_DAMP"))
+        {
+            waveformDisplay.setDampAmount(dampParam->load());
         }
     }
 
@@ -1262,7 +1275,7 @@ void JCBReverbAudioProcessorEditor::setupKnobs()
     leftKnobs.drywetSlider.setTextBoxIsEditable(true);
     leftKnobs.drywetSlider.setColour(juce::Slider::textBoxOutlineColourId, juce::Colours::transparentBlack);
     leftKnobs.drywetSlider.setColour(juce::Slider::textBoxTextColourId, juce::Colour(0xFFB1CAF6));  // Azul pálido como output
-    leftKnobs.drywetSlider.setDoubleClickReturnValue(true, 0.33);  // Default: 100% (o_DRYWET = 1.0)
+    leftKnobs.drywetSlider.setDoubleClickReturnValue(true, 0.5);  // Default: 100% (o_DRYWET = 1.0)
     leftKnobs.drywetSlider.setPopupDisplayEnabled(false, false, this);
     leftKnobs.drywetSlider.setRange(0.0, 1.0, 0.01);  // Rango interno 0.0-1.0
     leftKnobs.drywetSlider.textFromValueFunction = [](double value) {
@@ -1326,21 +1339,27 @@ void JCBReverbAudioProcessorEditor::setupKnobs()
 
     leftKnobs.stSlider.setTextBoxIsEditable(true);
     leftKnobs.stSlider.setEnabled(true);
-    leftKnobs.stSlider.setDoubleClickReturnValue(true, 0.5f);
+    leftKnobs.stSlider.setDoubleClickReturnValue(true, 0.45f);
     leftKnobs.stSlider.setPopupDisplayEnabled(false, false, this);
     leftKnobs.stSlider.setRange(0, 0.8,0.5);
-    leftKnobs.stSlider.setSkewFactorFromMidPoint(0.5);
+    //leftKnobs.stSlider.setSkewFactorFromMidPoint(0.5);
     // Funciones de conversión para mostrar porcentajes
-    leftKnobs.stSlider.textFromValueFunction = [](double value) {
-        const double pct = juce::jlimit(0.0, 0.8, (value - 0.f) / (1.0f - 0.f));
-        const int p = juce::roundToInt(pct * 100.0);
-        return juce::String(p) + "%";
+    leftKnobs.stSlider.setTextValueSuffix({}); // sin sufijo; lo añadimos nosotros
+    leftKnobs.stSlider.textFromValueFunction = [](double v)
+    {
+        // v está en 0..0.9 → mostramos 0..100%
+        const auto pct = std::round((v / 0.9) * 100.0);
+        return juce::String((int) pct) + " %";
     };
-    leftKnobs.stSlider.valueFromTextFunction = [](const juce::String& text) {
-        juce::String cleanText = text.trimEnd().upToLastOccurrenceOf("%", false, false);
-        double pct = juce::jlimit(0.0, 100.0, cleanText.getDoubleValue()) / 100.0;
-        return 0.0 + pct * (1.0 - 0.0);
+    leftKnobs.stSlider.valueFromTextFunction = [](const juce::String& text)
+    {
+        // extraer número de "42 %" o "42"
+        double pct = text.retainCharacters("0123456789.-").getDoubleValue();
+        pct = juce::jlimit(0.0, 100.0, pct);
+        return (pct / 100.0) * 0.9; // devolvemos 0..0.9
     };
+
+
     addAndMakeVisible(leftKnobs.stSlider);
     if (auto* param = processor.apvts.getParameter("f_ST"))
     {
@@ -3518,7 +3537,7 @@ void JCBReverbAudioProcessorEditor::toggleDisplayMode()
         // Configurar visualización Waveform
         spectrumAnalyzer.setVisible(false);
         waveformDisplay.setVisible(true);
-        utilityButtons.runGraphicsButton.setButtonText("WAVE");
+        utilityButtons.runGraphicsButton.setButtonText("wave");
         utilityButtons.runGraphicsButton.setColour(juce::TextButton::buttonColourId, 
                                                   DarkTheme::accent.withAlpha(0.3f));  // Color azul para Waveform
         
