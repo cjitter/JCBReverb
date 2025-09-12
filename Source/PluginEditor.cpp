@@ -46,13 +46,15 @@ public:
     void parameterChanged(const juce::String& parameterID, float newValue) override
     {
         juce::ignoreUnused(newValue);
-        if (parameterID == "y_FILTERS")
-        {
-            juce::MessageManager::callAsync([safeEditor = juce::Component::SafePointer(editor)]() {
-                if (safeEditor)
-                    safeEditor->updateSidechainComponentStates();
-            });
-        }
+        juce::MessageManager::callAsync([safeEditor = juce::Component::SafePointer(editor), parameterID]() {
+            if (! safeEditor) return;
+            if (parameterID == "y_FILTERS")
+                safeEditor->updateSidechainComponentStates();
+            else if (parameterID == "q_ONOFFEQ")
+                safeEditor->updateEqComponentStates();
+            else if (parameterID == "r_ONOFFCOMP")
+                safeEditor->updateCompComponentStates();
+        });
     }
 };
 
@@ -84,6 +86,7 @@ JCBReverbAudioProcessorEditor::JCBReverbAudioProcessorEditor (JCBReverbAudioProc
     setupPresetArea();
     setupUtilityButtons();
     setupParameterButtons();
+    setupRightTabs();
 
     // Agregar título y versión - mismo estilo que ExpansorGate
     auto titleFont = juce::Font(juce::FontOptions(22.0f));
@@ -98,9 +101,9 @@ JCBReverbAudioProcessorEditor::JCBReverbAudioProcessorEditor (JCBReverbAudioProc
     // Verificar si el host es Logic Pro
     juce::PluginHostType hostInfo;
     if (hostInfo.isLogic()) {
-        titleText = "v0.9.1";  // Solo versión para Logic Pro
+        titleText = "v1.0.0-alpha.1";  // Solo versión para Logic Pro
     } else {
-        titleText = "JCBReverb v0.9.1";  // Nombre completo para otros DAWs
+        titleText = "JCBReverb v1.0.0-alpha.1";  // Nombre completo para otros DAWs
     }
 
 #if defined(JCB_DEBUG_MUTE_OUTPUT)
@@ -214,6 +217,9 @@ JCBReverbAudioProcessorEditor::JCBReverbAudioProcessorEditor (JCBReverbAudioProc
     // Registrar listener para y_FILTERS (thread-safe para automatización del host)
     sidechainParameterListener = std::make_unique<SidechainParameterListener>(this);
     processor.apvts.addParameterListener("y_FILTERS", sidechainParameterListener.get());
+    // También escuchar los toggles de EQ y COMP para actualizar alfa/enable
+    processor.apvts.addParameterListener("q_ONOFFEQ", sidechainParameterListener.get());
+    processor.apvts.addParameterListener("r_ONOFFCOMP", sidechainParameterListener.get());
     
     // Connect spectrum analyzer callback to processor
     processor.setSpectrumAnalyzerCallback([this](float sample) {
@@ -231,6 +237,41 @@ JCBReverbAudioProcessorEditor::JCBReverbAudioProcessorEditor (JCBReverbAudioProc
     // CRASH FIX: Iniciar timer AL FINAL para evitar acceso prematuro a valores atómicos
     // El timer debe iniciarse después de que todo esté completamente inicializado
     startTimerHz(TIMER_HZ);
+    // Restaurar pestaña activa desde el estado del APVTS y aplicar visibilidad
+    if (processor.apvts.state.hasProperty("ui_right_tab"))
+    {
+        int tab = (int) processor.apvts.state.getProperty("ui_right_tab");
+        currentRightTab = (tab == 1) ? RightPanelTab::COMP : RightPanelTab::EQ;
+    }
+    updateRightPanelVisibility();
+
+    // Restaurar modo de display (FFT / Waveform) desde processor.displayModeIsFFT
+    if (! processor.displayModeIsFFT)
+    {
+        // Modo Waveform activo
+        currentDisplayMode = DisplayMode::Waveform;
+        spectrumAnalyzer.setVisible(false);
+        waveformDisplay.setVisible(true);
+        utilityButtons.runGraphicsButton.setButtonText("wave");
+        utilityButtons.runGraphicsButton.setColour(juce::TextButton::buttonColourId,
+                                                  DarkTheme::accent.withAlpha(0.3f));
+        utilityButtons.zoomButton.setAlpha(1.0f);
+        utilityButtons.zoomButton.setEnabled(true);
+        utilityButtons.zoomButton.setButtonText(waveformDisplay.getZoomEnabled() ? "zoom x2" : "zoom");
+    }
+    else
+    {
+        // Modo FFT activo
+        currentDisplayMode = DisplayMode::FFT;
+        spectrumAnalyzer.setVisible(true);
+        waveformDisplay.setVisible(false);
+        utilityButtons.runGraphicsButton.setButtonText("FFT");
+        utilityButtons.runGraphicsButton.setColour(juce::TextButton::buttonColourId,
+                                                  juce::Colours::transparentBlack);
+        utilityButtons.zoomButton.setAlpha(1.0f);
+        utilityButtons.zoomButton.setEnabled(true);
+        utilityButtons.zoomButton.setButtonText(spectrumAnalyzer.getZoomEnabled() ? "zoom x2" : "zoom");
+    }
 }
 
 //==============================================================================
@@ -414,8 +455,11 @@ JCBReverbAudioProcessorEditor::~JCBReverbAudioProcessorEditor()
     stopTimer();
     
     // Desregistrar listeners de parámetros antes de destruir
-    if (sidechainParameterListener)
+    if (sidechainParameterListener) {
         processor.apvts.removeParameterListener("y_FILTERS", sidechainParameterListener.get());
+        processor.apvts.removeParameterListener("q_ONOFFEQ", sidechainParameterListener.get());
+        processor.apvts.removeParameterListener("r_ONOFFCOMP", sidechainParameterListener.get());
+    }
 
     sidechainControls.hpfSlider.setLookAndFeel(nullptr);
     sidechainControls.lpfSlider.setLookAndFeel(nullptr);
@@ -427,6 +471,23 @@ JCBReverbAudioProcessorEditor::~JCBReverbAudioProcessorEditor()
     leftKnobs.drywetSlider.setLookAndFeel(nullptr);
     leftKnobs.stSlider.setLookAndFeel(nullptr);
     leftKnobs.freezeButton.setLookAndFeel(nullptr);
+
+    // Reset LAF for newly added right-side controls
+    eqControls.lsfSlider.setLookAndFeel(nullptr);
+    eqControls.pfSlider.setLookAndFeel(nullptr);
+    eqControls.hsfSlider.setLookAndFeel(nullptr);
+    eqControls.lsgSlider.setLookAndFeel(nullptr);
+    eqControls.pgSlider.setLookAndFeel(nullptr);
+    eqControls.hsgSlider.setLookAndFeel(nullptr);
+    eqControls.eqOnButton.setLookAndFeel(nullptr);
+
+    compControls.thdSlider.setLookAndFeel(nullptr);
+    compControls.ratioSlider.setLookAndFeel(nullptr);
+    compControls.atkSlider.setLookAndFeel(nullptr);
+    compControls.relSlider.setLookAndFeel(nullptr);
+    compControls.gainSlider.setLookAndFeel(nullptr);
+    compControls.compOnButton.setLookAndFeel(nullptr);
+    compControls.pumpButton.setLookAndFeel(nullptr);
 
     // Limpiar LookAndFeel del editor principal
     setLookAndFeel(nullptr);
@@ -508,17 +569,44 @@ void JCBReverbAudioProcessorEditor::resized()
     {
         const int buttonWidth = 50;
         const int centerX = 355;
-        sidechainControls.scButton.setBounds(getScaledBounds(centerX - buttonWidth/2, 14, buttonWidth, 17));
+        sidechainControls.scButton.setBounds(getScaledBounds(centerX - buttonWidth/2, 14, buttonWidth, 15));
     }
 
     // Posición leftKnobs
-    leftKnobs.reflectSlider.setBounds(getScaledBounds(52, 47, 53, 53));
-    leftKnobs.sizeSlider.setBounds(getScaledBounds(100, 47, 53, 53));
-    leftKnobs.dampSlider.setBounds(getScaledBounds(150, 47, 53, 53));
+    leftKnobs.reflectSlider.setBounds(getScaledBounds(44, 47, 53, 53));
+    leftKnobs.sizeSlider.setBounds(getScaledBounds(92, 47, 53, 53));
+    leftKnobs.dampSlider.setBounds(getScaledBounds(142, 47, 53, 53));
 
-    leftKnobs.drywetSlider.setBounds(getScaledBounds(73, 102, 53, 53));
-    leftKnobs.stSlider.setBounds(getScaledBounds(128, 102, 53, 53));
-    leftKnobs.freezeButton.setBounds(getScaledBounds(185, 115, 55, 20));
+    leftKnobs.drywetSlider.setBounds(getScaledBounds(65, 102, 53, 53));
+    leftKnobs.stSlider.setBounds(getScaledBounds(120, 102, 53, 53));
+    leftKnobs.freezeButton.setBounds(getScaledBounds(200, 93, 55, 16));
+
+    // === Right tabs (EQ / COMP) ===
+    rightTabs.eqTab.setBounds(getScaledBounds(453, 80, 25, 16));
+    rightTabs.compTab.setBounds(getScaledBounds(451, 103, 30, 16));
+
+    // === EQ (two rows on right): top = gains, bottom = freqs ===
+    // Place activation button just inside right panel, left of the 3 columns
+    eqControls.eqOnButton.setBounds(getScaledBounds(485, 95, 35, 12));
+    // Top row: Gains (LSG, PG, HSG)
+    eqControls.lsgSlider.setBounds(getScaledBounds(510, 48, 50, 50));
+    eqControls.pgSlider.setBounds (getScaledBounds(560, 48, 50, 50));
+    eqControls.hsgSlider.setBounds(getScaledBounds(610, 48, 50, 50));
+    // Bottom row: Freqs (LSF, PF, HSF)
+    eqControls.lsfSlider.setBounds(getScaledBounds(510, 102, 50, 50));
+    eqControls.pfSlider.setBounds (getScaledBounds(560, 102, 50, 50));
+    eqControls.hsfSlider.setBounds(getScaledBounds(610, 102, 50, 50));
+
+    // === COMP layer (same area; toggled by tab) ===
+    compControls.compOnButton.setBounds(getScaledBounds(485, 95, 35, 12));
+    compControls.pumpButton.setBounds (getScaledBounds(615, 115, 40, 15));
+    // Top row: THD, RATIO, GAIN
+    compControls.thdSlider.setBounds  (getScaledBounds(510, 48, 50, 50));
+    compControls.ratioSlider.setBounds(getScaledBounds(560, 48, 50, 50));
+    compControls.gainSlider.setBounds (getScaledBounds(610, 48, 50, 50));
+    // Bottom row: ATK, REL
+    compControls.atkSlider.setBounds  (getScaledBounds(510, 102, 50, 50));
+    compControls.relSlider.setBounds  (getScaledBounds(560, 102, 50, 50));
 
     // Posicionar debug label en esquina inferior derecha - ELIMINAR SI NO SE USA
     // const int dbgW = 220;
@@ -539,16 +627,14 @@ void JCBReverbAudioProcessorEditor::resized()
     leftBottomKnobs.tonePosButton.setBounds(getScaledBounds(136, 138, 20, 10));
     leftBottomKnobs.toneFreqSlider.setBounds(getScaledBounds(146, 102, 53, 53));
     leftBottomKnobs.toneQSlider.setBounds(getScaledBounds(193, 102, 53, 53));
-    rightTopControls.tiltOnButton.setBounds(getScaledBounds(53, 118, 25, 15));
-    rightTopControls.tiltPosButton.setBounds(getScaledBounds(63, 138, 20, 10));
-    rightBottomKnobs.distOnButton.setBounds(getScaledBounds(33, 68, 25, 20));
-    rightBottomKnobs.driveSlider.setBounds(getScaledBounds(100, 49, 53, 53));
-    leftKnobs.ceilingSlider.setBounds(getScaledBounds(193, 49, 53, 53));
-    rightTopControls.bitsSlider.setBounds(getScaledBounds(475, 51, 53, 53));
-    rightBottomKnobs.bitButton.setBounds(getScaledBounds(525, 73, 57, 15));
-    rightTopControls.downsampleSlider.setBounds(getScaledBounds(530, 102, 53, 53));
-    rightTopControls.downsampleButton.setBounds(getScaledBounds(580, 118, 57, 15));
-    rightTopControls.safeLimitButton.setBounds(getScaledBounds(678, 30, 20, 10));
+    // === COMP (bottom-right) ===
+    compControls.compOnButton.setBounds(getScaledBounds(390, 118, 35, 15));
+    compControls.thdSlider.setBounds(getScaledBounds(440, 102, 39, 39));
+    compControls.ratioSlider.setBounds(getScaledBounds(481, 102, 39, 39));
+    compControls.atkSlider.setBounds(getScaledBounds(522, 102, 39, 39));
+    compControls.relSlider.setBounds(getScaledBounds(563, 102, 39, 39));
+    compControls.gainSlider.setBounds(getScaledBounds(604, 102, 39, 39));
+    compControls.pumpButton.setBounds(getScaledBounds(390, 150, 44, 12));
     */
 
     // === PRESET AREA (TOP LEFT) ===
@@ -799,6 +885,35 @@ void JCBReverbAudioProcessorEditor::buttonClicked(juce::Button* button)
     {
         // Actualizar estado visual de sliders HPF/LPF inmediatamente para clicks manuales
         updateSidechainComponentStates();
+    }
+    else if (button == &rightTabs.eqTab)
+    {
+        currentRightTab = RightPanelTab::EQ;
+        updateRightPanelVisibility();
+        processor.apvts.state.setProperty("ui_right_tab", 0, nullptr);
+    }
+    else if (button == &rightTabs.compTab)
+    {
+        currentRightTab = RightPanelTab::COMP;
+        updateRightPanelVisibility();
+        processor.apvts.state.setProperty("ui_right_tab", 1, nullptr);
+    }
+    else if (button == &eqControls.eqOnButton)
+    {
+        updateEqComponentStates();
+    }
+    else if (button == &compControls.compOnButton)
+    {
+        updateCompComponentStates();
+    }
+    else if (button == &compControls.pumpButton)
+    {
+        // Sincronizar explícitamente el parámetro x_PUMP con el estado del botón
+        if (auto* pumpParam = processor.apvts.getParameter("x_PUMP"))
+        {
+            if (auto* boolParam = dynamic_cast<juce::AudioParameterBool*>(pumpParam))
+                boolParam->setValueNotifyingHost(compControls.pumpButton.getToggleState() ? 1.0f : 0.0f);
+        }
     }
     else if (button == &leftKnobs.freezeButton)
     {
@@ -1225,14 +1340,14 @@ void JCBReverbAudioProcessorEditor::setupKnobs()
     leftKnobs.reflectSlider.setColour(juce::Slider::textBoxTextColourId, juce::Colour(0xFFFFFFFF));
     leftKnobs.reflectSlider.setRange(0.1, 1.0, 0.01);
     leftKnobs.reflectSlider.setSkewFactorFromMidPoint(0.77);  // 0.77 aparece en la mitad del knob
-    leftKnobs.reflectSlider.setDoubleClickReturnValue(true, 0.77);
+    leftKnobs.reflectSlider.setDoubleClickReturnValue(true, 0.766); // 74 % visual
     leftKnobs.reflectSlider.setPopupDisplayEnabled(false, false, this);
     leftKnobs.reflectSlider.setTextBoxIsEditable(true);
     leftKnobs.reflectSlider.setNumDecimalPlacesToDisplay(0);
     leftKnobs.reflectSlider.textFromValueFunction = [](double value) {
         const double pct = juce::jlimit(0.0, 1.0, (value - 0.1) / (1.0 - 0.1));
         const int p = juce::roundToInt(pct * 100.0);
-        return juce::String(p) + "%";
+        return juce::String(p) + " %";
     };
     leftKnobs.reflectSlider.valueFromTextFunction = [](const juce::String& text) {
         auto t = text.trim();
@@ -1254,7 +1369,7 @@ void JCBReverbAudioProcessorEditor::setupKnobs()
     leftKnobs.sizeSlider.setTextBoxStyle(juce::Slider::TextBoxAbove, false, 70, 16);
     leftKnobs.sizeSlider.setLookAndFeel(&sliderLAFBig);
     leftKnobs.sizeSlider.setColour(juce::Slider::textBoxOutlineColourId, juce::Colours::transparentBlack);
-    leftKnobs.sizeSlider.setColour(juce::Slider::textBoxTextColourId, juce::Colour(0xFFFFFFFF));    leftKnobs.sizeSlider.setDoubleClickReturnValue(true, 1.0);  // Valor por defecto 1.0
+    leftKnobs.sizeSlider.setColour(juce::Slider::textBoxTextColourId, juce::Colour(0xFFFFFFFF));    leftKnobs.sizeSlider.setDoubleClickReturnValue(true, 1.5);  // Valor por defecto 1.5
     leftKnobs.sizeSlider.setPopupDisplayEnabled(false, false, this);
     leftKnobs.sizeSlider.setTextBoxIsEditable(true);
     leftKnobs.sizeSlider.setNumDecimalPlacesToDisplay(1);
@@ -1313,7 +1428,7 @@ void JCBReverbAudioProcessorEditor::setupKnobs()
     leftKnobs.dampSlider.textFromValueFunction = [](double value) {
         const double pct = juce::jlimit(0.0, 1.0, (value - 0.1) / (0.95 - 0.1));
         const int p = juce::roundToInt(pct * 100.0);
-        return juce::String(p) + "%";
+        return juce::String(p) + " %";
     };
     leftKnobs.dampSlider.valueFromTextFunction = [](const juce::String& text) {
         juce::String cleanText = text.trimEnd().upToLastOccurrenceOf("%", false, false);
@@ -1373,13 +1488,256 @@ void JCBReverbAudioProcessorEditor::setupKnobs()
     leftKnobs.freezeButton.setColour(juce::TextButton::buttonColourId, juce::Colours::transparentBlack);
     leftKnobs.freezeButton.setColour(juce::TextButton::buttonOnColourId, juce::Colours::transparentBlack);
     leftKnobs.freezeButton.setColour(juce::TextButton::textColourOffId, DarkTheme::textSecondary.withAlpha(0.7f));
-    leftKnobs.freezeButton.setColour(juce::TextButton::textColourOnId, DarkTheme::textPrimary);
+    // Cuando FREEZE está activo, colorear el texto en #36C0A6
+    leftKnobs.freezeButton.setColour(juce::TextButton::textColourOnId, juce::Colour(0xFF36C0A6));
     leftKnobs.freezeButton.addListener(this);
     addAndMakeVisible(leftKnobs.freezeButton);
     leftKnobs.freezeAttachment = std::make_unique<UndoableButtonAttachment>(
         *processor.apvts.getParameter("g_FREEZE"), leftKnobs.freezeButton, &undoManager);
     leftKnobs.freezeAttachment->onParameterChange = [this]() { handleParameterChange(); };
 
+    // === EQ CONTROLS (top-right) ===
+    // EQ ON button (q_ONOFFEQ)
+    eqControls.eqOnButton.setClickingTogglesState(true);
+    eqControls.eqOnButton.setLookAndFeel(&smallButtonLAF);
+    eqControls.eqOnButton.setColour(juce::TextButton::buttonColourId, juce::Colours::transparentBlack);
+    eqControls.eqOnButton.setColour(juce::TextButton::buttonOnColourId, juce::Colours::transparentBlack);
+    // Texto del activador EQ: ON morado claro; OFF blanco pálido más tenue
+    eqControls.eqOnButton.setColour(juce::TextButton::textColourOffId, DarkTheme::textSecondary.withAlpha(0.5f));
+    eqControls.eqOnButton.setColour(juce::TextButton::textColourOnId,  juce::Colour(0xFF7F78A2));
+    eqControls.eqOnButton.addListener(this);
+    addAndMakeVisible(eqControls.eqOnButton);
+    if (auto* paramEQ = processor.apvts.getParameter("q_ONOFFEQ"))
+    {
+        eqControls.eqOnAttachment = std::make_unique<UndoableButtonAttachment>(*paramEQ, eqControls.eqOnButton, &undoManager);
+        eqControls.eqOnAttachment->onParameterChange = [this]() { handleParameterChange(); };
+    }
+    // Asegurar que el botón quede por encima de la malla FFT para clics
+    eqControls.eqOnButton.toFront(true);
+
+    auto setupHzSlider = [this](CustomSlider& s, const char* paramID, double dblClick, std::unique_ptr<CustomSliderAttachment>& outAtt) {
+        s.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
+        s.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 60, 16);
+        s.setLookAndFeel(&sliderLAFBig);
+        s.setColour(juce::Slider::textBoxOutlineColourId, juce::Colours::transparentBlack);
+        s.setColour(juce::Slider::textBoxTextColourId, juce::Colour(0xFFFFFFFF));
+        s.setDoubleClickReturnValue(true, dblClick);
+        s.setPopupDisplayEnabled(false, false, this);
+        s.setNumDecimalPlacesToDisplay(0);
+        s.textFromValueFunction = [](double value) {
+            if (value < 1000.0) return juce::String(static_cast<int>(value));
+            return juce::String(value / 1000.0, 1) + "k";
+        };
+        s.setTextValueSuffix(" Hz");
+        addAndMakeVisible(s);
+        if (auto* param = processor.apvts.getParameter(paramID))
+        {
+            outAtt = std::make_unique<CustomSliderAttachment>(*param, s, &undoManager);
+            outAtt->onParameterChange = [this]() { handleParameterChange(); };
+        }
+    };
+
+    auto setupDbSlider = [this](CustomSlider& s, const char* paramID, double dblClick, std::unique_ptr<CustomSliderAttachment>& outAtt) {
+        s.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
+        s.setTextBoxStyle(juce::Slider::TextBoxAbove, false, 60, 16);
+        s.setLookAndFeel(&sliderLAFBig);
+        s.setColour(juce::Slider::textBoxOutlineColourId, juce::Colours::transparentBlack);
+        s.setColour(juce::Slider::textBoxTextColourId, juce::Colour(0xFFFFFFFF));
+        s.setDoubleClickReturnValue(true, dblClick);
+        s.setPopupDisplayEnabled(false, false, this);
+        s.setNumDecimalPlacesToDisplay(0);
+        s.setTextValueSuffix(" dB");
+        addAndMakeVisible(s);
+        if (auto* param = processor.apvts.getParameter(paramID))
+        {
+            outAtt = std::make_unique<CustomSliderAttachment>(*param, s, &undoManager);
+            outAtt->onParameterChange = [this]() { handleParameterChange(); };
+        }
+    };
+
+    // EQ frequencies
+    setupHzSlider(eqControls.lsfSlider, "n_LOWFREQ", 250.0, eqControls.lsfAttachment);
+    setupHzSlider(eqControls.pfSlider,  "o_PEAKFREQ", 1500.0, eqControls.pfAttachment);
+    setupHzSlider(eqControls.hsfSlider, "p_HIFREQ",  8600.0, eqControls.hsfAttachment);
+    // Colorear cajas de texto de EQ en #7F78A2 (más claro)
+    eqControls.lsfSlider.setColour(juce::Slider::textBoxTextColourId, juce::Colour(0xFF7F78A2));
+    eqControls.pfSlider .setColour(juce::Slider::textBoxTextColourId, juce::Colour(0xFF7F78A2));
+    eqControls.hsfSlider.setColour(juce::Slider::textBoxTextColourId, juce::Colour(0xFF7F78A2));
+    // EQ gains
+    setupDbSlider(eqControls.lsgSlider, "h_LOWGAIN", 0.0, eqControls.lsgAttachment);
+    setupDbSlider(eqControls.pgSlider,  "i_PEAKGAIN", 0.0, eqControls.pgAttachment);
+    setupDbSlider(eqControls.hsgSlider, "j_HIGAIN", 0.0, eqControls.hsgAttachment);
+    // Colorear cajas de texto de gains EQ en #7F78A2
+    eqControls.lsgSlider.setColour(juce::Slider::textBoxTextColourId, juce::Colour(0xFF7F78A2));
+    eqControls.pgSlider .setColour(juce::Slider::textBoxTextColourId, juce::Colour(0xFF7F78A2));
+    eqControls.hsgSlider.setColour(juce::Slider::textBoxTextColourId, juce::Colour(0xFF7F78A2));
+    // Ensanchar la caja de texto para que quepa "+12.34 dB" sin constricción
+    eqControls.lsgSlider.setTextBoxStyle(juce::Slider::TextBoxAbove, false, 64, 16);
+    eqControls.pgSlider.setTextBoxStyle (juce::Slider::TextBoxAbove, false, 64, 16);
+    eqControls.hsgSlider.setTextBoxStyle(juce::Slider::TextBoxAbove, false, 64, 16);
+    // Mostrar signo + en ganancias positivas de EQ
+    // Mostrar con 2 decimales; evitar "-0.00" usando umbral de cero
+    auto plusDb2 = [](double v) {
+        const double eps = 0.005; // ~0.5 centésimas
+        double vv = (std::abs(v) < eps) ? 0.0 : v;
+        if (vv == 0.0)
+            return juce::String("0.00");
+        return juce::String::formatted("%+0.2f", vv);
+    };
+    // Asegurar sufijo visible desde el inicio
+    eqControls.lsgSlider.setTextValueSuffix(" dB");
+    eqControls.pgSlider.setTextValueSuffix(" dB");
+    eqControls.hsgSlider.setTextValueSuffix(" dB");
+    eqControls.lsgSlider.setNumDecimalPlacesToDisplay(2);
+    eqControls.pgSlider.setNumDecimalPlacesToDisplay(2);
+    eqControls.hsgSlider.setNumDecimalPlacesToDisplay(2);
+    eqControls.lsgSlider.textFromValueFunction = plusDb2;
+    eqControls.pgSlider.textFromValueFunction  = plusDb2;
+    eqControls.hsgSlider.textFromValueFunction = plusDb2;
+    // Forzar refresco del texto inicial para mostrar "dB" desde el principio
+    eqControls.lsgSlider.setValue(eqControls.lsgSlider.getValue(), juce::dontSendNotification);
+    eqControls.pgSlider.setValue (eqControls.pgSlider.getValue(),  juce::dontSendNotification);
+    eqControls.hsgSlider.setValue(eqControls.hsgSlider.getValue(), juce::dontSendNotification);
+
+    // === COMP CONTROLS (bottom-right) ===
+    // COMP ON button (r_ONOFFCOMP)
+    compControls.compOnButton.setClickingTogglesState(true);
+    compControls.compOnButton.setLookAndFeel(&smallButtonLAF);
+    compControls.compOnButton.setColour(juce::TextButton::buttonColourId, juce::Colours::transparentBlack);
+    compControls.compOnButton.setColour(juce::TextButton::buttonOnColourId, juce::Colours::transparentBlack);
+    // Texto del activador COMP: ON amarillo suave; OFF blanco pálido más tenue
+    compControls.compOnButton.setColour(juce::TextButton::textColourOffId, DarkTheme::textSecondary.withAlpha(0.5f));
+    compControls.compOnButton.setColour(juce::TextButton::textColourOnId,  juce::Colour(0xFFDCCF6E));
+    compControls.compOnButton.addListener(this);
+    addAndMakeVisible(compControls.compOnButton);
+    if (auto* paramC = processor.apvts.getParameter("r_ONOFFCOMP"))
+    {
+        compControls.compOnAttachment = std::make_unique<UndoableButtonAttachment>(*paramC, compControls.compOnButton, &undoManager);
+        compControls.compOnAttachment->onParameterChange = [this]() { handleParameterChange(); };
+    }
+
+    // THD (dB)
+    setupDbSlider(compControls.thdSlider, "s_THD", -18.0, compControls.thdAttachment);
+
+    // RATIO (t_RATIO)
+    compControls.ratioSlider.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
+    compControls.ratioSlider.setTextBoxStyle(juce::Slider::TextBoxAbove, false, 60, 16);
+    compControls.ratioSlider.setLookAndFeel(&sliderLAFBig);
+    compControls.ratioSlider.setColour(juce::Slider::textBoxOutlineColourId, juce::Colours::transparentBlack);
+    compControls.ratioSlider.setColour(juce::Slider::textBoxTextColourId, juce::Colour(0xFFDCCF6E));
+    compControls.ratioSlider.setDoubleClickReturnValue(true, 4.0);
+    compControls.ratioSlider.setPopupDisplayEnabled(false, false, this);
+    compControls.ratioSlider.setNumDecimalPlacesToDisplay(1);
+    compControls.ratioSlider.textFromValueFunction = [](double v) { return juce::String(v, v < 10.0 ? 1 : 0) + ":1"; };
+    addAndMakeVisible(compControls.ratioSlider);
+    if (auto* paramR = processor.apvts.getParameter("t_RATIO"))
+    {
+        compControls.ratioAttachment = std::make_unique<CustomSliderAttachment>(*paramR, compControls.ratioSlider, &undoManager);
+        compControls.ratioAttachment->onParameterChange = [this]() { handleParameterChange(); };
+    }
+
+    // ATK, REL (ms)
+    auto setupMsSlider = [this](CustomSlider& s, const char* paramID, double dblClick, std::unique_ptr<CustomSliderAttachment>& outAtt) {
+        s.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
+        s.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 60, 16);
+        s.setLookAndFeel(&sliderLAFBig);
+        s.setColour(juce::Slider::textBoxOutlineColourId, juce::Colours::transparentBlack);
+        s.setColour(juce::Slider::textBoxTextColourId, juce::Colour(0xFFFFFFFF));
+        s.setDoubleClickReturnValue(true, dblClick);
+        s.setPopupDisplayEnabled(false, false, this);
+        s.setNumDecimalPlacesToDisplay(0);
+        s.setTextValueSuffix(" ms");
+    addAndMakeVisible(s);
+        if (auto* param = processor.apvts.getParameter(paramID))
+        {
+            outAtt = std::make_unique<CustomSliderAttachment>(*param, s, &undoManager);
+            outAtt->onParameterChange = [this]() { handleParameterChange(); };
+        }
+    };
+    setupMsSlider(compControls.atkSlider, "u_ATK", 110.0,   compControls.atkAttachment);
+    setupMsSlider(compControls.relSlider, "v_REL", 750.0, compControls.relAttachment);
+    // Ajustar skews/decimales: ATK centro 110 ms; REL centro 250 ms; ambos 1 decimal
+    compControls.atkSlider.setSkewFactorFromMidPoint(110.0);
+    compControls.atkSlider.setNumDecimalPlacesToDisplay(1);
+    compControls.relSlider.setSkewFactorFromMidPoint(250.0);
+    compControls.relSlider.setNumDecimalPlacesToDisplay(1);
+    // Colorear cajas de texto de COMP en amarillo suave
+    compControls.thdSlider  .setColour(juce::Slider::textBoxTextColourId, juce::Colour(0xFFDCCF6E));
+    compControls.atkSlider  .setColour(juce::Slider::textBoxTextColourId, juce::Colour(0xFFDCCF6E));
+    compControls.relSlider  .setColour(juce::Slider::textBoxTextColourId, juce::Colour(0xFFDCCF6E));
+    compControls.gainSlider .setColour(juce::Slider::textBoxTextColourId, juce::Colour(0xFFDCCF6E));
+
+    // GAIN (dB) — 2 decimales, sin sufijo duplicado
+    setupDbSlider(compControls.gainSlider, "w_MAKEUP", 0.0, compControls.gainAttachment);
+    // Ensanchar caja de texto
+    compControls.gainSlider.setTextBoxStyle(juce::Slider::TextBoxAbove, false, 64, 16);
+    // Asegurar sufijo visible desde el inicio
+    compControls.gainSlider.setTextValueSuffix(" dB");
+    compControls.gainSlider.setNumDecimalPlacesToDisplay(2);
+    compControls.gainSlider.textFromValueFunction = [](double v) {
+        const double eps = 0.005;
+        double vv = (std::abs(v) < eps) ? 0.0 : v;
+        if (vv == 0.0)
+            return juce::String("0.00");
+        return juce::String::formatted("%+0.2f", vv);
+    };
+    // Refrescar texto inicial
+    compControls.gainSlider.setValue(compControls.gainSlider.getValue(), juce::dontSendNotification);
+    // Asegurar color de texto amarillo (puede ser sobrescrito por setupDbSlider)
+    compControls.gainSlider.setColour(juce::Slider::textBoxTextColourId, juce::Colour(0xFFDCCF6E));
+
+    // PUMP toggle (x_PUMP)
+    compControls.pumpButton.setClickingTogglesState(true);
+    compControls.pumpButton.setLookAndFeel(&smallButtonLAF);
+    // Asegurar captura de clicks (por si algún overlay interfiere)
+    compControls.pumpButton.setInterceptsMouseClicks(true, true);
+    compControls.pumpButton.setColour(juce::TextButton::buttonColourId, juce::Colours::transparentBlack);
+    compControls.pumpButton.setColour(juce::TextButton::buttonOnColourId, juce::Colours::transparentBlack);
+    // Estado visual del PUMP: OFF más pálido, ON amarillo
+    compControls.pumpButton.setColour(juce::TextButton::textColourOffId, DarkTheme::textSecondary.withAlpha(0.5f));
+    compControls.pumpButton.setColour(juce::TextButton::textColourOnId,  juce::Colour(0xFFDCCF6E));
+    compControls.pumpButton.addListener(this);
+    addAndMakeVisible(compControls.pumpButton);
+    if (auto* paramPump = processor.apvts.getParameter("x_PUMP"))
+    {
+        compControls.pumpAttachment = std::make_unique<UndoableButtonAttachment>(*paramPump, compControls.pumpButton, &undoManager);
+        compControls.pumpAttachment->onParameterChange = [this]() { handleParameterChange(); };
+        // Refrescar texto/estado visual si cambia por automation/preset
+        compControls.pumpAttachment->onStateChange = [this](bool isOn) {
+            juce::ignoreUnused(isOn);
+            // El color del texto ya depende del toggle y está configurado; no se requiere más
+        };
+    }
+
+    // Asegurar estados iniciales coherentes (habilitación de PUMP según COMP)
+    updateCompComponentStates();
+}
+
+void JCBReverbAudioProcessorEditor::setupRightTabs()
+{
+    // Pestañas de capa derecha: EQ y COMP
+    rightTabs.eqTab.setClickingTogglesState(true);
+    rightTabs.eqTab.setLookAndFeel(&tabButtonLAF);
+    rightTabs.eqTab.setToggleState(true, juce::dontSendNotification); // EQ activo por defecto
+    // Fondo transparente para tabs; color solo en texto
+    rightTabs.eqTab.setColour(juce::TextButton::buttonColourId, juce::Colours::transparentBlack);
+    rightTabs.eqTab.setColour(juce::TextButton::buttonOnColourId, juce::Colours::transparentBlack);
+    // Texto: activo morado vibrante (#8F86D0), inactivo más pálido (alfa 0.5)
+    rightTabs.eqTab.setColour(juce::TextButton::textColourOffId, DarkTheme::textSecondary.withAlpha(0.5f));
+    rightTabs.eqTab.setColour(juce::TextButton::textColourOnId, juce::Colour(0xFF8F86D0));
+    rightTabs.eqTab.addListener(this);
+    addAndMakeVisible(rightTabs.eqTab);
+
+    rightTabs.compTab.setClickingTogglesState(true);
+    rightTabs.compTab.setLookAndFeel(&tabButtonLAF);
+    rightTabs.compTab.setToggleState(false, juce::dontSendNotification);
+    rightTabs.compTab.setColour(juce::TextButton::buttonColourId, juce::Colours::transparentBlack);
+    rightTabs.compTab.setColour(juce::TextButton::buttonOnColourId, juce::Colours::transparentBlack);
+    // Texto: activo amarillo, inactivo más pálido (alfa 0.5)
+    rightTabs.compTab.setColour(juce::TextButton::textColourOffId, DarkTheme::textSecondary.withAlpha(0.5f));
+    rightTabs.compTab.setColour(juce::TextButton::textColourOnId, juce::Colour(0xFFDCCF6E));
+    rightTabs.compTab.addListener(this);
+    addAndMakeVisible(rightTabs.compTab);
 }
 
 void JCBReverbAudioProcessorEditor::setupMeters()
@@ -1507,6 +1865,24 @@ void JCBReverbAudioProcessorEditor::setupPresetArea()
 
             // Deshabilitar undo durante la carga de preset
             isLoadingPreset = true;
+
+            // 1) Resetear TODOS los parámetros del APVTS a sus valores por defecto
+            {
+                auto& params = processor.getParameters();
+                for (auto* p : params)
+                {
+                    if (auto* withID = dynamic_cast<juce::AudioProcessorParameterWithID*>(p))
+                    {
+                        if (auto* ranged = processor.apvts.getParameter(withID->paramID))
+                        {
+                            float def = ranged->getDefaultValue(); // normalizado 0..1
+                            ranged->beginChangeGesture();
+                            ranged->setValueNotifyingHost(def);
+                            ranged->endChangeGesture();
+                        }
+                    }
+                }
+            }
 
             // Establecer todos los parámetros a sus valores por defecto usando gesture mechanism
             // Esto replica el mismo mecanismo usado por CustomSliderAttachment (doble-click)
@@ -1640,24 +2016,8 @@ void JCBReverbAudioProcessorEditor::setupPresetArea()
             }
             */
 
-            // Restaurar FFT/CURVES a su estado por defecto (FFT)
-            // currentDisplayMode = DisplayMode::FFT; // COMENTADO: DisplayMode eliminado
-            utilityButtons.runGraphicsButton.setButtonText("FFT");
-    // distortionCurveDisplay.setVisible(false);
-    // spectrumAnalyzer.setVisible(true);
-            // Actualizar color del botón para modo FFT
-            utilityButtons.runGraphicsButton.setColour(juce::TextButton::buttonColourId,
-                                                      juce::Colours::transparentBlack);  // FFT: transparente
-            // Habilitar zoom button en modo FFT
-            utilityButtons.zoomButton.setAlpha(1.0f);
-            utilityButtons.zoomButton.setEnabled(true);
-
-            // Establecer modo FFT para preset DEFAULT
-            // currentDisplayMode = DisplayMode::FFT; // COMENTADO: DisplayMode eliminado
-            processor.displayModeIsFFT = true;
-            utilityButtons.runGraphicsButton.setButtonText("FFT");
-    // distortionCurveDisplay.setVisible(false);
-    // spectrumAnalyzer.setVisible(true);
+            // DEFAULT: activar vista Wave
+            applyDisplayMode(false);
 
             // Reactivar undo después carga de preset
             isLoadingPreset = false;
@@ -1681,7 +2041,7 @@ void JCBReverbAudioProcessorEditor::setupPresetArea()
                 }
             }
         }
-        else if (presetName.startsWith("Bass_") || presetName.startsWith("Drums_") ||
+        else if (presetName.startsWith("Rooms_") || presetName.startsWith("Bass_") || presetName.startsWith("Drums_") ||
                  presetName.startsWith("Guitars_") || presetName.startsWith("Voces_") ||
                  presetName.startsWith("Fx_") || presetName.startsWith("Synth_") ||
                  presetName.startsWith("General_")) {
@@ -1705,19 +2065,11 @@ void JCBReverbAudioProcessorEditor::setupPresetArea()
                             auto stateTree = juce::ValueTree::fromXml(*xmlState);
                             processor.apvts.replaceState(stateTree);
 
-                            // Restaurar estado del modo de visualización FFT/CURVES si está presente
+                            // Restaurar estado del modo de visualización FFT/WAVE si está presente
                             auto uiSettings = stateTree.getChildWithName("UISettings");
                             if (uiSettings.isValid()) {
                                 bool isFFT = uiSettings.getProperty("displayModeIsFFT", false);
-                                // currentDisplayMode = DisplayMode::FFT; // COMENTADO: DisplayMode eliminado // Solo FFT para reverb
-                                // Actualizar botón graphics
-                                utilityButtons.runGraphicsButton.setButtonText(isFFT ? "FFT" : "curves");
-                                // Actualizar color del botón
-                                utilityButtons.runGraphicsButton.setColour(juce::TextButton::buttonColourId,
-                                                                          isFFT ? juce::Colours::transparentBlack : DarkTheme::accent.withAlpha(0.3f));
-                                // Actualizar visibilidad de componentes
-    // distortionCurveDisplay.setVisible(!isFFT);
-    // spectrumAnalyzer.setVisible(isFFT);
+                                applyDisplayMode(isFFT);
                             }
 
                             // SIEMPRE salir de bypass al cargar factory preset
@@ -1740,19 +2092,11 @@ void JCBReverbAudioProcessorEditor::setupPresetArea()
                     auto stateTree = juce::ValueTree::fromXml(*xmlState);
                     processor.apvts.replaceState(stateTree);
 
-                    // Restaurar estado del modo de visualización FFT/CURVES si está presente
+                    // Restaurar estado del modo de visualización FFT/WAVE si está presente
                     auto uiSettings = stateTree.getChildWithName("UISettings");
                     if (uiSettings.isValid()) {
                         bool isFFT = uiSettings.getProperty("displayModeIsFFT", false);
-                        // currentDisplayMode = DisplayMode::FFT; // COMENTADO: DisplayMode eliminado // Solo FFT para reverb
-                        // Actualizar botón graphics
-                        utilityButtons.runGraphicsButton.setButtonText(isFFT ? "FFT" : "curves");
-                        // Actualizar color del botón
-                        utilityButtons.runGraphicsButton.setColour(juce::TextButton::buttonColourId,
-                                                                  isFFT ? juce::Colours::transparentBlack : DarkTheme::accent.withAlpha(0.3f));
-                        // Actualizar visibilidad de componentes
-    // distortionCurveDisplay.setVisible(!isFFT);
-    // spectrumAnalyzer.setVisible(isFFT);
+                        applyDisplayMode(isFFT);
                     }
 
                     // SIEMPRE salir de bypass al cargar user preset
@@ -1767,7 +2111,9 @@ void JCBReverbAudioProcessorEditor::setupPresetArea()
 
         // Para mostrar en el menú, usar nombre limpio sin prefijos
         juce::String displayName = presetName;
-        if (presetName.startsWith("Bass_")) {
+        if (presetName.startsWith("Rooms_")) {
+            displayName = "[F] " + presetName.substring(6).replace("_", " ");
+        } else if (presetName.startsWith("Bass_")) {
             displayName = "[F] " + presetName.substring(5).replace("_", " ");
         } else if (presetName.startsWith("Drums_")) {
             displayName = "[F] " + presetName.substring(6).replace("_", " ");
@@ -2027,6 +2373,8 @@ void JCBReverbAudioProcessorEditor::updateButtonStates()
     // Función maestra que actualiza todos los estados de UI
     updateBasicButtonStates();
     updateSidechainComponentStates();
+    updateEqComponentStates();
+    updateCompComponentStates();
     /*
     // Actualizar estados de componentes de distorsión
     updateDistortionComponentStates();
@@ -2067,6 +2415,86 @@ void JCBReverbAudioProcessorEditor::updateSidechainComponentStates()
     // Solo cambiar alpha para indicación visual (pero siguen siendo movibles)
     sidechainControls.hpfSlider.setAlpha(filtersActive ? 1.0f : 0.5f);  // Alpha indica estado
     sidechainControls.lpfSlider.setAlpha(filtersActive ? 1.0f : 0.5f);   // Alpha indica estado
+}
+
+void JCBReverbAudioProcessorEditor::updateEqComponentStates()
+{
+    const bool eqOn = processor.apvts.getRawParameterValue("q_ONOFFEQ")->load() > 0.5f;
+    auto set = [&](juce::Component& c){ c.setEnabled(eqOn); c.setAlpha(eqOn ? 1.0f : 0.35f); };
+    set(eqControls.lsfSlider); set(eqControls.pfSlider); set(eqControls.hsfSlider);
+    set(eqControls.lsgSlider); set(eqControls.pgSlider); set(eqControls.hsgSlider);
+    eqControls.eqOnButton.setButtonText(eqOn ? "ON" : "OFF");
+}
+
+void JCBReverbAudioProcessorEditor::updateCompComponentStates()
+{
+    const bool compOn = processor.apvts.getRawParameterValue("r_ONOFFCOMP")->load() > 0.5f;
+    auto set = [&](juce::Component& c){ c.setEnabled(compOn); c.setAlpha(compOn ? 1.0f : 0.35f); };
+    set(compControls.thdSlider);
+    set(compControls.ratioSlider);
+    set(compControls.atkSlider);
+    set(compControls.relSlider);
+    set(compControls.gainSlider);
+    set(compControls.pumpButton);
+    compControls.compOnButton.setButtonText(compOn ? "ON" : "OFF");
+
+    // Nota: No modificar el valor del parámetro PUMP cuando COMP está OFF.
+    // Se deshabilita el control visualmente, pero se conserva el último estado
+    // para que al volver a activar COMP, PUMP recupere su valor anterior.
+}
+
+void JCBReverbAudioProcessorEditor::updateRightPanelVisibility()
+{
+    const bool showEQ = (currentRightTab == RightPanelTab::EQ);
+
+    auto setEqVis = [&](bool v){
+        eqControls.eqOnButton.setVisible(v);
+        eqControls.lsfSlider.setVisible(v);
+        eqControls.pfSlider.setVisible(v);
+        eqControls.hsfSlider.setVisible(v);
+        eqControls.lsgSlider.setVisible(v);
+        eqControls.pgSlider.setVisible(v);
+        eqControls.hsgSlider.setVisible(v);
+    };
+    auto setCompVis = [&](bool v){
+        compControls.compOnButton.setVisible(v);
+        compControls.thdSlider.setVisible(v);
+        compControls.ratioSlider.setVisible(v);
+        compControls.atkSlider.setVisible(v);
+        compControls.relSlider.setVisible(v);
+        compControls.gainSlider.setVisible(v);
+        compControls.pumpButton.setVisible(v);
+    };
+
+    setEqVis(showEQ);
+    setCompVis(!showEQ);
+
+    rightTabs.eqTab.setToggleState(showEQ, juce::dontSendNotification);
+    rightTabs.compTab.setToggleState(!showEQ, juce::dontSendNotification);
+
+    // Bring tabs and active panel to front for clickability over FFT
+    rightTabs.eqTab.toFront(true);
+    rightTabs.compTab.toFront(true);
+    if (showEQ)
+    {
+        eqControls.eqOnButton.toFront(true);
+        eqControls.lsfSlider.toFront(true);
+        eqControls.pfSlider.toFront(true);
+        eqControls.hsfSlider.toFront(true);
+        eqControls.lsgSlider.toFront(true);
+        eqControls.pgSlider.toFront(true);
+        eqControls.hsgSlider.toFront(true);
+    }
+    else
+    {
+        compControls.compOnButton.toFront(true);
+        compControls.pumpButton.toFront(true);
+        compControls.thdSlider.toFront(true);
+        compControls.ratioSlider.toFront(true);
+        compControls.atkSlider.toFront(true);
+        compControls.relSlider.toFront(true);
+        compControls.gainSlider.toFront(true);
+    }
 }
 
 
@@ -2604,6 +3032,11 @@ void JCBReverbAudioProcessorEditor::refreshPresetMenu()
                 category = "Drums";
                 presetName = cleanName.substring(6).replace("_", " ");
             }
+            else if (cleanName.startsWith("Rooms_"))
+            {
+                category = "Rooms";
+                presetName = cleanName.substring(6).replace("_", " ");
+            }
             else if (cleanName.startsWith("Guitars_"))
             {
                 category = "Guitars";
@@ -2636,7 +3069,7 @@ void JCBReverbAudioProcessorEditor::refreshPresetMenu()
     }
 
     // Añadir categorías al menú
-    juce::StringArray categoryOrder = {"Bass", "Drums", "Fx", "Guitars"};
+    juce::StringArray categoryOrder = {"Rooms", "Bass", "Drums", "Fx", "Guitars"};
 
     for (const auto& category : categoryOrder)
     {
@@ -2734,9 +3167,9 @@ void JCBReverbAudioProcessorEditor::savePresetFile()
                 auto presetFile = getPresetsFolder().getChildFile(currentPresetName + ".preset");
                 auto state = processor.apvts.copyState();
 
-                // Añadir estado del modo de visualización FFT/CURVES
+                // Añadir estado del modo de visualización FFT/WAVE
                 auto uiSettings = state.getOrCreateChildWithName("UISettings", nullptr);
-                // uiSettings.setProperty("displayModeIsFFT", currentDisplayMode == DisplayMode::FFT, nullptr); // COMENTADO: DisplayMode eliminado
+                uiSettings.setProperty("displayModeIsFFT", processor.displayModeIsFFT, nullptr);
 
                 std::unique_ptr<juce::XmlElement> xml(state.createXml());
 
@@ -2811,9 +3244,9 @@ void JCBReverbAudioProcessorEditor::saveAsPresetFile()
                         // Guardar el preset
                         auto state = processor.apvts.copyState();
 
-                        // Añadir estado del modo de visualización FFT/CURVES
+                        // Añadir estado del modo de visualización FFT/WAVE
                         auto uiSettings = state.getOrCreateChildWithName("UISettings", nullptr);
-                        // uiSettings.setProperty("displayModeIsFFT", currentDisplayMode == DisplayMode::FFT, nullptr); // COMENTADO: DisplayMode eliminado
+                        uiSettings.setProperty("displayModeIsFFT", processor.displayModeIsFFT, nullptr);
 
                         std::unique_ptr<juce::XmlElement> xml(state.createXml());
 
@@ -2840,9 +3273,9 @@ void JCBReverbAudioProcessorEditor::saveAsPresetFile()
                 // Guardar directamente si no existe
                 auto state = processor.apvts.copyState();
 
-                // Añadir estado del modo de visualización FFT/CURVES
+                // Añadir estado del modo de visualización FFT/WAVE
                 auto uiSettings = state.getOrCreateChildWithName("UISettings", nullptr);
-                // uiSettings.setProperty("displayModeIsFFT", currentDisplayMode == DisplayMode::FFT, nullptr); // COMENTADO: DisplayMode eliminado
+                uiSettings.setProperty("displayModeIsFFT", processor.displayModeIsFFT, nullptr);
 
                 std::unique_ptr<juce::XmlElement> xml(state.createXml());
 
@@ -3114,6 +3547,26 @@ void JCBReverbAudioProcessorEditor::updateAllTooltips()
     // Botones de parámetros
     parameterButtons.bypassButton.setTooltip(getTooltipText("bypass"));
 
+    // Tabs y controles de la derecha (EQ / COMP)
+    rightTabs.eqTab.setTooltip(getTooltipText("eqtab"));
+    rightTabs.compTab.setTooltip(getTooltipText("comptab"));
+
+    eqControls.eqOnButton.setTooltip(getTooltipText("eqon"));
+    eqControls.lsgSlider.setTooltip(getTooltipText("lsg"));
+    eqControls.pgSlider.setTooltip(getTooltipText("pg"));
+    eqControls.hsgSlider.setTooltip(getTooltipText("hsg"));
+    eqControls.lsfSlider.setTooltip(getTooltipText("lsf"));
+    eqControls.pfSlider.setTooltip(getTooltipText("pf"));
+    eqControls.hsfSlider.setTooltip(getTooltipText("hsf"));
+
+    compControls.compOnButton.setTooltip(getTooltipText("compon"));
+    compControls.pumpButton.setTooltip(getTooltipText("pump"));
+    compControls.thdSlider.setTooltip(getTooltipText("thd"));
+    compControls.ratioSlider.setTooltip(getTooltipText("ratio"));
+    compControls.atkSlider.setTooltip(getTooltipText("atk"));
+    compControls.relSlider.setTooltip(getTooltipText("rel"));
+    compControls.gainSlider.setTooltip(getTooltipText("compgain"));
+
     // Actualizar tooltips de botones "por hacer"
     updateTodoButtonTexts();
 
@@ -3127,24 +3580,44 @@ juce::String JCBReverbAudioProcessorEditor::getTooltipText(const juce::String& k
     {
         // Spanish tooltips
         if (key == "trim") return JUCE_UTF8("TRIM: ganancia de entrada a la reverb\nAjusta el nivel antes del procesamiento\nRango: -12 a +12 dB | Por defecto: 0 dB");
-        if (key == "makeup") return JUCE_UTF8("OUTPUT: ganancia de salida (sólo WET)\nNo afecta la rama DRY/Dry-Wet\nRango: -12 a +12 dB | Por defecto: 0 dB");
+        if (key == "makeup") return JUCE_UTF8("OUTPUT: ganancia de salida (sólo WET)\nNo afecta la rama DRY/Dry-Wet\nRango: -24 a +12 dB | Por defecto: 0 dB");
 
         if (key == "hpf") return JUCE_UTF8("HPF: filtro paso alto 12 dB/oct\nAtenúa frecuencias por debajo del corte\nRango: 20 a 1000 Hz | Por defecto: 250 Hz");
         if (key == "lpf") return JUCE_UTF8("LPF: filtro paso bajo 12 dB/oct\nAtenúa frecuencias por encima del corte\nRango: 100 Hz a 20 kHz | Por defecto: 20 kHz");
         if (key == "sc") return JUCE_UTF8("FILTERS: activa/desactiva los filtros HPF/LPF (12 dB/oct).\nHPF y LPF se aplican según sus controles dedicados.\nValor por defecto: OFF");
 
-        if (key == "reflect") return JUCE_UTF8("REFLECT: cantidad de reflexiones\nControla la retroalimentación/densidad de la reverb\nRango: 0% a 100% | Por defecto: 100%");
-        if (key == "size") return JUCE_UTF8("SIZE: tamaño del tanque de filtros peine\nSimula el tamaño del espacio\nRango: 0.1 a 4 | Por defecto: 1");
+        if (key == "reflect") return JUCE_UTF8("REFLECT: cantidad de reflexiones\nControla la retroalimentación/densidad de la reverb\nRango: 0% a 100% | Por defecto: 74 %");
+        if (key == "size") return JUCE_UTF8("SIZE: tamaño del tanque de filtros peine\nSimula el tamaño del espacio\nRango: 0.1 a 4 | Por defecto: 1.5");
 
         if (key == "drywet") return JUCE_UTF8("DRY/WET: mezcla entre señal original y procesada\nControla el balance final de salida\nRango: 0 a 100% | Por defecto: 100%");
         //if (key == "lookahead") return JUCE_UTF8("LOOKAHEAD: anticipación para evitar distorsión\nEvita overshooting en transitorios rápidos\nRango: 0 a 5 ms | Por defecto: 0 ms");
 
-        if (key == "damp") return JUCE_UTF8("DAMP: filtro en los feedback de los tanques de comb\nLPF 1er orden dentro del feedback\nRango: 0 a 100% | Por defecto: 25%");
+        if (key == "damp") return JUCE_UTF8("DAMP: filtro en los feedback de los tanques de comb\nLPF 1er orden dentro del feedback\nRango: 0 a 100% | Por defecto: 0 %");
         if (key == "stereo") return JUCE_UTF8("STEREO: stereo image width\nMS matrix with delay on right channel\nRange: 0% to 100% | Default: 50%");
         if (key == "freeze") return JUCE_UTF8("FREEZE: congela el tanque de combs\nActivado silencia la entrada y la cadena DRY\nRango: OFF/ON | Por defecto: OFF");
 
+        // Tabs y EQ (derecha)
+        if (key == "eqtab") return JUCE_UTF8("Pestaña EQ: muestra controles de ecualización\nAjusta frecuencias y ganancias");
+        if (key == "comptab") return JUCE_UTF8("Pestaña COMP: muestra controles del compresor\nConfigura dinámica y PUMP");
+        if (key == "eqon") return JUCE_UTF8("EQ ON/OFF: activa o desactiva la EQ\nAl OFF, los controles quedan atenuados");
+        if (key == "lsf") return JUCE_UTF8("LSF: frecuencia del Low Shelf\nPunto de giro de graves\nRango: 20 a 500 Hz");
+        if (key == "pf")  return JUCE_UTF8("PF: frecuencia del filtro Peak (campana)\nCentro de realce/atenuación en medios\nRango: 500 a 2500 Hz");
+        if (key == "hsf") return JUCE_UTF8("HSF: frecuencia del High Shelf\nPunto de giro de agudos\nRango: 2.5 a 15 kHz");
+        if (key == "lsg") return JUCE_UTF8("LSG: ganancia del Low Shelf\nAjuste de graves en dB\nRango: -24 a +24 dB");
+        if (key == "pg")  return JUCE_UTF8("PG: ganancia del filtro Peak\nRealce/atenuación en medios\nRango: -24 a +24 dB");
+        if (key == "hsg") return JUCE_UTF8("HSG: ganancia del High Shelf\nAjuste de agudos en dB\nRango: -24 a +24 dB");
 
-        if (key == "title") return JUCE_UTF8("JCBReverb: reverb tipo Schoroeder v0.9.1\nPlugin de audio open source\nClick para créditos");
+        // Compresor (derecha)
+        if (key == "compon") return JUCE_UTF8("COMP ON/OFF: activa o desactiva el compresor\nAl OFF se bloquea PUMP y los controles quedan atenuados");
+        if (key == "thd")   return JUCE_UTF8("THD: umbral del compresor\nNivel a partir del cual comprime\nRango: -60 a 0 dB");
+        if (key == "ratio") return JUCE_UTF8("RATIO: relación de compresión\nCuánto reduce por encima del umbral\nRango: 1:1 a 20:1");
+        if (key == "atk")   return JUCE_UTF8("ATK: tiempo de ataque\nVelocidad de reacción al superar el umbral\nRango: 1 a 750 ms");
+        if (key == "rel")   return JUCE_UTF8("REL: tiempo de relajación\nVelocidad de retorno tras compresión\nRango: 15 a 2000 ms");
+        if (key == "compgain") return JUCE_UTF8("GAIN: ganancia de compensación del compresor\nAjusta el nivel tras comprimir\nRango: -6 a +6 dB");
+        if (key == "pump")  return JUCE_UTF8("PUMP: modo de bombeo/ducking\nRealza el efecto de bombeo impulsado por el compresor\nSolo disponible cuando COMP está ON");
+
+
+        if (key == "title") return JUCE_UTF8("JCBReverb: reverb tipo Schoroeder v1.0.0-alpha.1\nPlugin de audio open source\nClick para créditos");
         if (key == "save") return JUCE_UTF8("SAVE: guarda el preset actual\nSobrescribe el preset seleccionado con valores actuales\nNo funciona con DEFAULT");
         if (key == "saveas") return JUCE_UTF8("SAVE AS: guarda como nuevo preset\nCrea un nuevo archivo de preset con los valores actuales\nPermite crear presets personalizados");
         if (key == "delete") return JUCE_UTF8("BORRAR: elimina el preset seleccionado\nRequiere confirmación antes de borrar");
@@ -3154,7 +3627,7 @@ juce::String JCBReverbAudioProcessorEditor::getTooltipText(const juce::String& k
         if (key == "redo") return JUCE_UTF8("REHACER: aplica el cambio deshecho\nRehace modificación manual previamente revertida\nHistorial: hasta 20 pasos");
         if (key == "resetgui") return JUCE_UTF8("SIZE: cicla entre tamaños de ventana\nActual → Máximo → Mínimo → Actual\nAjuste rápido del tamaño del plugin");
         if (key == "bypass") return JUCE_UTF8("BYPASS: desactiva el procesamiento del plugin\nParámetro global, no automatizable. Transición suave\nRango: OFF/ON | Por defecto: OFF");
-        if (key == "graphics") return JUCE_UTF8("GRAPHICS: alterna entre FFT y curvas de distorsión\nFFT: analizador de espectro | curves: visualizador de curvas\nClick para cambiar entre modos");
+        if (key == "graphics") return JUCE_UTF8("GRAPHICS: alterna entre FFT y Wave\nFFT: analizador de espectro | Wave: forma de onda\nClick para cambiar de modo");
         if (key == "zoom") return JUCE_UTF8("ZOOM: cicla entre vista normal y ampliada del FFT\nNormal: -80 a 0dB | x2: -48 a 0dB\nSolo activo en modo FFT");
         if (key == "diagram") return JUCE_UTF8("DIAGRAM: muestra diagrama de bloques del procesador\nDespliega menú con código GenExpr por bloque para copiar");
         if (key == "tooltiptoggle") return JUCE_UTF8("TOOLTIP: muestra/oculta los tooltips de ayuda\nActiva o desactiva las ventanas de ayuda emergentes");
@@ -3172,23 +3645,43 @@ juce::String JCBReverbAudioProcessorEditor::getTooltipText(const juce::String& k
     {
         // English tooltips
         if (key == "trim") return JUCE_UTF8("TRIM: input gain to the reverb\nAdjusts the level before processing\nRange: -12 to +12 dB | Default: 0 dB");
-        if (key == "makeup") return JUCE_UTF8("OUTPUT: output gain (WET only)\nDoes not affect the DRY/Dry-Wet path\nRange: -12 to +12 dB | Default: 0 dB");
+        if (key == "makeup") return JUCE_UTF8("OUTPUT: output gain (WET only)\nDoes not affect the DRY/Dry-Wet path\nRange: -24 to +12 dB | Default: 0 dB");
 
         if (key == "hpf") return JUCE_UTF8("HPF: high-pass filter 12 dB/oct\nAttenuates frequencies below the cutoff\nRange: 20 to 1000 Hz | Default: 250 Hz");
         if (key == "lpf") return JUCE_UTF8("LPF: low-pass filter 12 dB/oct\nAttenuates frequencies above the cutoff\nRange: 100 Hz to 20 kHz | Default: 20 kHz");
         if (key == "sc") return JUCE_UTF8("FILTERS: enable/disable HPF/LPF (12 dB/oct)\nHPF and LPF are applied according to their dedicated controls\nDefault: OFF");
 
-        if (key == "reflect") return JUCE_UTF8("REFLECT: amount of reflections\nControls reverb feedback/density\nRange: 0% to 100% | Default: 100%");
-        if (key == "size") return JUCE_UTF8("SIZE: comb filter tank size\nSimulates the size of the space\nRange: 0.1 to 4 | Default: 1");
+        if (key == "reflect") return JUCE_UTF8("REFLECT: amount of reflections\nControls reverb feedback/density\nRange: 0% to 100% | Default: 74 %");
+        if (key == "size") return JUCE_UTF8("SIZE: comb filter tank size\nSimulates the size of the space\nRange: 0.1 to 4 | Default: 1.5");
 
         if (key == "drywet") return JUCE_UTF8("DRY/WET: mix between original and processed signal\nControls the final output balance\nRange: 0 to 100% | Default: 100%");
-        if (key == "damp") return JUCE_UTF8("DAMP: damping filter in the comb tank feedback\n1st-order LPF inside the feedback loop\nRange: 0 to 100% | Default: 25%");
+        if (key == "damp") return JUCE_UTF8("DAMP: damping filter in the comb tank feedback\n1st-order LPF inside the feedback loop\nRange: 0 to 100% | Default: 0 %");
         if (key == "stereo") return JUCE_UTF8("STEREO: stereo image width\nMS matrix with delay on right channel\nRange: 0% to 100% | Default: 50%");
         if (key == "freeze") return JUCE_UTF8("FREEZE: freezes the comb tank\nWhen enabled, input and DRY chain are muted\nRange: OFF/ON | Default: OFF");
 
+        // Tabs & EQ (right)
+        if (key == "eqtab") return JUCE_UTF8("EQ tab: shows equalizer controls\nAdjust frequencies and gains");
+        if (key == "comptab") return JUCE_UTF8("COMP tab: shows compressor controls\nSet dynamics and PUMP");
+        if (key == "eqon") return JUCE_UTF8("EQ ON/OFF: enable or disable the EQ\nWhen OFF, controls are dimmed");
+        if (key == "lsf") return JUCE_UTF8("LSF: Low Shelf frequency\nShelf pivot for lows\nRange: 20 to 500 Hz");
+        if (key == "pf")  return JUCE_UTF8("PF: Peak filter frequency\nCenter frequency for mid boost/cut\nRange: 500 to 2500 Hz");
+        if (key == "hsf") return JUCE_UTF8("HSF: High Shelf frequency\nShelf pivot for highs\nRange: 2.5 to 15 kHz");
+        if (key == "lsg") return JUCE_UTF8("LSG: Low Shelf gain\nBass adjustment in dB\nRange: -24 to +24 dB");
+        if (key == "pg")  return JUCE_UTF8("PG: Peak gain\nMidrange boost/cut in dB\nRange: -24 to +24 dB");
+        if (key == "hsg") return JUCE_UTF8("HSG: High Shelf gain\nHighs adjustment in dB\nRange: -24 to +24 dB");
+
+        // Compressor (right)
+        if (key == "compon") return JUCE_UTF8("COMP ON/OFF: enable or disable the compressor\nWhen OFF, PUMP is blocked and controls are dimmed");
+        if (key == "thd")   return JUCE_UTF8("THD: compressor threshold\nLevel above which compression occurs\nRange: -60 to 0 dB");
+        if (key == "ratio") return JUCE_UTF8("RATIO: compression ratio\nHow much reduction above threshold\nRange: 1:1 to 20:1");
+        if (key == "atk")   return JUCE_UTF8("ATK: attack time\nHow fast it reacts above threshold\nRange: 1 to 750 ms");
+        if (key == "rel")   return JUCE_UTF8("REL: release time\nHow fast it recovers after compression\nRange: 15 to 2000 ms");
+        if (key == "compgain") return JUCE_UTF8("GAIN: compressor makeup gain\nAdjusts level after compression\nRange: -6 to +6 dB");
+        if (key == "pump")  return JUCE_UTF8("PUMP: pumping/ducking mode\nEnhances compressor-driven pumping effect\nOnly available when COMP is ON");
 
 
-        if (key == "title") return JUCE_UTF8("JCBReverb: Schroeder-type reverb v0.9.1\nOpen source audio plugin\nClick for credits");
+
+        if (key == "title") return JUCE_UTF8("JCBReverb: Schroeder-type reverb v1.0.0-alpha.1\nOpen source audio plugin\nClick for credits");
         if (key == "save") return JUCE_UTF8("SAVE: overwrite current preset\nReplaces the selected preset with current values\nNot available for DEFAULT");
         if (key == "saveas") return JUCE_UTF8("SAVE AS: save as new preset\nCreates a new preset file with current values\nAllows creating custom presets");
         if (key == "delete") return JUCE_UTF8("DELETE: remove selected preset\nRequires confirmation before deletion");
@@ -3198,7 +3691,7 @@ juce::String JCBReverbAudioProcessorEditor::getTooltipText(const juce::String& k
         if (key == "redo") return JUCE_UTF8("REDO: apply reverted change\nReapplies previously undone modification\nHistory: up to 20 steps");
         if (key == "resetgui") return JUCE_UTF8("SIZE: cycle window size\nCurrent → Maximum → Minimum → Current\nQuick adjustment of plugin window size");
         if (key == "bypass") return JUCE_UTF8("BYPASS: disables plugin processing\nGlobal parameter, not automatable. Smooth transition\nRange: OFF/ON | Default: OFF");
-        if (key == "graphics") return JUCE_UTF8("GRAPHICS: toggle between FFT and distortion curves\nFFT: spectrum analyzer | curves: curve visualizer\nClick to switch modes");
+        if (key == "graphics") return JUCE_UTF8("GRAPHICS: toggle between FFT and Wave\nFFT: spectrum analyzer | Wave: waveform display\nClick to switch modes");
         if (key == "zoom") return JUCE_UTF8("ZOOM: cycle FFT zoom view\nNormal: -80 to 0 dB | x2: -48 to 0 dB\nOnly active in FFT mode");
         if (key == "diagram") return JUCE_UTF8("DIAGRAM: show processor block diagram\nDisplays menu with GenExpr code per block for copy");
         if (key == "tooltiptoggle") return JUCE_UTF8("TOOLTIP: show/hide help tooltips\nEnable or disable popup help windows");
@@ -3370,43 +3863,8 @@ juce::String JCBReverbAudioProcessorEditor::loadCodeFromFile(const juce::String&
 
 void JCBReverbAudioProcessorEditor::initializeCodeContentCache()
 {
-    if (codeContentCacheInitialized) return;
-
-    // Pre-cargar todo el contenido de código al inicializar para thread safety
-    struct CodeMapping {
-        juce::String blockName;
-        const char* binaryData;
-        int dataSize;
-    };
-
-    // Lista de todos los mappings - DISTORTION (archivos Gen~ disponibles)
-    std::vector<CodeMapping> mappings = {
-        {"INPUT STAGE", BinaryData::InputStage_txt, BinaryData::InputStage_txtSize},
-        {"EFFECTS CHAIN", BinaryData::EffectsChain_txt, BinaryData::EffectsChain_txtSize},
-        {"DISTORTION CORE", BinaryData::DistortionCore_txt, BinaryData::DistortionCore_txtSize},
-        //{"GEN EXPR", BinaryData::GenExpr_txt, BinaryData::GenExpr_txtSize},
-        //{"GEN EXPR (FILTERS)", BinaryData::GenExpr_with_filters_txt, BinaryData::GenExpr_with_filters_txtSize},
-        {"OUTPUT STAGE", BinaryData::OutputStage_txt, BinaryData::OutputStage_txtSize},
-        // Bloques de filtros LR4 (Linkwitz-Riley 4th order) - ambos apuntan al CrossoverStage completo
-        {"LR4", BinaryData::CrossoverStage_txt, BinaryData::CrossoverStage_txtSize},
-        {"LR4-DRY-AllpassCompensated", BinaryData::CrossoverStage_txt, BinaryData::CrossoverStage_txtSize},
-    };
-
-    // Cargar todo en cache
-    for (const auto& mapping : mappings) {
-        if (mapping.binaryData != nullptr && mapping.dataSize > 0) {
-            juce::String content = juce::String::createStringFromData(mapping.binaryData, mapping.dataSize);
-            if (content.isNotEmpty()) {
-                codeContentCache[mapping.blockName] = content;
-            } else {
-                // Fallback si falla la carga
-                codeContentCache[mapping.blockName] = "// Code for " + mapping.blockName +
-                    "\n\n// Error cargando contenido\n\n// Funcionalidad básica:\n" +
-                    getBasicBlockDescription(mapping.blockName);
-            }
-        }
-    }
-
+    // Code windows for DIAGRAM have been removed; keep an empty cache to satisfy calls.
+    codeContentCache.clear();
     codeContentCacheInitialized = true;
 }
 
@@ -3530,41 +3988,36 @@ void JCBReverbAudioProcessorEditor::toggleDisplayMode()
     // Alternar entre modos FFT y Waveform
     if (currentDisplayMode == DisplayMode::FFT)
     {
-        // Cambiar a modo Waveform
-        currentDisplayMode = DisplayMode::Waveform;
-        processor.displayModeIsFFT = false;
-        
-        // Configurar visualización Waveform
-        spectrumAnalyzer.setVisible(false);
-        waveformDisplay.setVisible(true);
-        utilityButtons.runGraphicsButton.setButtonText("wave");
-        utilityButtons.runGraphicsButton.setColour(juce::TextButton::buttonColourId, 
-                                                  DarkTheme::accent.withAlpha(0.3f));  // Color azul para Waveform
-        
-        // Botón zoom disponible para zoom vertical en modo Waveform
-        utilityButtons.zoomButton.setAlpha(1.0f);
-        utilityButtons.zoomButton.setEnabled(true);
-        utilityButtons.zoomButton.setButtonText(waveformDisplay.getZoomEnabled() ? "zoom x2" : "zoom");
+        applyDisplayMode(false);
     }
     else
     {
-        // Cambiar a modo FFT
-        currentDisplayMode = DisplayMode::FFT;
-        processor.displayModeIsFFT = true;
-        
-        // Configurar visualización FFT
-        spectrumAnalyzer.setVisible(true);
-        waveformDisplay.setVisible(false);
-        utilityButtons.runGraphicsButton.setButtonText("FFT");
-        utilityButtons.runGraphicsButton.setColour(juce::TextButton::buttonColourId, 
-                                                  juce::Colours::transparentBlack);
-        
-        // Botón zoom para modo FFT
-        utilityButtons.zoomButton.setAlpha(1.0f);
-        utilityButtons.zoomButton.setEnabled(true);
-        utilityButtons.zoomButton.setButtonText(spectrumAnalyzer.getZoomEnabled() ? "zoom x2" : "zoom");
+        applyDisplayMode(true);
     }
-    
+}
+
+void JCBReverbAudioProcessorEditor::applyDisplayMode(bool isFFT)
+{
+    processor.displayModeIsFFT = isFFT;
+    currentDisplayMode = isFFT ? DisplayMode::FFT : DisplayMode::Waveform;
+
+    // Visibilidad de componentes
+    spectrumAnalyzer.setVisible(isFFT);
+    waveformDisplay.setVisible(!isFFT);
+
+    // Botón
+    utilityButtons.runGraphicsButton.setButtonText(isFFT ? "FFT" : "wave");
+    utilityButtons.runGraphicsButton.setColour(
+        juce::TextButton::buttonColourId,
+        isFFT ? juce::Colours::transparentBlack : DarkTheme::accent.withAlpha(0.3f));
+
+    // Zoom button estado
+    utilityButtons.zoomButton.setAlpha(1.0f);
+    utilityButtons.zoomButton.setEnabled(true);
+    utilityButtons.zoomButton.setButtonText(
+        isFFT ? (spectrumAnalyzer.getZoomEnabled() ? "zoom x2" : "zoom")
+              : (waveformDisplay.getZoomEnabled() ? "zoom x2" : "zoom"));
+
     handleParameterChange();
     repaint();
 }

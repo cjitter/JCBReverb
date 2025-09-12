@@ -177,7 +177,7 @@ public:
     bool isInitialized() const noexcept { return m_PluginState != nullptr; }
     
     // Estado del modo de visualización (no es parámetro automatizable)
-    bool displayModeIsFFT = true;
+    bool displayModeIsFFT = false; // DEFAULT: Wave view active
     
 private:
     //==============================================================================

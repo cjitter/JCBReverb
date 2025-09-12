@@ -144,14 +144,19 @@ private:
         // Verificar si el componente está en la misma ventana que este tooltip
         if (comp && isInSameWindow(comp))
         {
-            // Intentar obtener tooltip de la interfaz TooltipClient
-            if (auto* client = dynamic_cast<juce::TooltipClient*>(comp))
+            // Intentar obtener tooltip subiendo por la cadena de padres si es necesario
+            juce::Component* iter = comp;
+            while (iter != nullptr)
             {
-                if (!comp->isCurrentlyBlockedByAnotherModalComponent())
+                if (auto* client = dynamic_cast<juce::TooltipClient*>(iter))
                 {
-                    showTip(client->getTooltip());
-                    return;
+                    if (!iter->isCurrentlyBlockedByAnotherModalComponent())
+                    {
+                        showTip(client->getTooltip());
+                        return;
+                    }
                 }
+                iter = iter->getParentComponent();
             }
         }
         

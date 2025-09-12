@@ -23,6 +23,12 @@ void WaveformComponent::paint(juce::Graphics& g)
     auto bounds = getLocalBounds();
     const float width = static_cast<float>(bounds.getWidth());
     const float height = static_cast<float>(bounds.getHeight());
+    // Ganancia de zoom vertical: x2 cuando está activo (fija)
+    const float zoomGain = zoomEnabled ? 2.0f : 1.0f;
+    // Mapeo simple de amplitud: ON = 1.0x, OFF = 0.5x
+    // Con zoom ON: 2.0 * 0.5 = 1.0 (tamaño "normal")
+    // Con zoom OFF: 1.0 * 0.5 = 0.5 (la mitad del tamaño)
+    const float ampScale = 0.5f;
     
     // No dibujar fondo - dejar transparente
     // Grid sutil y línea media
@@ -64,9 +70,12 @@ void WaveformComponent::paint(juce::Graphics& g)
             const int idxp2 = (writePos - levelHistorySize + i + 2 + levelHistorySize*10) % levelHistorySize;
             const float t = (tailLevels[idxm2] + tailLevels[idxm1] + tailLevels[idx0] + tailLevels[idxp1] + tailLevels[idxp2]) * 0.2f;
             const float d = (inputLevels[idxm2] + inputLevels[idxm1] + inputLevels[idx0] + inputLevels[idxp1] + inputLevels[idxp2]) * 0.2f;
-            localTail[i] = t;
+            // Remapeo visual para realzar colas pequeñas y comprimir picos
+            const float remapGamma = 0.80f; // <1.0 agranda valores pequeños
+            const float tRemap = std::pow(juce::jmax(0.0f, t), remapGamma);
+            localTail[i] = tRemap;
             localDry[i]  = d;
-            if (t > maxTail) maxTail = t;
+            if (tRemap > maxTail) maxTail = tRemap;
         }
 
         // --- DRY FILL (debajo del WET): dibujar primero para que quede por debajo ---
@@ -139,8 +148,8 @@ void WaveformComponent::paint(juce::Graphics& g)
         for (int i = 0; i < levelHistorySize; ++i)
             combinedTail[i] = localTail[i];
 
-        // 2) Auto-escalado estabilizado: amplificar para ocupar más alto útil
-        const float targetHalf = height * (zoomEnabled ? 0.995f : 0.90f);
+        // 2) Auto-escalado estabilizado: objetivo fijo para consistencia (evita cambiar con zoom)
+        const float targetHalf = height * 0.85f;
         const float eps = 1.0e-4f;
         float targetScale = (maxTail > eps) ? (targetHalf / maxTail) : tailScaleSmoothed;
         // Limitar escala
@@ -165,15 +174,22 @@ void WaveformComponent::paint(juce::Graphics& g)
         // Envolventes DRY superior/inferior (espejo negativo)
         juce::Path dryUpper, dryLower;
         bool dryStarted = false;
-        const float dryScale = height * (zoomEnabled ? 0.92f : 0.82f);
+        // Escala base de DRY; el zoom aplica multiplicador explícito x2
+        const float dryScale = height * 0.82f;
         float dryVals[levelHistorySize];
         for (int i = 0; i < levelHistorySize; ++i)
         {
             const int idx0 = (writePos - levelHistorySize + i - 1 + levelHistorySize*10) % levelHistorySize;
             const int idx1 = (writePos - levelHistorySize + i +     levelHistorySize*10) % levelHistorySize;
             const int idx2 = (writePos - levelHistorySize + i + 1 + levelHistorySize*10) % levelHistorySize;
-            const float inAvg = (inputLevels[idx0] + inputLevels[idx1] + inputLevels[idx2]) * (1.0f / 3.0f);
-            const float dAmp = inAvg * dryScale;
+            // Usar valor central para seguir más fielmente el contorno de entrada
+            const float inAvg = inputLevels[idx1];
+            float dAmp = inAvg * dryScale;
+            dAmp *= zoomGain; // aplicar zoom x2 a la envolvente DRY
+            dAmp *= ampScale; // reducir amplitud visual para mejor percepción
+            // Clamp para evitar desbordes verticales en zoom
+            const float maxDryAmp = height * 0.42f;
+            dAmp = juce::jmin(dAmp, maxDryAmp);
             dryVals[i] = dAmp;
             const float x = i * stepX;
             const float yU = yCenter - dAmp;
@@ -193,7 +209,12 @@ void WaveformComponent::paint(juce::Graphics& g)
         const float overflowBase = 1.0f;
         const float sizeGain = 1.0f + reverbSize * 3.2f; // agrandar moderado (sin cuña)
         for (int i = 0; i < levelHistorySize; ++i)
-            bandAmp[i] = juce::jmax(0.0f, smear[i] * tailScaleSmoothed * overflowBase) * sizeGain;
+        {
+            float ampLin = juce::jmax(0.0f, smear[i] * tailScaleSmoothed * overflowBase);
+            // Remapeo visual consistente con localTail
+            ampLin = std::pow(ampLin, 0.80f);
+            bandAmp[i] = ampLin * sizeGain * zoomGain * ampScale; // reducir amplitud visual
+        }
 
         juce::Path wetUpper, wetLower;
         bool wetStarted = false;
@@ -224,14 +245,11 @@ void WaveformComponent::paint(juce::Graphics& g)
         juce::Colour baseWet = Colours::freezeAccent;
         juce::Colour topCol    = baseWet.interpolatedWith(Colours::inputWaveform, 0.65f * dampVis);
         juce::Colour bottomCol = topCol; // mismo color arriba/abajo (sin M/S)
-        // Atenuar WET según DRY/WET con smoothstep (sin escalón)
-        const float mixWet = juce::jlimit(0.0f, 1.0f, dryWetMix);
-        const float sWet = (mixWet * mixWet) * (3.0f - 2.0f * mixWet);
-        if (sWet > 0.02f)
+        // Nota: el área WET NO depende del control DRY/WET (solo afecta al contorno DRY)
         {
             const float wetAlphaBase = juce::jlimit(0.25f, 0.95f, 0.50f + (maxTail > eps ? 0.40f : 0.0f));
             float wetAlpha = juce::jlimit(0.0f, 0.95f,
-                                          wetAlphaBase * (0.7f + 0.3f * (1.0f - dampVis)) * sWet);
+                                          wetAlphaBase * (0.7f + 0.3f * (1.0f - dampVis)));
                 // Base por columnas (evita cuñas): pintar rectángulos simétricos
                 juce::ColourGradient grad(topCol.withAlpha(wetAlpha), 0.0f, 0.0f,
                                           bottomCol.withAlpha(wetAlpha), 0.0f, height, false);
@@ -239,7 +257,6 @@ void WaveformComponent::paint(juce::Graphics& g)
                 const float colW = juce::jmax(1.0f, stepX);
                 const float minHeightPx = 1.2f;                             // raya mínima
                 const float maxAmpPx   = height * (freezeOn ? 0.52f : 0.70f); // freeze contenido / normal abierto
-                const float capRatio   = (freezeOn ? 1.4f : 2.2f);            // freeze ajustado / normal libre
                 // Máscara oval para extremos (suavizado horizontal)
                 const float edgeTaper = 0.20f; // 20% a cada lado (cierra más extremos)
                 auto maskAt = [&](int idx) noexcept {
@@ -255,12 +272,8 @@ void WaveformComponent::paint(juce::Graphics& g)
                 for (int i = 0; i < levelHistorySize; ++i)
                 {
                     const float x = i * stepX;
-                    const float drySrc = (freezeOn && (int)freezeDryCaps.size()==levelHistorySize) ? freezeDryCaps[i] : localDry[i];
-                    const float dryCap = drySrc * capRatio;
                     float amp = bandAmp[i];
                     amp = juce::jmin(amp, maxAmpPx);
-                    if (!freezeOn)
-                        amp = juce::jmin(amp, dryCap + 1.0f);
                     float rectH = amp * 2.0f;
                     if (rectH < minHeightPx) { rectH = minHeightPx; amp = rectH * 0.5f; }
                     g.setOpacity(maskAt(i));
@@ -278,26 +291,21 @@ void WaveformComponent::paint(juce::Graphics& g)
             {
                 const float a = std::max(0.0f, (float)
                                    (juce::jlimit(0.0f, 0.95f,
-                                      (0.50f + (maxTail > eps ? 0.40f : 0.0f)) * (0.7f + 0.3f * (1.0f - dampVis)) * sWet))
+                                      (0.50f + (maxTail > eps ? 0.40f : 0.0f)) * (0.7f + 0.3f * (1.0f - dampVis))))
                                    ) * std::pow(0.82f - 0.15f * dampVis, (float)e) * (0.80f + 0.20f * reflectAmount);
                 if (a < 0.02f) break;
                 // Ecos por columnas: expansión vertical sin conectar en X
                 const float colW2 = juce::jmax(1.0f, stepX);
                 const float factor = 1.0f + spreadBase * (float)e;
                 const float maxAmpPx = height * (freezeOn ? 0.52f : 0.70f);
-                const float capRatio = (freezeOn ? 1.4f : 2.2f);
                 juce::ColourGradient gradE(topCol.withAlpha(a), 0.0f, 0.0f,
                                            bottomCol.withAlpha(a), 0.0f, height, false);
                 g.setGradientFill(gradE);
                 for (int i2 = 0; i2 < levelHistorySize; ++i2)
                 {
                     const float x2 = i2 * stepX;
-                    const float drySrc = (freezeOn && (int)freezeDryCaps.size()==levelHistorySize) ? freezeDryCaps[i2] : localDry[i2];
-                    const float dryCap = drySrc * capRatio;
                     float amp2 = bandAmp[i2] * factor;
                     amp2 = juce::jmin(amp2, maxAmpPx);
-                    if (!freezeOn)
-                        amp2 = juce::jmin(amp2, dryCap + 1.0f);
                     float rectH2 = amp2 * 2.0f;
                     if (rectH2 <= 0.5f) continue;
                     g.setOpacity(maskAt(i2));
@@ -313,10 +321,8 @@ void WaveformComponent::paint(juce::Graphics& g)
                 for (int i2 = 0; i2 < levelHistorySize; ++i2)
                 {
                     const float x2 = i2 * stepX;
-                    const float dryCap = dryVals[i2] * capRatio;
                     float amp2 = bandAmp[i2] * factorSoft;
                     amp2 = juce::jmin(amp2, maxAmpPx);
-                    amp2 = juce::jmin(amp2, dryCap + 1.0f);
                     float rectH2 = amp2 * 2.0f;
                     if (rectH2 <= 0.5f) continue;
                     g.setOpacity(maskAt(i2));
@@ -386,22 +392,25 @@ void WaveformComponent::updateWaveformData(const std::vector<float>& inputSample
     inputRMS = std::log10(1.0f + inputRMS * 9.0f);  // Mapea a rango ~0-1
     outputRMS = std::log10(1.0f + outputRMS * 9.0f);
     
-    // Suavizar los niveles
-    const float attackTime = 0.1f;   // Respuesta rápida al ataque
-    const float releaseTime = 0.95f; // Liberación lenta para ver la cola
-    
+    // Suavizar niveles con constantes diferenciadas para entrada y salida
+    const float inAttack = 0.35f;   // Entrada: respuesta más rápida
+    const float inRelease = 0.80f;  // Entrada: liberación más rápida para seguir transitorios
+    const float outAttack = 0.12f;  // Salida: mantener algo de suavidad
+    const float outRelease = 0.92f; // Salida: cola más estable
+
     if (inputRMS > currentInputLevel)
-        currentInputLevel = currentInputLevel * (1.0f - attackTime) + inputRMS * attackTime;
+        currentInputLevel = currentInputLevel * (1.0f - inAttack) + inputRMS * inAttack;
     else
-        currentInputLevel = currentInputLevel * releaseTime + inputRMS * (1.0f - releaseTime);
-        
+        currentInputLevel = currentInputLevel * inRelease + inputRMS * (1.0f - inRelease);
+
     if (outputRMS > currentOutputLevel)
-        currentOutputLevel = currentOutputLevel * (1.0f - attackTime) + outputRMS * attackTime;
+        currentOutputLevel = currentOutputLevel * (1.0f - outAttack) + outputRMS * outAttack;
     else
-        currentOutputLevel = currentOutputLevel * releaseTime + outputRMS * (1.0f - releaseTime);
+        currentOutputLevel = currentOutputLevel * outRelease + outputRMS * (1.0f - outRelease);
     
-    // Calcular nivel de reverb (diferencia) y actividad global
-    float reverbLevel = juce::jmax(0.0f, currentOutputLevel - currentInputLevel);
+    // Calcular nivel de reverb para visualización
+    // Desacoplar de TRIM: usar salida post-cadena directamente (no restar input)
+    float reverbLevel = juce::jmax(0.0f, currentOutputLevel);
     peakReverbLevel = peakReverbLevel * 0.9f + reverbLevel * 0.1f;
     activitySmoothed = activitySmoothed * 0.9f + juce::jmax(currentInputLevel, currentOutputLevel) * 0.1f;
 

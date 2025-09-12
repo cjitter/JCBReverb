@@ -59,7 +59,7 @@ cmake --build build-debug    # Para Debug
 cmake --build build-release   # Para Release
 ```
 
-## Características principales (v0.9.1)
+## Características principales (v1.0.0-alpha.1)
 
 - Distorsión multimodal: 8 algoritmos seleccionables (Soft Clip, Sigmoid, Full/Half Rectifier, Fuzz Exp., Tanh, Arctan, Hard Clip).
 - Ganancia de entrada (DRIVE) de 1× a 50× y asimetría (EVEN) con skew dependiente de polaridad → armónicos pares controlables y sin DC.
@@ -124,5 +124,4 @@ Los tests validan los formatos VST3 y AU del plugin.
 
 ---
 
-*© 2025 Juan Carlos Blancas – JCBReverb v0.9.1*
-
+*© 2025 Juan Carlos Blancas – JCBReverb v1.0.0-alpha.1*

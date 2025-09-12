@@ -19,7 +19,7 @@
 
 cmake_minimum_required(VERSION 3.20)
 
-project(JCBReverb VERSION 0.9.1)
+project(JCBReverb VERSION 1.0.0)
 
 # Configuración C++
 set(CMAKE_CXX_STANDARD 20)
@@ -65,8 +65,8 @@ juce_add_plugin(JCBReverb
         # Información básica del plugin
         PLUGIN_NAME "JCBReverb"
         PRODUCT_NAME "JCBReverb"
-        VERSION 0.9.1
-        DESCRIPTION "Reverb estéreo (tipo Freeverb) con EQ y utilidades"
+        VERSION 1.0.0
+        DESCRIPTION "Stereo reverb (Freeverb-style) with EQ and utilities"
 
         # Información de la empresa
         COMPANY_NAME "Coeval"
@@ -124,11 +124,7 @@ juce_add_binary_data(JCBReverb_BinaryData
         Assets/diagram.png
 
         # Archivos de texto/documentación usada en UI
-        Assets/code/DistortionCore.txt
-        Assets/code/EffectsChain.txt
-        Assets/code/InputStage.txt
-        Assets/code/OutputStage.txt
-        Assets/code/CrossoverStage.txt
+        Assets/FactoryPresets/Rooms_Funeralis.preset
 )
 
 # Linkear binary data al plugin

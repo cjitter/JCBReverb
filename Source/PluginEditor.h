@@ -74,6 +74,7 @@ public:
     
     // Toggle para cambiar modo de visualización
     void toggleDisplayMode();
+    void applyDisplayMode(bool isFFT);
     
     // Actualizar color del botón SOLO BAND basado en banda seleccionada
     
@@ -81,6 +82,10 @@ public:
     
     // Métodos de actualización para controles
     void updateSidechainComponentStates();
+    void updateEqComponentStates();
+    void updateCompComponentStates();
+    void updateRightPanelVisibility();
+    void setupRightTabs();
     
     // Debug overlay
     void setDebugOverlayVisible(bool v) { debugOverlayVisible = v; repaint(); }
@@ -252,6 +257,38 @@ private:
     private:
         const juce::Colour coralColour{0xFFFEB2B2};  // Rosa pálido para distorsión
     };
+
+    // LookAndFeel para pestañas (usa color de fondo distinto si está activa)
+    class TabButtonLAF : public juce::LookAndFeel_V4
+    {
+    public:
+        juce::Font getTextButtonFont(juce::TextButton&, int buttonHeight) override
+        {
+            return juce::Font(juce::FontOptions(buttonHeight * 0.6f)).withStyle(juce::Font::bold);
+        }
+
+        void drawButtonBackground(juce::Graphics& g, juce::Button& button,
+                                  const juce::Colour& backgroundColour,
+                                  bool shouldDrawButtonAsHighlighted,
+                                  bool shouldDrawButtonAsDown) override
+        {
+            // Sin fondo: tabs con texto plano (transparente)
+            juce::ignoreUnused(g, button, backgroundColour, shouldDrawButtonAsHighlighted, shouldDrawButtonAsDown);
+        }
+
+        void drawButtonText(juce::Graphics& g, juce::TextButton& button,
+                            bool shouldDrawButtonAsHighlighted,
+                            bool shouldDrawButtonAsDown) override
+        {
+            auto& lf = *this; juce::ignoreUnused(lf);
+            juce::Font font(getTextButtonFont(button, button.getHeight()));
+            g.setFont(font);
+            auto colour = button.findColour(button.getToggleState() ? juce::TextButton::textColourOnId
+                                                                    : juce::TextButton::textColourOffId);
+            g.setColour(colour);
+            g.drawFittedText(button.getButtonText(), button.getLocalBounds(), juce::Justification::centred, 1);
+        }
+    };
     
     // Debug overlay controls
     bool debugOverlayVisible { true };
@@ -314,6 +351,55 @@ private:
         std::unique_ptr<CustomSliderAttachment> lpfAttachment;
         std::unique_ptr<UndoableButtonAttachment> scAttachment;
     } sidechainControls;
+
+    // EQ controls (top-right row)
+    struct EqControls {
+        juce::TextButton eqOnButton{"EQ"}; // q_ONOFFEQ
+        // Frequencies
+        CustomSlider lsfSlider{"lsf"};   // n_LOWFREQ
+        CustomSlider pfSlider {"pf"};    // o_PEAKFREQ
+        CustomSlider hsfSlider{"hsf"};   // p_HIFREQ
+        // Gains
+        CustomSlider lsgSlider{"lsg"};   // h_LOWGAIN
+        CustomSlider pgSlider {"pg"};    // i_PEAKGAIN
+        CustomSlider hsgSlider{"hsg"};   // j_HIGAIN
+
+        std::unique_ptr<UndoableButtonAttachment> eqOnAttachment;
+        std::unique_ptr<CustomSliderAttachment> lsfAttachment;
+        std::unique_ptr<CustomSliderAttachment> pfAttachment;
+        std::unique_ptr<CustomSliderAttachment> hsfAttachment;
+        std::unique_ptr<CustomSliderAttachment> lsgAttachment;
+        std::unique_ptr<CustomSliderAttachment> pgAttachment;
+        std::unique_ptr<CustomSliderAttachment> hsgAttachment;
+    } eqControls;
+
+    // Compressor controls (bottom-right row)
+    struct CompControls {
+        juce::TextButton compOnButton{"COMP"}; // r_ONOFFCOMP
+        CustomSlider thdSlider{"thd"};   // s_THD
+        CustomSlider ratioSlider{"ratio"}; // t_RATIO
+        CustomSlider atkSlider{"atk"};   // u_ATK
+        CustomSlider relSlider{"rel"};   // v_REL
+        CustomSlider gainSlider{"gain"}; // w_MAKEUP
+        juce::TextButton pumpButton{"PUMP"}; // x_PUMP
+
+        std::unique_ptr<UndoableButtonAttachment> compOnAttachment;
+        std::unique_ptr<CustomSliderAttachment> thdAttachment;
+        std::unique_ptr<CustomSliderAttachment> ratioAttachment;
+        std::unique_ptr<CustomSliderAttachment> atkAttachment;
+        std::unique_ptr<CustomSliderAttachment> relAttachment;
+        std::unique_ptr<CustomSliderAttachment> gainAttachment;
+        std::unique_ptr<UndoableButtonAttachment> pumpAttachment;
+    } compControls;
+
+    // Right panel tabs (EQ / COMP)
+    struct RightTabs {
+        juce::TextButton eqTab{"EQ"};
+        juce::TextButton compTab{"COMP"};
+    } rightTabs;
+
+    enum class RightPanelTab { EQ, COMP };
+    RightPanelTab currentRightTab { RightPanelTab::EQ };
 
     // Left top area controls
     struct LeftTopReverbKnobs {
@@ -388,7 +474,7 @@ private:
     //==========================================================================
     
     // Título y versión en la parte inferior (combinado como ExpansorGate)
-    juce::TextButton titleLink{"JCBReverb v0.9.1"};
+    juce::TextButton titleLink{"JCBReverb v1.0.0-alpha.1"};
     
     // Imágenes de fondo
     juce::ImageComponent backgroundImage;
@@ -423,7 +509,7 @@ private:
         DiagramOverlay(JCBReverbAudioProcessorEditor& editor) : owner(editor)
         {
             setInterceptsMouseClicks(true, true);
-            setAlwaysOnTop(false);  // Cambiado a false para permitir que el código aparezca encima
+            setAlwaysOnTop(true);
             setWantsKeyboardFocus(true);  // No necesita foco, no maneja eventos de teclado
             
             // Cargar la imagen del diagrama PNG
@@ -470,8 +556,7 @@ private:
                             juce::RectanglePlacement::onlyReduceInSize);
             }
 
-            // Dibujar glow effect sobre bloques hovered
-            drawHoverGlow(g);
+            // Sin efecto hover ni resaltado en este plugin
 
             // Dibujar botón de cierre en la esquina superior derecha
             auto closeBounds = getLocalBounds().removeFromTop(40).removeFromRight(100).reduced(5);
@@ -481,6 +566,9 @@ private:
             g.setFont(14.0f);
             g.drawText("Close [ESC]", closeBounds, juce::Justification::centred);
         }
+
+        // Capturar todos los clics dentro del overlay (bloquear fondo)
+        bool hitTest (int, int) override { return true; }
         
         void drawBlockLabels(juce::Graphics& g, const juce::Rectangle<int>& diagramBounds)
         {
@@ -541,121 +629,18 @@ private:
             }
         }
         
-        void mouseMove(const juce::MouseEvent& event) override
-        {
-            // Verificar si el mouse está sobre un bloque clickeable
-            auto blockName = getBlockAtPosition(event.position);
-            
-            // Actualizar estado de hover si cambió
-            if (blockName != hoveredBlockName)
-            {
-                hoveredBlockName = blockName;
-                isMouseOverClickableArea = blockName.isNotEmpty();
-                repaint(); // Trigger repaint para actualizar efecto glow
-            }
-            
-            if (blockName.isNotEmpty())
-            {
-                // Cambiar cursor a mano
-                setMouseCursor(juce::MouseCursor::PointingHandCursor);
-            }
-            else
-            {
-                // Restaurar cursor normal
-                setMouseCursor(juce::MouseCursor::NormalCursor);
-            }
-        }
+        void mouseMove(const juce::MouseEvent&) override {}
         
-        void mouseExit(const juce::MouseEvent& /*event*/) override
-        {
-            // Limpiar estado de hover cuando el mouse sale del diagrama
-            if (isMouseOverClickableArea || hoveredBlockName.isNotEmpty())
-            {
-                hoveredBlockName = "";
-                isMouseOverClickableArea = false;
-                setMouseCursor(juce::MouseCursor::NormalCursor);
-                repaint(); // Trigger repaint para quitar efecto glow
-            }
-        }
+        void mouseExit(const juce::MouseEvent&) override {}
         
         void mouseDown(const juce::MouseEvent& event) override
         {
-            // Si hay una ventana de código visible, verificar si el click es fuera de ella para cerrarla
-            if (owner.codeWindow != nullptr && owner.codeWindow->isVisible())
-            {
-                if (!owner.codeWindow->getBounds().contains(event.position.toInt()))
-                {
-                    owner.hideCodeWindow();
-                    return;
-                }
-            }
-            
             // Verificar si se hizo click en el botón de cierre
             auto closeBounds = getLocalBounds().removeFromTop(40).removeFromRight(100).reduced(5);
             if (closeBounds.contains(event.position.toInt()))
             {
                 owner.hideDiagram();
                 return;
-            }
-            
-            // Verificar si se hizo click en un bloque para mostrar código
-            auto blockName = getBlockAtPosition(event.position);
-            if (blockName.isNotEmpty())
-            {
-                // Thread-safe: mover operaciones pesadas a MessageManager::callAsync
-                juce::Component::SafePointer<JCBReverbAudioProcessorEditor> safeOwner(&owner);
-                juce::MessageManager::callAsync([safeOwner, blockName]() {
-                    if (!safeOwner) return;  // Componente fue eliminado
-                    
-                    // Crear CodeWindow si no existe (solo en message thread)
-                    if (safeOwner->codeWindow == nullptr)
-                    {
-                        safeOwner->codeWindow = std::make_unique<CodeWindow>();
-                    }
-                    
-                    // Cargar código desde cache thread-safe
-                    juce::String genCode = safeOwner->loadCodeFromFile(blockName);
-                    
-                    // Determinar título de ventana: usar nombres personalizados para bloques específicos
-                    juce::String windowTitle = blockName;
-                    if (blockName == "LOOKAHEAD" || blockName == "MAKEUP" || 
-                        blockName == "OUTPUT") {
-                        windowTitle = "OUTPUT";
-                    }
-                    else if (blockName == "LR4" || blockName == "LR4-DRY-AllpassCompensated") {
-                        windowTitle = "CROSSOVER STAGE";
-                    }
-                    
-                    safeOwner->codeWindow->setCode(genCode, windowTitle);
-                    
-                    // Configurar colores: fondo negro sólido, texto blanco
-                    safeOwner->codeWindow->setHaloColour(juce::Colours::white);
-                    
-                    // Configurar callback de cierre
-                    safeOwner->codeWindow->onClose = [safeOwner]() {
-                        if (safeOwner) safeOwner->hideCodeWindow();
-                    };
-                    
-                    // Calcular tamaño responsivo
-                    int pluginWidth = safeOwner->getWidth();
-                    int pluginHeight = safeOwner->getHeight();
-                    
-                    int windowWidth = static_cast<int>(pluginWidth * 0.35f);
-                    int windowHeight = static_cast<int>(pluginHeight * 0.50f);
-                    
-                    // Limitar tamaños
-                    windowWidth = juce::jlimit(350, 600, windowWidth);
-                    windowHeight = juce::jlimit(250, 450, windowHeight);
-                    
-                    int x = pluginWidth / 2 - windowWidth / 2;
-                    int y = pluginHeight / 2 - windowHeight / 2;
-                    
-                    safeOwner->addChildComponent(safeOwner->codeWindow.get());
-                    safeOwner->codeWindow->setBounds(x, y, windowWidth, windowHeight);
-                    safeOwner->codeWindow->setVisible(true);
-                    safeOwner->codeWindow->toFront(true);
-                    safeOwner->codeWindow->grabKeyboardFocus();
-                });
             }
         }
         
@@ -906,6 +891,7 @@ private:
     // Instancias de Look and Feel
     CustomSlider::LookAndFeel sliderLAFBig;
     SmallButtonLAF smallButtonLAF;
+    TabButtonLAF tabButtonLAF;
     std::unique_ptr<SoloButtonLookAndFeel> soloButtonLAF;  // LookAndFeel para botón SOLO con gradiente invertido
     std::unique_ptr<ReversedGradientButtonLookAndFeel> reversedGradientButtonLAF;  // LookAndFeel con gradiente invertido
     std::unique_ptr<TealGradientButtonLookAndFeel> tealGradientButtonLAF;  // LookAndFeel con gradiente teal para PRE/POST

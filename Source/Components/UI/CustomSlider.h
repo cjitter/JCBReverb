@@ -81,6 +81,7 @@ public:
             
             // Determinar color de acento basado en el tipo de componente
             juce::Colour accentColour = juce::Colours::white;  // Por defecto
+            bool isEQ = false;
             
             // Obtener nombre/ID del componente para asignación de color
             juce::String name = slider.getName().toLowerCase();
@@ -100,14 +101,34 @@ public:
             // STEREO WIDTH (Azul pálido) - #B1CAF6
             else if (name == "stereo" || id == "stereo") {
                  accentColour = juce::Colour(0xFFB1CAF6);                                                                                                                                                               }
+            // EQ (morado más vibrante para mejor contraste) - #8F86D0
+            else if (name == "lsf" || id == "lsf" || name == "pf"  || id == "pf"  ||
+                     name == "hsf" || id == "hsf" || name == "lsg" || id == "lsg" ||
+                     name == "pg"  || id == "pg"  || name == "hsg" || id == "hsg") {
+                accentColour = juce::Colour(0xFF8F86D0);
+                isEQ = true;
+            }
+            // COMP (amarillo suave)
+            else if (name == "thd" || id == "thd" || name == "ratio" || id == "ratio" ||
+                     name == "atk" || id == "atk" || name == "rel"   || id == "rel"   ||
+                     name == "gain"|| id == "gain") {
+                accentColour = juce::Colour(0xFFDCCF6E);
+            }
             
             // Dibujar cuerpo del knob - estilos diferentes para grande vs pequeño
             if (!isSmall)
             {
                 // Knob grande - relleno sólido con gradient sutil
-                auto gradient = juce::ColourGradient(DarkTheme::backgroundLight.withAlpha(0.4f), 
+                auto bgLight = DarkTheme::backgroundLight.withAlpha(0.4f);
+                auto bgDark  = DarkTheme::backgroundDark.withAlpha(0.7f);
+                // Para EQ, aclarar ligeramente el fondo para mejorar contraste
+                if (isEQ) {
+                    bgLight = DarkTheme::backgroundLight.withAlpha(0.55f);
+                    bgDark  = DarkTheme::backgroundDark.withAlpha(0.55f);
+                }
+                auto gradient = juce::ColourGradient(bgLight,
                                               bounds.getCentreX(), bounds.getCentreY() - radius * 0.3f,
-                                              DarkTheme::backgroundDark.withAlpha(0.7f), 
+                                              bgDark,
                                               bounds.getCentreX(), bounds.getCentreY() + radius * 0.3f, false);
                 g.setGradientFill(gradient);
                 g.fillEllipse(bounds);
@@ -249,6 +270,21 @@ public:
             if (name == "drywet" || id == "drywet") return "D/W";
             if (name == "damp" || id == "damp") return "DAMP";
             if (name == "stereo" || id == "stereo" || name == "stereo" || id == "stereo") return "M/S";  // RLPF label
+
+            // EQ short labels
+            if (name == "lsf" || id == "lsf") return "LSF";   // Low Shelf Freq
+            if (name == "pf"  || id == "pf")  return "PF";    // Peak Freq
+            if (name == "hsf" || id == "hsf") return "HSF";   // High Shelf Freq
+            if (name == "lsg" || id == "lsg") return "LSG";   // Low Shelf Gain
+            if (name == "pg"  || id == "pg")  return "PG";    // Peak Gain
+            if (name == "hsg" || id == "hsg") return "HSG";   // High Shelf Gain
+
+            // Compressor short labels
+            if (name == "thd"   || id == "thd")   return "THD";   // Threshold
+            if (name == "ratio" || id == "ratio") return "RATIO"; // Ratio
+            if (name == "atk"   || id == "atk")   return "ATK";   // Attack
+            if (name == "rel"   || id == "rel")   return "REL";   // Release
+            if (name == "gain"  || id == "gain")  return "GAIN";  // Makeup
 
             return "";
         }
