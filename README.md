@@ -1,6 +1,9 @@
 ![JCBReverb Interface](Assets/screenshot.png)
 
-Plugin distorsionador desarrollado en gen~, exportado con [gen~ Plugin Export](https://github.com/Cycling74/gen-plugin-export) y finalizado con el framework C++ [JUCE](https://github.com/juce-framework/JUCE). Este plugin forma parte de un conjunto de herramientas didácticas que utilizo en la asignatura de Técnicas de Grabación y Masterización para Música Electroacústica del [MCE](https://katarinagurska.com/curso-of/master-de-composicion-electroacustica-mce/). Originalmente creado con JUCE 6 hace unos años, el proyecto ha evolucionado significativamente en su interfaz gráfica y funcionalidad gracias al desarrollo con Claude Code durante junio de 2025. Para más detalles técnicos, consulta [NOTAS.md](NOTAS.md).
+Reverb estéreo desarrollada en gen~, exportada con [gen~ Plugin Export](https://github.com/Cycling74/gen-plugin-export) y finalizada con [JUCE](https://github.com/juce-framework/JUCE). Forma parte de un conjunto de herramientas didácticas que utilizo en la asignatura de Técnicas de Grabación y Masterización para Música Electroacústica del [MCE](https://katarinagurska.com/curso-of/master-de-composicion-electroacustica-mce/). Originalmente creado con JUCE 6 hace unos años, el proyecto ha evolucionado significativamente en su interfaz gráfica y funcionalidad gracias al desarrollo con Claude Code y posteriormente con Codex CLI. Para más detalles técnicos, consulta [NOTAS.md](NOTAS.md).
+
+
+El proyecto ha evolucionado en interfaz y UX durante 2025. Para más detalles técnicos, consulta [NOTAS.md](NOTAS.md).
 
 ## Instalación macOS
 1. Descarga el archivo DMG desde la página de [Releases](https://github.com/cjitter/JCBReverb/releases)
@@ -61,23 +64,16 @@ cmake --build build-release   # Para Release
 
 ## Características principales (v1.0.0-alpha.1)
 
-- Distorsión multimodal: 8 algoritmos seleccionables (Soft Clip, Sigmoid, Full/Half Rectifier, Fuzz Exp., Tanh, Arctan, Hard Clip).
-- Ganancia de entrada (DRIVE) de 1× a 50× y asimetría (EVEN) con skew dependiente de polaridad → armónicos pares controlables y sin DC.
-- Filtro Tilt: ±6 dB, con posición Pre/Post Distorsión y morph continuo.
-- Filtro Tone (RLPF resonante): Q 0.707–16, conmutación Pre/Post, compensación de fase en Dry y suavizado de parámetros.
-- Crossover LR4 de 3 bandas con puntos ajustables (20 Hz–1 kHz / 1–20 kHz) y compensación de fase en la ruta Dry.
-- Gestión de banda: selección continua y Solo de banda en Wet, manteniendo Dry full-range.
-- Bit Crusher (2–16 bits) con cuantización por round, dc-block y mezcla conmutada.
-- Downsampler con latch estable y reset limpio al activar (1–100×).
-- Output: ceiling ajustable (−20 a +6 dB) + limitador de seguridad opcional (−0.1 dB), trim ±12 dB, mezcla Dry/Wet.
-- Pipeline modular: Input → Crossover → Distorsión → Efectos → Output (fácil de depurar/extender).
-- Robustez numérica: smoothing crítico (incl. MODE), fixdenorm en biquads y bypass suavizado compatible con Pro Tools.
-- UI/UX:
-- Analizador FFT 2048 pt con líneas de crossover arrastrables.
-- Curvas de distorsión en tiempo real.
-- Medidores In/Out RMS/Peak.
-- Tooltips bilingües (ES/EN).
-- Diagrama de bloques interactivo con acceso a GenExpr (Max).
+- Reverb estéreo tipo Schroeder/Freeverb con controles musicales.
+- Controles principales: Input Trim (±12 dB), Dry/Wet (0–100%), Size, Reflections, DAMP (0–100%), Stereo Width (M/S 0–100%).
+- EQ 3 bandas en salida Wet: Low/Peak/High con frecuencias y ganancias (±24 dB) ajustables.
+- Compresor en salida Wet: Threshold, Ratio, Attack, Release y Makeup (0.01 dB step). PUMP disponible solo con COMP ON.
+- Visualizador: FFT y Waveform; Wave ajustado con gamma y autoescala para colas realistas, desacoplado de TRIM y Dry/Wet.
+- Presets de fábrica y gestión de presets de usuario.
+- UI/UX: botones y sliders con colores consistentes; tooltips bilingües (ES/EN); tabs EQ/COMP con acentos (#8F86D0/#DCCF6E).
+- Medidores In/Out RMS/Peak y bypass suave sin latencia.
+
+Nota: el overlay de diagrama es informativo y no interactivo con código GenExpr.
 
 ![Diagrama de Bloques](Assets/screenshotDiagram.png)
 

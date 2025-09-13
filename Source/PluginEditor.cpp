@@ -821,12 +821,6 @@ void JCBReverbAudioProcessorEditor::timerCallback()
     {
         // Si está en bypass o Logic está parado, no hay reducción
         maxGainReductionFromBuffer = 0.0f;
-
-        // Forzar repaint del transfer display cuando Logic está parado
-        // para que las envolventes y el histograma desaparezcan
-        if (isProcessingInactive)
-        {
-        }
     }
 
     // Debug overlay: update counters each frame (lightweight atomics)
@@ -1256,7 +1250,7 @@ void JCBReverbAudioProcessorEditor::setupKnobs()
     sidechainControls.hpfSlider.setTextBoxIsEditable(true);
     sidechainControls.hpfSlider.setEnabled(true);  // Inicialmente habilitado
     sidechainControls.hpfSlider.setAlpha(1.0f);  // Inicialmente visible
-    sidechainControls.hpfSlider.setDoubleClickReturnValue(true, 100.0f);  // Nuevo default 250Hz
+    sidechainControls.hpfSlider.setDoubleClickReturnValue(true, 100.0f);  // Default 100 Hz
     sidechainControls.hpfSlider.setPopupDisplayEnabled(false, false, this);
     sidechainControls.hpfSlider.setNumDecimalPlacesToDisplay(0);
     // Formato de texto personalizado para frecuencia
@@ -1267,8 +1261,8 @@ void JCBReverbAudioProcessorEditor::setupKnobs()
             return juce::String(value / 1000.0, 1) + "k";
     };
     sidechainControls.hpfSlider.setTextValueSuffix(" Hz");
-    sidechainControls.hpfSlider.setRange(20.0, 1000.0, 1.0);
-    sidechainControls.hpfSlider.setSkewFactorFromMidPoint(250.0);  // 250Hz en el centro
+    sidechainControls.hpfSlider.setRange(20.0, 5000.0, 1.0);
+    sidechainControls.hpfSlider.setSkewFactorFromMidPoint(500.0);  // 500 Hz en el centro visual
     addAndMakeVisible(sidechainControls.hpfSlider);
     if (auto* param = processor.apvts.getParameter("l_HPF"))
     {
@@ -1422,7 +1416,7 @@ void JCBReverbAudioProcessorEditor::setupKnobs()
     leftKnobs.dampSlider.setColour(juce::Slider::textBoxOutlineColourId, juce::Colours::transparentBlack);
     leftKnobs.dampSlider.setColour(juce::Slider::textBoxTextColourId, juce::Colour(0xFFFFFFFF));
     leftKnobs.dampSlider.setRange(0.1, 0.95, 0.01);
-    leftKnobs.dampSlider.setDoubleClickReturnValue(true, 0.3125);  // Para mostrar 25%
+    leftKnobs.dampSlider.setDoubleClickReturnValue(true, 0.10);    // 0% visual (Gen 0.1)
     leftKnobs.dampSlider.setPopupDisplayEnabled(false, false, this);
     // Funciones de conversión para mostrar porcentajes
     leftKnobs.dampSlider.textFromValueFunction = [](double value) {
@@ -1454,24 +1448,31 @@ void JCBReverbAudioProcessorEditor::setupKnobs()
 
     leftKnobs.stSlider.setTextBoxIsEditable(true);
     leftKnobs.stSlider.setEnabled(true);
-    leftKnobs.stSlider.setDoubleClickReturnValue(true, 0.45f);
+    leftKnobs.stSlider.setDoubleClickReturnValue(true, 0.425f);
     leftKnobs.stSlider.setPopupDisplayEnabled(false, false, this);
-    leftKnobs.stSlider.setRange(0, 0.8,0.5);
+    // Range aligned to parameter: 0..0.85. Paso 0.005 permite 0.425 exacto
+    leftKnobs.stSlider.setRange(0.0, 0.85, 0.005);
     //leftKnobs.stSlider.setSkewFactorFromMidPoint(0.5);
     // Funciones de conversión para mostrar porcentajes
     leftKnobs.stSlider.setTextValueSuffix({}); // sin sufijo; lo añadimos nosotros
     leftKnobs.stSlider.textFromValueFunction = [](double v)
     {
-        // v está en 0..0.9 → mostramos 0..100%
-        const auto pct = std::round((v / 0.9) * 100.0);
-        return juce::String((int) pct) + " %";
+        const double maxV = 0.85;
+        // Snap al 50% para evitar mostrar 51% por redondeos
+        if (std::abs(v - 0.425) < 1.0e-3) {
+            return juce::String(50) + " %";
+        }
+        double pct = (v / maxV) * 100.0;
+        int ipct = juce::roundToInt(pct + 1.0e-6);
+        ipct = juce::jlimit(0, 100, ipct);
+        return juce::String(ipct) + " %";
     };
     leftKnobs.stSlider.valueFromTextFunction = [](const juce::String& text)
     {
         // extraer número de "42 %" o "42"
         double pct = text.retainCharacters("0123456789.-").getDoubleValue();
         pct = juce::jlimit(0.0, 100.0, pct);
-        return (pct / 100.0) * 0.9; // devolvemos 0..0.9
+        return (pct / 100.0) * 0.85; // devolvemos 0..0.85
     };
 
 
@@ -1502,9 +1503,9 @@ void JCBReverbAudioProcessorEditor::setupKnobs()
     eqControls.eqOnButton.setLookAndFeel(&smallButtonLAF);
     eqControls.eqOnButton.setColour(juce::TextButton::buttonColourId, juce::Colours::transparentBlack);
     eqControls.eqOnButton.setColour(juce::TextButton::buttonOnColourId, juce::Colours::transparentBlack);
-    // Texto del activador EQ: ON morado claro; OFF blanco pálido más tenue
+    // Texto del activador EQ: ON morado #8F86D0; OFF blanco pálido (alfa 0.5)
     eqControls.eqOnButton.setColour(juce::TextButton::textColourOffId, DarkTheme::textSecondary.withAlpha(0.5f));
-    eqControls.eqOnButton.setColour(juce::TextButton::textColourOnId,  juce::Colour(0xFF7F78A2));
+    eqControls.eqOnButton.setColour(juce::TextButton::textColourOnId,  juce::Colour(0xFF8F86D0));
     eqControls.eqOnButton.addListener(this);
     addAndMakeVisible(eqControls.eqOnButton);
     if (auto* paramEQ = processor.apvts.getParameter("q_ONOFFEQ"))
@@ -2029,7 +2030,7 @@ void JCBReverbAudioProcessorEditor::setupPresetArea()
                 if (auto* param = processor.apvts.getRawParameterValue(paramName)) {
                     float value = param->load();
 
-                    // Aplicar la misma validación que en parameterChanged() (DISTORTION)
+                    // Aplicar la misma validación que en parameterChanged()
                     if (paramName == "b_DRIVE" && value < 1.0f) {
                         value = 1.0f;  // Drive mínimo 1x
                     }
@@ -2438,9 +2439,8 @@ void JCBReverbAudioProcessorEditor::updateCompComponentStates()
     set(compControls.pumpButton);
     compControls.compOnButton.setButtonText(compOn ? "ON" : "OFF");
 
-    // Nota: No modificar el valor del parámetro PUMP cuando COMP está OFF.
-    // Se deshabilita el control visualmente, pero se conserva el último estado
-    // para que al volver a activar COMP, PUMP recupere su valor anterior.
+    // Política: cuando COMP está OFF, PUMP queda deshabilitado visualmente
+    // pero su estado (ON/OFF) se conserva para restaurarlo al reactivar COMP.
 }
 
 void JCBReverbAudioProcessorEditor::updateRightPanelVisibility()
@@ -2713,7 +2713,7 @@ void JCBReverbAudioProcessorEditor::updateMeterStates()
     const bool bypassActive = parameterButtons.bypassButton.getToggleState();
     // MAXIMIZER: No sidechain controls - commenting out
     // const bool soloScActive = sidechainControls.soloScButton.getToggleState();
-    const bool soloScActive = false;  // Maximizer has no sidechain
+    const bool soloScActive = false;  // No sidechain in this processor
 
     // Actualizar colores de medidores
     // Si bypass está activo, no cambiar colores (mantener normales)
@@ -2751,8 +2751,8 @@ void JCBReverbAudioProcessorEditor::updateMeters()
     // MAXIMIZER: No sidechain controls - commenting out
     // const bool soloScActive = sidechainControls.soloScButton.getToggleState();
     // const bool extKeyActive = sidechainControls.keyButton.getToggleState();
-    const bool soloScActive = false;  // Maximizer has no sidechain
-    const bool extKeyActive = false;  // Maximizer has no external key
+    const bool soloScActive = false;  // No sidechain
+    const bool extKeyActive = false;  // No external key
 
     // Solo actualizar visibilidad cuando el estado realmente cambia
     if (soloScActive != lastSoloScActive || extKeyActive != lastExtKeyActive) {
@@ -2840,7 +2840,7 @@ void JCBReverbAudioProcessorEditor::updateSliderValues()
     //     leftKnobs.kneeSlider.setValue(param->load(), juce::dontSendNotification);
 
 
-    // DISTORTION: n_LOOKAHEAD eliminado - no existe en distorsionador
+    // n_LOOKAHEAD no existe en este procesador
 
 
 
@@ -3582,7 +3582,7 @@ juce::String JCBReverbAudioProcessorEditor::getTooltipText(const juce::String& k
         if (key == "trim") return JUCE_UTF8("TRIM: ganancia de entrada a la reverb\nAjusta el nivel antes del procesamiento\nRango: -12 a +12 dB | Por defecto: 0 dB");
         if (key == "makeup") return JUCE_UTF8("OUTPUT: ganancia de salida (sólo WET)\nNo afecta la rama DRY/Dry-Wet\nRango: -24 a +12 dB | Por defecto: 0 dB");
 
-        if (key == "hpf") return JUCE_UTF8("HPF: filtro paso alto 12 dB/oct\nAtenúa frecuencias por debajo del corte\nRango: 20 a 1000 Hz | Por defecto: 250 Hz");
+        if (key == "hpf") return JUCE_UTF8("HPF: filtro paso alto 12 dB/oct\nAtenúa frecuencias por debajo del corte\nRango: 20 a 5000 Hz | Por defecto: 100 Hz");
         if (key == "lpf") return JUCE_UTF8("LPF: filtro paso bajo 12 dB/oct\nAtenúa frecuencias por encima del corte\nRango: 100 Hz a 20 kHz | Por defecto: 20 kHz");
         if (key == "sc") return JUCE_UTF8("FILTERS: activa/desactiva los filtros HPF/LPF (12 dB/oct).\nHPF y LPF se aplican según sus controles dedicados.\nValor por defecto: OFF");
 
@@ -3629,7 +3629,7 @@ juce::String JCBReverbAudioProcessorEditor::getTooltipText(const juce::String& k
         if (key == "bypass") return JUCE_UTF8("BYPASS: desactiva el procesamiento del plugin\nParámetro global, no automatizable. Transición suave\nRango: OFF/ON | Por defecto: OFF");
         if (key == "graphics") return JUCE_UTF8("GRAPHICS: alterna entre FFT y Wave\nFFT: analizador de espectro | Wave: forma de onda\nClick para cambiar de modo");
         if (key == "zoom") return JUCE_UTF8("ZOOM: cicla entre vista normal y ampliada del FFT\nNormal: -80 a 0dB | x2: -48 a 0dB\nSolo activo en modo FFT");
-        if (key == "diagram") return JUCE_UTF8("DIAGRAM: muestra diagrama de bloques del procesador\nDespliega menú con código GenExpr por bloque para copiar");
+        if (key == "diagram") return JUCE_UTF8("DIAGRAM: muestra diagrama de bloques del procesador\nSolo visual; bloquea clics al fondo");
         if (key == "tooltiptoggle") return JUCE_UTF8("TOOLTIP: muestra/oculta los tooltips de ayuda\nActiva o desactiva las ventanas de ayuda emergentes");
         if (key == "tooltiplang") return JUCE_UTF8("IDIOMA: cambia entre español e inglés.\nAlterna el idioma de los tooltips.");
         if (key == "link") return JUCE_UTF8("STEREO LINKED: siempre activo.\nEl plugin solo funciona en modo stereo linked.\nAmbos canales siempre están vinculados");
@@ -3647,7 +3647,7 @@ juce::String JCBReverbAudioProcessorEditor::getTooltipText(const juce::String& k
         if (key == "trim") return JUCE_UTF8("TRIM: input gain to the reverb\nAdjusts the level before processing\nRange: -12 to +12 dB | Default: 0 dB");
         if (key == "makeup") return JUCE_UTF8("OUTPUT: output gain (WET only)\nDoes not affect the DRY/Dry-Wet path\nRange: -24 to +12 dB | Default: 0 dB");
 
-        if (key == "hpf") return JUCE_UTF8("HPF: high-pass filter 12 dB/oct\nAttenuates frequencies below the cutoff\nRange: 20 to 1000 Hz | Default: 250 Hz");
+        if (key == "hpf") return JUCE_UTF8("HPF: high-pass filter 12 dB/oct\nAttenuates frequencies below the cutoff\nRange: 20 to 5000 Hz | Default: 100 Hz");
         if (key == "lpf") return JUCE_UTF8("LPF: low-pass filter 12 dB/oct\nAttenuates frequencies above the cutoff\nRange: 100 Hz to 20 kHz | Default: 20 kHz");
         if (key == "sc") return JUCE_UTF8("FILTERS: enable/disable HPF/LPF (12 dB/oct)\nHPF and LPF are applied according to their dedicated controls\nDefault: OFF");
 
@@ -3693,7 +3693,7 @@ juce::String JCBReverbAudioProcessorEditor::getTooltipText(const juce::String& k
         if (key == "bypass") return JUCE_UTF8("BYPASS: disables plugin processing\nGlobal parameter, not automatable. Smooth transition\nRange: OFF/ON | Default: OFF");
         if (key == "graphics") return JUCE_UTF8("GRAPHICS: toggle between FFT and Wave\nFFT: spectrum analyzer | Wave: waveform display\nClick to switch modes");
         if (key == "zoom") return JUCE_UTF8("ZOOM: cycle FFT zoom view\nNormal: -80 to 0 dB | x2: -48 to 0 dB\nOnly active in FFT mode");
-        if (key == "diagram") return JUCE_UTF8("DIAGRAM: show processor block diagram\nDisplays menu with GenExpr code per block for copy");
+        if (key == "diagram") return JUCE_UTF8("DIAGRAM: show processor block diagram\nVisual only; blocks clicks to the background");
         if (key == "tooltiptoggle") return JUCE_UTF8("TOOLTIP: show/hide help tooltips\nEnable or disable popup help windows");
         if (key == "tooltiplang") return JUCE_UTF8("LANGUAGE: switch between Spanish and English\nToggles tooltip language");
         if (key == "link") return JUCE_UTF8("STEREO LINKED: always active\nThe plugin only works in stereo linked mode\nBoth channels are always coupled");
@@ -3975,7 +3975,7 @@ void JCBReverbAudioProcessorEditor::applyMeterDecayIfNeeded()
 void JCBReverbAudioProcessorEditor::updateARButtonText()
 {
     // En el original ExpansorGate manejaba el texto dinámico AR OFF/AR ON
-    // El Maximizer tiene AUTOREL como botón toggle separado
+    // En este procesador no hay AUTOREL independiente
 }
 
 

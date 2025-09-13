@@ -25593,8 +25593,8 @@
 									"numinlets" : 0,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 676.0, 194.0, 291.0, 22.0 ],
-									"text" : "param @name f_ST @min 0 @max 0.9 @default 0.5"
+									"patching_rect" : [ 676.0, 194.0, 311.0, 22.0 ],
+									"text" : "param @name f_ST @min 0 @max 0.85 @default 0\\,425"
 								}
 
 							}

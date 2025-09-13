@@ -702,8 +702,8 @@ private:
         {
             if (clickableAreasCached) return;
             
-            // Áreas clickables para el diagrama de distorsión
-            // Distribución horizontal de los 4 bloques principales
+            // Áreas clickables para el diagrama (informativo)
+            // Distribución horizontal de los bloques principales
             cachedClickableAreas = {
                 // Los 4 bloques del procesamiento de distorsión
                 {"INPUT STAGE", 75.f, 75.f, 55.f, 45.f},      // Entrada y trim
@@ -718,11 +718,10 @@ private:
             clickableAreasCached = true;
         }
         
-        // Obtener color para efectos hover - Todos blancos para el distorsionador
+        // Obtener color para efectos hover - Blanco para todos los bloques
         juce::Colour getBlockColor(const juce::String& blockName)
         {
-            // Todos los bloques del distorsionador usan el mismo color blanco
-            // para mantener coherencia visual
+            // Todos los bloques usan el mismo color blanco para coherencia visual
             return DarkTheme::textPrimary;  // Blanco para todos los bloques
         }
         

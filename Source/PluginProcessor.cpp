@@ -98,7 +98,7 @@ JCBReverbAudioProcessor::JCBReverbAudioProcessor()
                 value = juce::jlimit(0.1f, 4.0f, value);
             }
             else if (paramName == "f_ST") {
-                value = juce::jlimit(0.0f, 0.8f, value);
+                value = juce::jlimit(0.0f, 0.85f, value);
             }
             else if (paramName == "g_FREEZE" || paramName == "q_ONOFFEQ" || paramName == "r_ONOFFCOMP" || paramName == "y_FILTERS" || paramName == "z_BYPASS") {
                 value = juce::jlimit(0.0f, 1.0f, value);
@@ -110,10 +110,7 @@ JCBReverbAudioProcessor::JCBReverbAudioProcessor()
                 value = juce::jlimit(100.0f, 20000.0f, value);
             }
             else if (paramName == "l_HPF") {
-                value = juce::jlimit(20.0f, 1000.0f, value);
-            }
-            else if (paramName == "m_OUTPUT") {
-                value = juce::jlimit(-24.0f, 12.0f, value);
+                value = juce::jlimit(20.0f, 5000.0f, value);
             }
             else if (paramName == "n_LOWFREQ") {
                 value = juce::jlimit(20.0f, 800.0f, value);
@@ -369,7 +366,7 @@ void JCBReverbAudioProcessor::processBlockCommon(juce::AudioBuffer<float>& buffe
     // === 1.b APLICAR AQUÍ: drenar cambios de parámetros pendientes ===
     drainPendingParamsToGen();
 
-    // Host bypass handled via FSM mix below (mirrors JCBDistortion). No early return.
+    // Host bypass handled via FSM mix below. No early return.
 
     // === 2. (reserved) bus layout sync ===
 
@@ -685,7 +682,7 @@ void JCBReverbAudioProcessor::processBlockCommon(juce::AudioBuffer<float>& buffe
         }
     }
 
-    // === 5. FSM de Bypass y mezcla equal-power (mirroring JCBDistortion) ===
+    // === 5. FSM de Bypass y mezcla equal-power ===
     const bool wantsBypass = hostWantsBypass;
     hostBypassMirror.store(wantsBypass, std::memory_order_relaxed);
     const bool bypassEdge = (wantsBypass != lastWantsBypass);
@@ -909,7 +906,7 @@ void JCBReverbAudioProcessor::fillGenInputBuffers(const juce::AudioBuffer<float>
 
 void JCBReverbAudioProcessor::processGenAudio(int numSamples)
 {
-    // Simplificado como en Maximizer - sin verificación de errores
+    // Simplificado: sin verificación de errores
     JCBReverb::perform(m_PluginState,
                       m_InputBuffers,
                       JCBReverb::num_inputs(),
@@ -1193,12 +1190,12 @@ juce::AudioProcessorValueTreeState::ParameterLayout JCBReverbAudioProcessor::cre
        juce::NormalisableRange<float>(0.1f, 4.f, 0.01f),
        1.5f));
 
-   // f_ST - Stereo width
+   // f_ST - Stereo width (Gen: 0..0.85, default 0.425)
    params.push_back(std::make_unique<juce::AudioParameterFloat>(
        juce::ParameterID("f_ST", versionHint),
        "Stereo",
-       juce::NormalisableRange<float>(0.f, 0.9f, 0.01f),
-       0.45f));
+       juce::NormalisableRange<float>(0.f, 0.85f, 0.005f),
+       0.425f));
 
    // g_FREEZE - Freeze mode
    params.push_back(std::make_unique<juce::AudioParameterBool>(
@@ -1240,7 +1237,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout JCBReverbAudioProcessor::cre
         12000.f,
        "Hz"));
 
-   // l_HPF - High pass filter
+   // l_HPF - High pass filter (Gen: 20..5000 Hz, default 100)
    params.push_back(std::make_unique<juce::AudioParameterFloat>(
        juce::ParameterID("l_HPF", versionHint),
        "HPF",

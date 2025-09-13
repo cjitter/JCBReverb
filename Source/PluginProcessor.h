@@ -88,7 +88,7 @@ public:
     double getCurrentSampleRate() const noexcept { return m_PluginState ? m_PluginState->sr : 44100.0; }
     
     //==============================================================================
-    // DISTORTION: No requiere reportes de gain reduction - eliminados
+    // Reverb: no requiere reportes de gain reduction
     
     #if JucePlugin_Build_VST3
     void updateVST3GainReduction();

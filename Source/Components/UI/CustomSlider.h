@@ -35,6 +35,14 @@ public:
     
     CustomSlider(const juce::String& name = {}) : juce::Slider(name) {}
 
+    void mouseDoubleClick (const juce::MouseEvent& e) override
+    {
+        // Refuerza el comportamiento de doble clic para devolver al valor por defecto
+        // útil cuando el LAF/attachments interfieren con los gestos.
+        setValue(getDoubleClickReturnValue(), juce::sendNotification);
+        juce::Slider::mouseDoubleClick(e);
+    }
+
     //==========================================================================
     // LOOK AND FEEL INTEGRADO
     //==========================================================================
