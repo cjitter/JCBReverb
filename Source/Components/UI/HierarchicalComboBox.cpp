@@ -266,8 +266,8 @@ void HierarchicalComboBox::HierarchicalPopupWindow::hideSubMenu()
 //==============================================================================
 
 HierarchicalComboBox::HierarchicalPopupWindow::SubMenu::SubMenu(HierarchicalPopupWindow& parent)
-    : parentWindow(parent)
 {
+    juce::ignoreUnused(parent);
 }
 
 void HierarchicalComboBox::HierarchicalPopupWindow::SubMenu::paint(juce::Graphics& g)

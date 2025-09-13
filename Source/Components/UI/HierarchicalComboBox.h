@@ -93,7 +93,7 @@ public:
             void hide();
             
         private:
-            HierarchicalPopupWindow& parentWindow;
+            // (reservado) referencia al padre si se necesitase en el futuro
             std::vector<const MenuItem*> currentItems;
             int hoveredIndex = -1;
             

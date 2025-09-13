@@ -166,10 +166,7 @@ void WaveformComponent::paint(juce::Graphics& g)
         if (activitySmoothed < 0.02f)
             tailScaleSmoothed *= 0.995f; // decaimiento muy suave
 
-        const float colW = juce::jmax(1.0f, stepX); // path continuo
-
         // 3) Construir área WET (cola) y las envolventes DRY superior/inferior
-        const juce::Colour base = freezeOn ? Colours::freezeAccent : Colours::outputWaveform;
 
         // Envolventes DRY superior/inferior (espejo negativo)
         juce::Path dryUpper, dryLower;
@@ -179,9 +176,7 @@ void WaveformComponent::paint(juce::Graphics& g)
         float dryVals[levelHistorySize];
         for (int i = 0; i < levelHistorySize; ++i)
         {
-            const int idx0 = (writePos - levelHistorySize + i - 1 + levelHistorySize*10) % levelHistorySize;
             const int idx1 = (writePos - levelHistorySize + i +     levelHistorySize*10) % levelHistorySize;
-            const int idx2 = (writePos - levelHistorySize + i + 1 + levelHistorySize*10) % levelHistorySize;
             // Usar valor central para seguir más fielmente el contorno de entrada
             const float inAvg = inputLevels[idx1];
             float dAmp = inAvg * dryScale;
