@@ -489,6 +489,10 @@ JCBReverbAudioProcessorEditor::~JCBReverbAudioProcessorEditor()
     compControls.compOnButton.setLookAndFeel(nullptr);
     compControls.pumpButton.setLookAndFeel(nullptr);
 
+    // Tabs (EQ/COMP)
+    rightTabs.eqTab.setLookAndFeel(nullptr);
+    rightTabs.compTab.setLookAndFeel(nullptr);
+
     // Limpiar LookAndFeel del editor principal
     setLookAndFeel(nullptr);
 }
@@ -607,35 +611,6 @@ void JCBReverbAudioProcessorEditor::resized()
     // Bottom row: ATK, REL
     compControls.atkSlider.setBounds  (getScaledBounds(510, 102, 50, 50));
     compControls.relSlider.setBounds  (getScaledBounds(560, 102, 50, 50));
-
-    // Posicionar debug label en esquina inferior derecha - ELIMINAR SI NO SE USA
-    // const int dbgW = 220;
-    // const int dbgH = 16;
-    // debugLabel.setBounds(getWidth() - dbgW - 10, getHeight() - dbgH - 6, dbgW, dbgH);
-
-    // === TRANSFER FUNCTION DISPLAY (CENTER) ===
-    // float x = 460.0f * 700.0f / 1247.0f;
-    // float y = 73.0f * 200.0f / 353.0f + 4.0f;
-    // float w = 335.0f * 700.0f / 1247.0f;
-    // float h = 205.0f * 200.0f / 353.0f - 5.0f;
-
-    // Posicionar el analizador de espectro en el mismo lugar
-    // spectrumAnalyzer.setBounds(getScaledBounds(x, y, w, h));
-
-    /*
-    leftBottomKnobs.toneLpfButton.setBounds(getScaledBounds(126, 118, 25, 15));
-    leftBottomKnobs.tonePosButton.setBounds(getScaledBounds(136, 138, 20, 10));
-    leftBottomKnobs.toneFreqSlider.setBounds(getScaledBounds(146, 102, 53, 53));
-    leftBottomKnobs.toneQSlider.setBounds(getScaledBounds(193, 102, 53, 53));
-    // === COMP (bottom-right) ===
-    compControls.compOnButton.setBounds(getScaledBounds(390, 118, 35, 15));
-    compControls.thdSlider.setBounds(getScaledBounds(440, 102, 39, 39));
-    compControls.ratioSlider.setBounds(getScaledBounds(481, 102, 39, 39));
-    compControls.atkSlider.setBounds(getScaledBounds(522, 102, 39, 39));
-    compControls.relSlider.setBounds(getScaledBounds(563, 102, 39, 39));
-    compControls.gainSlider.setBounds(getScaledBounds(604, 102, 39, 39));
-    compControls.pumpButton.setBounds(getScaledBounds(390, 150, 44, 12));
-    */
 
     // === PRESET AREA (TOP LEFT) ===
     presetArea.saveButton.setBounds(getScaledBounds(5, 15, 20, 12));  // Alineado con undo
@@ -1704,9 +1679,9 @@ void JCBReverbAudioProcessorEditor::setupKnobs()
         compControls.pumpAttachment = std::make_unique<UndoableButtonAttachment>(*paramPump, compControls.pumpButton, &undoManager);
         compControls.pumpAttachment->onParameterChange = [this]() { handleParameterChange(); };
         // Refrescar texto/estado visual si cambia por automation/preset
-        compControls.pumpAttachment->onStateChange = [this](bool isOn) {
-            juce::ignoreUnused(isOn);
-            // El color del texto ya depende del toggle y está configurado; no se requiere más
+        // (No se necesita acceso a 'this' en este momento)
+        compControls.pumpAttachment->onStateChange = [](bool /*isOn*/) {
+            // El color del texto ya depende del toggle y está configurado
         };
     }
 

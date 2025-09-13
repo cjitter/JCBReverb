@@ -298,6 +298,15 @@ private:
     // LISTENERS ESPECIALIZADOS
     //==========================================================================
 
+    // Instancias LookAndFeel (declaradas antes de componentes para asegurar vida > componentes)
+    CustomSlider::LookAndFeel sliderLAFBig;
+    SmallButtonLAF smallButtonLAF;
+    TabButtonLAF tabButtonLAF;
+    std::unique_ptr<SoloButtonLookAndFeel> soloButtonLAF;            // opcional
+    std::unique_ptr<ReversedGradientButtonLookAndFeel> reversedGradientButtonLAF; // opcional
+    std::unique_ptr<TealGradientButtonLookAndFeel> tealGradientButtonLAF;        // opcional
+    std::unique_ptr<CoralGradientButtonLookAndFeel> coralGradientButtonLAF;      // opcional
+
     //==========================================================================
     // COMPONENTES DE DISPLAY PRINCIPALES
     //==========================================================================
@@ -886,15 +895,6 @@ private:
     //==========================================================================
     // VARIABLES DE STATE
     //==========================================================================
-    
-    // Instancias de Look and Feel
-    CustomSlider::LookAndFeel sliderLAFBig;
-    SmallButtonLAF smallButtonLAF;
-    TabButtonLAF tabButtonLAF;
-    std::unique_ptr<SoloButtonLookAndFeel> soloButtonLAF;  // LookAndFeel para botón SOLO con gradiente invertido
-    std::unique_ptr<ReversedGradientButtonLookAndFeel> reversedGradientButtonLAF;  // LookAndFeel con gradiente invertido
-    std::unique_ptr<TealGradientButtonLookAndFeel> tealGradientButtonLAF;  // LookAndFeel con gradiente teal para PRE/POST
-    std::unique_ptr<CoralGradientButtonLookAndFeel> coralGradientButtonLAF;  // LookAndFeel con gradiente coral para DIST ON
     
     // Banderas de estado principales
     bool isLoadingPreset = false;
