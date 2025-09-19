@@ -2,9 +2,6 @@
 
 Reverb estéreo desarrollada en gen~, exportada con [gen~ Plugin Export](https://github.com/Cycling74/gen-plugin-export) y finalizada con [JUCE](https://github.com/juce-framework/JUCE). Forma parte de un conjunto de herramientas didácticas que utilizo en la asignatura de Técnicas de Grabación y Masterización para Música Electroacústica del [MCE](https://katarinagurska.com/curso-of/master-de-composicion-electroacustica-mce/). Originalmente creado con JUCE 6 hace unos años, el proyecto ha evolucionado significativamente en su interfaz gráfica y funcionalidad gracias al desarrollo con Claude Code y posteriormente con Codex CLI. Para más detalles técnicos, consulta [NOTAS.md](NOTAS.md).
 
-
-El proyecto ha evolucionado en interfaz y UX durante 2025. Para más detalles técnicos, consulta [NOTAS.md](NOTAS.md).
-
 ## Instalación macOS
 1. Descarga el archivo DMG desde la página de [Releases](https://github.com/cjitter/JCBReverb/releases)
 2. Abre el DMG y ejecuta el instalador
