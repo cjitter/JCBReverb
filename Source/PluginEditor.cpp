@@ -453,6 +453,9 @@ JCBReverbAudioProcessorEditor::~JCBReverbAudioProcessorEditor()
 {
     // CRÍTICO: Detener timer PRIMERO para prevenir crashes durante destrucción
     stopTimer();
+
+    processor.setSpectrumAnalyzerCallback({});
+    processor.setSampleRateChangedCallback({});
     
     // Desregistrar listeners de parámetros antes de destruir
     if (sidechainParameterListener) {
@@ -3870,70 +3873,47 @@ int JCBReverbAudioProcessorEditor::getParameterIndexByID(const juce::String& par
 
 int JCBReverbAudioProcessorEditor::getControlParameterIndex(juce::Component& control)
 {
-    // Mapear componentes UI a sus IDs de parámetro (robusta, compatible con el futuro)
-    // Retornar -1 para componentes que no representan parámetros automatizables
-
-    juce::String parameterID;
-
-    // COMENTADO: Referencias a controles inexistentes en getParameterIndexFromControl
-    /*
-    // Perillas Superiores Izquierdas (threshold, ratio, knee)
-    if (&control == &leftBottomKnobs.drywetSlider) parameterID = "a_DRYWET";
-    else if (&control == &leftKnobs.ceilingSlider) parameterID = "e_CEILING";  // NUEVO - ceiling slider
-    */
-    // MAXIMIZER: c_RATIO no existe - comentado según CONTEXTO.txt
-    // else if (&control == &leftKnobs.ratioSlider) parameterID = "c_RATIO";
-    // MAXIMIZER: q_KNEE no existe - comentado según CONTEXTO.txt
-    // else if (&control == &leftKnobs.kneeSlider) parameterID = "q_KNEE";
-
-    // DISTORTION: n_LOOKAHEAD eliminado - no existe en distorsionador
-    // else if (&control == &rightTopControls.lookaheadSlider) parameterID = "n_LOOKAHEAD";
-
-    // Controles Superiores Derechos (range, react, smooth)
-    // MAXIMIZER: h_RANGE no existe - comentado según CONTEXTO.txt
-    // else if (&control == &rightTopControls.rangeSlider) parameterID = "h_RANGE";
-    // MAXIMIZER: g_REACT no existe - comentado según CONTEXTO.txt
-    // else if (&control == &rightTopControls.reactSlider) parameterID = "g_REACT";
-    // MAXIMIZER: z_SMOOTH no existe - comentado según CONTEXTO.txt
-    // else if (&control == &rightTopControls.smoothSlider) parameterID = "z_SMOOTH";
-    // COMENTADO: Más referencias en getParameterIndexFromControl
-    /*
-    else if (&control == &rightTopControls.tiltSlider) parameterID = "i_TILT";  // NUEVO - tilt EQ slider
-    else if (&control == &rightTopControls.bitsSlider) parameterID = "g_BITS";  // NUEVO - bit crusher resolution
-
-    // Perillas Inferiores Derechas (attack, release, hold)
-    else if (&control == &rightBottomKnobs.driveSlider) parameterID = "b_DRIVE";
-    else if (&control == &leftKnobs.reflectSlider) parameterID = "c_REFLECT";
-    // else if (&control == &rightBottomKnobs.holdSlider) parameterID = "f_HOLD";
-    
-    // Controles de filtro de entrada
-    else if (&control == &sidechainControls.hpfSlider) parameterID = "l_HPF";
-    else if (&control == &sidechainControls.bandSlider) parameterID = "o_BAND";
-    else if (&control == &sidechainControls.lpfSlider) parameterID = "k_LPF";
-    // else if (&control == &sidechainControls.keyButton) parameterID = "r_KEY";
-    
-    // Sliders de Trim
-    else if (&control == &trimSlider) parameterID = "a_INPUT";
-    else if (&control == &makeupSlider) parameterID = "m_OUTPUT";
-    // else if (&control == &scTrimSlider) parameterID = "y_SCTRIM";
-    
-    // Botones Automatizables
-    else if (&control == &sidechainControls.scButton) parameterID = "y_FILTERS";
-    
-    // Parámetros no automatizables (retornar -1)
-    // Estos son parámetros globales/utility que no deberían mostrar carriles de automatización
-    // else if (&control == &sidechainControls.soloScButton) return -1;  // m_SOLOSC (no automatizable)
-    else if (&control == &rightBottomKnobs.bitButton) return -1;      // g_DITHER (no automatizable)
-    else if (&control == &rightBottomKnobs.dcSlider) parameterID = "c_DC";  // c_DC (continuo 0-1)
-    */
-    // else if (&control == &parameterButtons.bypassButton) return -1;     // h_BYPASS (no automatizable)
-    
-    // Obtener índice dinámico de parámetro
-    if (parameterID.isNotEmpty()) {
+    auto resolve = [this](const char* parameterID) -> int
+    {
         return getParameterIndexByID(parameterID);
-    }
-    
-    // Cualquier otro componente que no representa un parámetro
+    };
+
+    // Trim sliders over the meters
+    if (&control == &trimSlider)       return resolve("a_INPUT");
+    if (&control == &makeupSlider)     return resolve("m_OUTPUT");
+
+    // Main reverb knobs
+    if (&control == &leftKnobs.reflectSlider) return resolve("c_REFLECT");
+    if (&control == &leftKnobs.sizeSlider)    return resolve("e_SIZE");
+    if (&control == &leftKnobs.drywetSlider)  return resolve("b_DRYWET");
+    if (&control == &leftKnobs.dampSlider)    return resolve("d_DAMP");
+    if (&control == &leftKnobs.stSlider)      return resolve("f_ST");
+    if (&control == &leftKnobs.freezeButton)  return resolve("g_FREEZE");
+
+    // Input filtering section
+    if (&control == &sidechainControls.hpfSlider) return resolve("l_HPF");
+    if (&control == &sidechainControls.lpfSlider) return resolve("k_LPF");
+    if (&control == &sidechainControls.scButton)  return resolve("y_FILTERS");
+
+    // EQ tab controls
+    if (&control == &eqControls.eqOnButton)   return resolve("q_ONOFFEQ");
+    if (&control == &eqControls.lsfSlider)    return resolve("n_LOWFREQ");
+    if (&control == &eqControls.pfSlider)     return resolve("o_PEAKFREQ");
+    if (&control == &eqControls.hsfSlider)    return resolve("p_HIFREQ");
+    if (&control == &eqControls.lsgSlider)    return resolve("h_LOWGAIN");
+    if (&control == &eqControls.pgSlider)     return resolve("i_PEAKGAIN");
+    if (&control == &eqControls.hsgSlider)    return resolve("j_HIGAIN");
+
+    // Compressor tab controls
+    if (&control == &compControls.compOnButton) return resolve("r_ONOFFCOMP");
+    if (&control == &compControls.thdSlider)    return resolve("s_THD");
+    if (&control == &compControls.ratioSlider)  return resolve("t_RATIO");
+    if (&control == &compControls.atkSlider)    return resolve("u_ATK");
+    if (&control == &compControls.relSlider)    return resolve("v_REL");
+    if (&control == &compControls.gainSlider)   return resolve("w_MAKEUP");
+    if (&control == &compControls.pumpButton)   return resolve("x_PUMP");
+
+    // All other components are visual-only or not exposed as automatable parameters
     return -1;
 }
 

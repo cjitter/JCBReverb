@@ -13,11 +13,46 @@
 #include "PluginEditor.h"
 #include "Helpers/UTF8Helper.h"
 
+// Librerías estándar
+#include <utility>
+
 #//define JCB_DEBUG_METERS
 #//define JCB_DEBUG_AUDIO_WATCH
 #//define JCB_DEBUG_WATCHDOG
 #//define JCB_DEBUG_TRACE_SILENCE
 #//define JCB_DISABLE_SANITIZER
+
+//==============================================================================
+// CALLBACK SETTERS (THREAD-SAFE)
+//==============================================================================
+
+void JCBReverbAudioProcessor::setSpectrumAnalyzerCallback(SpectrumCallback callback)
+{
+    if (callback)
+    {
+        auto holder = std::make_shared<SpectrumCallback>(std::move(callback));
+        std::atomic_store_explicit(&spectrumAnalyzerCallbackShared, holder, std::memory_order_release);
+    }
+    else
+    {
+        std::shared_ptr<SpectrumCallback> empty;
+        std::atomic_store_explicit(&spectrumAnalyzerCallbackShared, empty, std::memory_order_release);
+    }
+}
+
+void JCBReverbAudioProcessor::setSampleRateChangedCallback(SampleRateCallback callback)
+{
+    if (callback)
+    {
+        auto holder = std::make_shared<SampleRateCallback>(std::move(callback));
+        std::atomic_store_explicit(&sampleRateChangedCallbackShared, holder, std::memory_order_release);
+    }
+    else
+    {
+        std::shared_ptr<SampleRateCallback> empty;
+        std::atomic_store_explicit(&sampleRateChangedCallbackShared, empty, std::memory_order_release);
+    }
+}
 
 [[maybe_unused]] static inline float blockMaxAbs (const float* x, int n) noexcept
 {
@@ -145,6 +180,9 @@ JCBReverbAudioProcessor::~JCBReverbAudioProcessor()
 {
     // CRÍTICO: Primero indicar que estamos destruyendo para evitar race conditions
     isBeingDestroyed = true;
+
+    setSpectrumAnalyzerCallback({});
+    setSampleRateChangedCallback({});
 
     // Detener timer AAX inmediatamente (antes que cualquier otra cosa)
     #if JucePlugin_Build_AAX
@@ -278,8 +316,9 @@ void JCBReverbAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlo
     }
     
     // Notify spectrum analyzer of sample rate change
-    if (sampleRateChangedCallback) {
-        sampleRateChangedCallback(sampleRate);
+    if (auto callback = std::atomic_load_explicit(&sampleRateChangedCallbackShared, std::memory_order_acquire))
+    {
+        (*callback)(sampleRate);
     }
 
 }
@@ -831,12 +870,16 @@ void JCBReverbAudioProcessor::processBlockCommon(juce::AudioBuffer<float>& buffe
     // === 6. Análisis y medición post-procesamiento ===
 
     // Feed spectrum analyzer con salida final
-    if (spectrumAnalyzerCallback && buffer.getNumChannels() > 0)
+    if (buffer.getNumChannels() > 0)
     {
-        auto* outputSamples = buffer.getReadPointer(0);
-        for (int sample = 0; sample < numSamples; ++sample)
+        if (auto callback = std::atomic_load_explicit(&spectrumAnalyzerCallbackShared, std::memory_order_acquire))
         {
-            spectrumAnalyzerCallback(outputSamples[sample]);
+            auto* outputSamples = buffer.getReadPointer(0);
+            auto& cb = *callback;
+            for (int sample = 0; sample < numSamples; ++sample)
+            {
+                cb(outputSamples[sample]);
+            }
         }
     }
 

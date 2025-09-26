@@ -21,6 +21,7 @@
 #include <array>
 #include <atomic>
 #include <functional>
+#include <memory>
 #include <cmath>
 
 // Archivos del proyecto
@@ -81,10 +82,11 @@ public:
     
     //==============================================================================
     // FFT Spectrum Analyzer Support
-    std::function<void(float)> spectrumAnalyzerCallback;
-    std::function<void(double)> sampleRateChangedCallback;
-    void setSpectrumAnalyzerCallback(std::function<void(float)> callback) { spectrumAnalyzerCallback = callback; }
-    void setSampleRateChangedCallback(std::function<void(double)> callback) { sampleRateChangedCallback = callback; }
+    using SpectrumCallback = std::function<void(float)>;
+    using SampleRateCallback = std::function<void(double)>;
+
+    void setSpectrumAnalyzerCallback(SpectrumCallback callback);
+    void setSampleRateChangedCallback(SampleRateCallback callback);
     double getCurrentSampleRate() const noexcept { return m_PluginState ? m_PluginState->sr : 44100.0; }
     
     //==============================================================================
@@ -193,6 +195,9 @@ private:
 
     //==============================================================================
     void processBlockCommon(juce::AudioBuffer<float>& buffer, bool hostWantsBypass);
+
+    std::shared_ptr<SpectrumCallback> spectrumAnalyzerCallbackShared;
+    std::shared_ptr<SampleRateCallback> sampleRateChangedCallbackShared;
 
     // Safety: sanitize audio to avoid NaN/Inf blasts (hard limiter + finite check)
     // COMMENTED OUT - Gen~ issue fixed, no longer needed
