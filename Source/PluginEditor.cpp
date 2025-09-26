@@ -101,17 +101,11 @@ JCBReverbAudioProcessorEditor::JCBReverbAudioProcessorEditor (JCBReverbAudioProc
     // Verificar si el host es Logic Pro
     juce::PluginHostType hostInfo;
     if (hostInfo.isLogic()) {
-        titleText = "v1.0.0-alpha.1";  // Solo versión para Logic Pro
+        titleText = "v1.0.0-alpha.2";  // Solo versión para Logic Pro
     } else {
-        titleText = "JCBReverb v1.0.0-alpha.1";  // Nombre completo para otros DAWs
+        titleText = "JCBReverb v1.0.0-alpha.2";  // Nombre completo para otros DAWs
     }
 
-#if defined(JCB_DEBUG_MUTE_OUTPUT)
-    titleText += " [MUTE]";
-#elif defined(JCB_DEBUG_PASSTHROUGH)
-    titleText += " [PT]";
-#endif
-    
     titleLink.setButtonText(titleText);
     // NO agregar tooltip individual - solo usar la ventana general de tooltips
     // El tooltip se actualiza dinámicamente en updateTooltips() usando getTooltipText("title")
@@ -3595,7 +3589,7 @@ juce::String JCBReverbAudioProcessorEditor::getTooltipText(const juce::String& k
         if (key == "pump")  return JUCE_UTF8("PUMP: modo de bombeo/ducking\nRealza el efecto de bombeo impulsado por el compresor\nSolo disponible cuando COMP está ON");
 
 
-        if (key == "title") return JUCE_UTF8("JCBReverb: reverb tipo Schoroeder v1.0.0-alpha.1\nPlugin de audio open source\nClick para créditos");
+        if (key == "title") return JUCE_UTF8("JCBReverb: reverb tipo Schoroeder v1.0.0-alpha.2\nPlugin de audio open source\nClick para créditos");
         if (key == "save") return JUCE_UTF8("SAVE: guarda el preset actual\nSobrescribe el preset seleccionado con valores actuales\nNo funciona con DEFAULT");
         if (key == "saveas") return JUCE_UTF8("SAVE AS: guarda como nuevo preset\nCrea un nuevo archivo de preset con los valores actuales\nPermite crear presets personalizados");
         if (key == "delete") return JUCE_UTF8("BORRAR: elimina el preset seleccionado\nRequiere confirmación antes de borrar");
@@ -3659,7 +3653,7 @@ juce::String JCBReverbAudioProcessorEditor::getTooltipText(const juce::String& k
 
 
 
-        if (key == "title") return JUCE_UTF8("JCBReverb: Schroeder-type reverb v1.0.0-alpha.1\nOpen source audio plugin\nClick for credits");
+        if (key == "title") return JUCE_UTF8("JCBReverb: Schroeder-type reverb v1.0.0-alpha.2\nOpen source audio plugin\nClick for credits");
         if (key == "save") return JUCE_UTF8("SAVE: overwrite current preset\nReplaces the selected preset with current values\nNot available for DEFAULT");
         if (key == "saveas") return JUCE_UTF8("SAVE AS: save as new preset\nCreates a new preset file with current values\nAllows creating custom presets");
         if (key == "delete") return JUCE_UTF8("DELETE: remove selected preset\nRequires confirmation before deletion");

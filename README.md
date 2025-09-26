@@ -59,7 +59,7 @@ cmake --build build-debug    # Para Debug
 cmake --build build-release   # Para Release
 ```
 
-## Características principales (v1.0.0-alpha.1)
+## Características principales (v1.0.0-alpha.2)
 
 - Reverb estéreo tipo Schroeder/Freeverb con controles musicales.
 - Controles principales: Input Trim (±12 dB), Dry/Wet (0–100%), Size, Reflections, DAMP (0–100%), Stereo Width (M/S 0–100%).
@@ -117,4 +117,4 @@ Los tests validan los formatos VST3 y AU del plugin.
 
 ---
 
-*© 2025 Juan Carlos Blancas – JCBReverb v1.0.0-alpha.1*
+*© 2025 Juan Carlos Blancas – JCBReverb v1.0.0-alpha.2*

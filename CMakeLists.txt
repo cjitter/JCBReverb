@@ -49,6 +49,7 @@ FetchContent_MakeAvailable(JUCE)
 # Opciones de configuración
 option(JUCE_BUILD_AAX "Build AAX format (requires AAX SDK and Pro Tools Developer)" ON)
 option(JUCE_AUTO_INSTALL_PLUGINS "Auto-install plugins after build" ON)
+option(JCB_DISABLE_SANITIZER "Disable runtime output sanitizer (only when debugging issues)" OFF)
 
 # SDK externo opcional (AAX) para macOS
 set(JUCE_AAX_SDK_PATH "$ENV{HOME}/SDK/aax-sdk-2-8-1" CACHE PATH "Ruta al SDK de AAX")
@@ -162,19 +163,14 @@ target_compile_definitions(JCBReverb PUBLIC
         JUCE_STRICT_REFCOUNTEDPTR=1
 )
 
+if(JCB_DISABLE_SANITIZER)
+    target_compile_definitions(JCBReverb PRIVATE JCB_DISABLE_SANITIZER=1)
+endif()
+
 # Flags del compilador para macOS (Clang)
 target_compile_options(JCBReverb PRIVATE
         -Wall -Wextra -Wno-unused-parameter
 )
-
-# Debug-only diagnostic switches (work with single- or multi-config generators)
-# target_compile_definitions(JCBReverb PRIVATE $<$<CONFIG:Debug>:JCB_DEBUG_PASSTHROUGH=1>)
-# To force absolute silence for isolation, enable the following line (uncomment):
-# target_compile_definitions(JCBReverb PRIVATE $<$<CONFIG:Debug>:JCB_DEBUG_MUTE_OUTPUT=1>)
-# To route Gen out4/out5 to main outs (Debug):
-# target_compile_definitions(JCBReverb PRIVATE $<$<CONFIG:Debug>:JCB_DEBUG_GEN_OUT45=1>)
-# To force 100% wet inside Gen (Debug):
-# target_compile_definitions(JCBReverb PRIVATE $<$<CONFIG:Debug>:JCB_DEBUG_FORCE_WET=1>)
 
 # Testing con pluginval (opcional). Requiere cmake/Pluginval.cmake
 enable_testing()

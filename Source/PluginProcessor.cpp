@@ -16,10 +16,6 @@
 // Librerías estándar
 #include <utility>
 
-#//define JCB_DEBUG_METERS
-#//define JCB_DEBUG_AUDIO_WATCH
-#//define JCB_DEBUG_WATCHDOG
-#//define JCB_DEBUG_TRACE_SILENCE
 #//define JCB_DISABLE_SANITIZER
 
 //==============================================================================
@@ -52,21 +48,6 @@ void JCBReverbAudioProcessor::setSampleRateChangedCallback(SampleRateCallback ca
         std::shared_ptr<SampleRateCallback> empty;
         std::atomic_store_explicit(&sampleRateChangedCallbackShared, empty, std::memory_order_release);
     }
-}
-
-[[maybe_unused]] static inline float blockMaxAbs (const float* x, int n) noexcept
-{
-    float m = 0.f;
-    for (int i = 0; i < n; ++i) { float a = std::abs(x[i]); if (a > m) m = a; }
-    return m;
-}
-
-// Overload for Gen's t_sample* (usually double*)
-[[maybe_unused]] static inline float blockMaxAbs (const t_sample* x, int n) noexcept
-{
-    double m = 0.0;
-    for (int i = 0; i < n; ++i) { double a = std::abs(x[i]); if (a > m) m = a; }
-    return static_cast<float>(m);
 }
 
 //==============================================================================
@@ -352,29 +333,9 @@ void JCBReverbAudioProcessor::processBlockCommon(juce::AudioBuffer<float>& buffe
     const int numSamples = buffer.getNumSamples();
     const int numChannels = buffer.getNumChannels();
 
-    #if defined(JCB_DEBUG_TRACE_SILENCE)
-    {
-        static int prevNs = -1, prevTrim = -1, prevOuts = -1;
-        const int trimCap = trimInputBuffer.getNumSamples();
-        const int outs    = JCBReverb::num_outputs();
-        if (numSamples != prevNs || trimCap != prevTrim || outs != prevOuts)
-        {
-            DBG("[JCBReverb] blk ns=" << numSamples << " trimCap=" << trimCap << " outs=" << outs);
-            prevNs = numSamples; prevTrim = trimCap; prevOuts = outs;
-        }
-        static int prevHostBy = -1, prevState = -1;
-        if (prevHostBy != (hostWantsBypass?1:0) || prevState != (int)bypassState)
-        {
-            DBG("[JCBReverb] bypass host=" << (hostWantsBypass?1:0) << " state=" << (int)bypassState);
-            prevHostBy = (hostWantsBypass?1:0); prevState = (int)bypassState;
-        }
-    }
-    #endif
-
     // Si el host manda bloques vacíos (p.ej., al parar), evita alterar estados
     if (numSamples <= 0)
         return;
-
 
     // No forzar reset en arranque de reproducción; dejar que el motor continúe suavemente
 
@@ -401,7 +362,6 @@ void JCBReverbAudioProcessor::processBlockCommon(juce::AudioBuffer<float>& buffe
     // Capturar la señal de entrada SECA antes de cualquier procesamiento
     captureInputWaveformData(scratchIn, numSamples);
 
-
     // === 1.b APLICAR AQUÍ: drenar cambios de parámetros pendientes ===
     drainPendingParamsToGen();
 
@@ -409,304 +369,16 @@ void JCBReverbAudioProcessor::processBlockCommon(juce::AudioBuffer<float>& buffe
 
     // === 2. (reserved) bus layout sync ===
 
-#ifdef JCB_DEBUG_PASSTHROUGH
-    // === DEBUG: Passthrough total (no Gen) para aislar host vs Gen ===
-    {
-        // Rellenar trimInputBuffer desde la entrada capturada para medidores
-        trimInputBuffer.setSize(2, numSamples, false, false, true);
-        {
-            float* tL = trimInputBuffer.getWritePointer(0);
-            float* tR = trimInputBuffer.getWritePointer(1);
-            std::memcpy(tL, inL, sizeof(float) * static_cast<size_t>(numSamples));
-            std::memcpy(tR, inR, sizeof(float) * static_cast<size_t>(numSamples));
-        }
-
-        // Copiar entrada a salida respetando layout 1->2 o 2->2
-        float* outL = buffer.getWritePointer(0);
-        float* outR = (numChannels > 1 ? buffer.getWritePointer(1) : nullptr);
-        for (int n = 0; n < numSamples; ++n)
-        {
-            outL[n] = inL[n];
-            if (outR) outR[n] = inR[n];
-        }
-        
-
-        // Métricas y salida
-        updateClipDetection(buffer, buffer);
-        updateInputMeters(buffer);
-        updateOutputMeters(buffer);
-        return;
-    }
-#endif
-
     // === 3. Procesar WET con Gen~ (siempre activo) ===
-#ifdef JCB_DEBUG_FORCE_WET
-    if (genIdxDryWet >= 0)
-        JCBReverb::setparameter(m_PluginState, genIdxDryWet, 1.0f, nullptr);
-#endif
-#ifdef JCB_DEBUG_MUTE_OUTPUT
-    // Fuerza silencio total para aislar el host
-    buffer.clear();
-    trimInputBuffer.setSize(2, numSamples, false, false, true);
-    {
-        float* tL = trimInputBuffer.getWritePointer(0);
-        float* tR = trimInputBuffer.getWritePointer(1);
-        std::memcpy(tL, inL, sizeof(float) * static_cast<size_t>(numSamples));
-        std::memcpy(tR, inR, sizeof(float) * static_cast<size_t>(numSamples));
-    }
-    updateClipDetection(buffer, buffer);
-    updateInputMeters(buffer);
-    updateOutputMeters(buffer);
-    return;
-#endif
-
     // Preparar entrada -> Procesar Gen
     fillGenInputBuffers(buffer);
     processGenAudio(numSamples);
-
-#if defined(JCB_DEBUG_TRACE_SILENCE)
-    {
-        // Entrada (capturada en scratchIn)
-        const float inMaxL_pre = blockMaxAbs(inL, numSamples);
-        const float inMaxR_pre = (getMainBusNumInputChannels() > 1 ? blockMaxAbs(inR, numSamples) : inMaxL_pre);
-
-        // Salidas directas de Gen (main L/R)
-        const float gen01L = blockMaxAbs(m_OutputBuffers[0], numSamples);
-        const float gen01R = blockMaxAbs(m_OutputBuffers[1], numSamples);
-
-        // Salidas POST-TRIM si existen (outs 3/4 => idx 2/3)
-        const bool havePostTrim = (JCBReverb::num_outputs() >= 4 && m_OutputBuffers[2] && m_OutputBuffers[3]);
-        const float gen23L = havePostTrim ? blockMaxAbs(m_OutputBuffers[2], numSamples) : -1.0f;
-        const float gen23R = havePostTrim ? blockMaxAbs(m_OutputBuffers[3], numSamples) : -1.0f;
-
-        static int phase = -1;
-        int newPhase = 0; // 0 = ok, 1 = gen main ~0, 2 = gen post-trim ~0
-        const bool hasIn = (inMaxL_pre > 1.0e-6f) || (inMaxR_pre > 1.0e-6f);
-        const bool gen01Zero = (gen01L < 1.0e-9f) && (gen01R < 1.0e-9f);
-        const bool gen23Zero = havePostTrim && (gen23L < 1.0e-9f) && (gen23R < 1.0e-9f);
-
-        if (hasIn)
-        {
-            if (gen01Zero) newPhase = 1;
-            if (gen23Zero) newPhase = 2; // prioridad a post-trim si ambos son cero
-        }
-
-        if (newPhase != phase)
-        {
-            phase = newPhase;
-            DBG("[JCBReverb] TRACE gen phase=" << phase
-                << " inL=" << inMaxL_pre << " inR=" << inMaxR_pre
-                << " gen01L=" << gen01L << " gen01R=" << gen01R
-                << " gen23L=" << gen23L << " gen23R=" << gen23R);
-        }
-    }
-#endif
-
-    // --- Sonda: máximos en salida de Gen ANTES del copiado a buffer (solo debug) ---
-    #if defined(JCB_DEBUG_AUDIO_WATCH) || defined(JCB_DEBUG_WATCHDOG)
-    float genMaxL_pre = 0.f, genMaxR_pre = 0.f;
-    if (JCBReverb::num_outputs() >= 4 && m_OutputBuffers[2] && m_OutputBuffers[3])
-    {
-        // Preferir POST-TRIM (outs 3/4 => idx 2/3) si existen
-        genMaxL_pre = blockMaxAbs(m_OutputBuffers[2], numSamples);
-        genMaxR_pre = blockMaxAbs(m_OutputBuffers[3], numSamples);
-    }
-    else
-    {
-        // Fallback: outs principales L/R
-        genMaxL_pre = blockMaxAbs(m_OutputBuffers[0], numSamples);
-        genMaxR_pre = blockMaxAbs(m_OutputBuffers[1], numSamples);
-    }
-    #endif
 
     // Volcar salida de Gen al buffer del host
     fillOutputBuffers(buffer); // buffer = WET procesado
 
     auto* wetL = buffer.getWritePointer(0);
     auto* wetR = (numChannels > 1) ? buffer.getWritePointer(1) : wetL;
-
-    // Sanitizer is applied after bypass mixing below
-
-#if defined(JCB_DEBUG_AUDIO_WATCH)
-    {
-        const float inMaxL_dbg  = blockMaxAbs(inL, numSamples);
-        const float inMaxR_dbg  = (getMainBusNumInputChannels() > 1 ? blockMaxAbs(inR, numSamples) : inMaxL_dbg);
-        const float wetMaxL_dbg = blockMaxAbs(wetL, numSamples);
-        const float wetMaxR_dbg = (numChannels > 1 ? blockMaxAbs(wetR, numSamples) : wetMaxL_dbg);
-
-        static int hardZeroBlocks = 0;
-        const bool hasInput = (inMaxL_dbg > 1.0e-6f) || (inMaxR_dbg > 1.0e-6f);
-        const bool wetIsHardZero = (wetMaxL_dbg < 1.0e-10f) && (wetMaxR_dbg < 1.0e-10f);
-
-        if (hasInput && wetIsHardZero)
-        {
-            hardZeroBlocks++;
-        }
-        else
-        {
-            hardZeroBlocks = 0;
-        }
-
-        if (hardZeroBlocks >= 2)
-        {
-            // Failsafe audible so we can keep monitoring while investigating
-            for (int n = 0; n < numSamples; ++n) {
-                wetL[n] = inL[n];
-                if (numChannels > 1) wetR[n] = (getMainBusNumInputChannels() > 1 ? inR[n] : inL[n]);
-            }
-
-            // Dump a detailed state snapshot once and reset the counter
-            hardZeroBlocks = 0;
-
-            float dw = 0.f, fr = 0.f, by = 0.f;
-            if (genIdxDryWet >= 0) { t_param v = 0; JCBReverb::getparameter(m_PluginState, genIdxDryWet, &v); dw = (float)v; }
-            if (genIdxFreeze >= 0) { t_param v = 0; JCBReverb::getparameter(m_PluginState, genIdxFreeze, &v); fr = (float)v; }
-            if (genIdxZBypass >= 0){ t_param v = 0; JCBReverb::getparameter(m_PluginState, genIdxZBypass, &v); by = (float)v; }
-
-            DBG("[JCBReverb] HARDZERO: inL=" << inMaxL_dbg
-                << " inR=" << inMaxR_dbg
-                << " wetL=" << wetMaxL_dbg
-                << " wetR=" << wetMaxR_dbg
-                << " genMaxL_pre=" << genMaxL_pre
-                << " genMaxR_pre=" << genMaxR_pre
-                << " FREEZE=" << fr
-                << " DRYWET=" << dw
-                << " z_BYPASS=" << by
-                << " hostBypass=" << (hostWantsBypass?1:0)
-                << " state=" << (int)bypassState);
-
-            juce::MessageManager::callAsync([this]{
-                auto get = [&](const char* id){ if (auto* p=apvts.getRawParameterValue(id)) return p->load(); return 0.f; };
-                DBG("[JCBReverb] PARAMS size=" << get("e_SIZE")
-                    << " reflect="<< get("c_REFLECT")
-                    << " damp="   << get("d_DAMP")
-                    << " stereo=" << get("f_ST")
-                    << " freeze=" << get("g_FREEZE")
-                    << " drywet=" << get("b_DRYWET")
-                    << " lpf="    << get("k_LPF")
-                    << " hpf="    << get("l_HPF")
-                    << " compOn=" << get("r_ONOFFCOMP"));
-            });
-        }
-    }
-#endif
-
-    // Leer FREEZE de Gen (solo para watchdog de silencio)
-    #if defined(JCB_DEBUG_WATCHDOG)
-    bool freezeOn = false;
-    if (genIdxFreeze >= 0)
-    {
-        t_param fv = 0.0;
-        JCBReverb::getparameter(m_PluginState, genIdxFreeze, &fv);
-        freezeOn = (fv >= 0.5);
-    }
-    #endif
-
-#if defined(JCB_DEBUG_WATCHDOG)
-    // --- Watchdog relativo por canal (guardado por FREEZE) ---
-    if (!freezeOn)
-    {
-        const float inMax = juce::jmax(blockMaxAbs(inL, numSamples),
-                                       (getMainBusNumInputChannels() > 1 ? blockMaxAbs(inR, numSamples)
-                                                                         : blockMaxAbs(inL, numSamples)));
-
-        // Umbral relativo al nivel de entrada (si no hay entrada, no disparamos)
-        const float rel = juce::jmax(1.0e-4f * inMax, 1.0e-9f);
-        const float wetMaxL = blockMaxAbs(wetL, numSamples);
-        const float wetMaxR = (numChannels > 1 ? blockMaxAbs(wetR, numSamples) : wetMaxL);
-
-        if (inMax > 1.0e-5f)  // hay señal de entrada
-        {
-            // L
-            if (wetMaxL < rel)
-            {
-                const int cL = silentL.fetch_add(1, std::memory_order_relaxed) + 1;
-                if (cL >= 3 && genMaxL_pre < rel) // 3 bloques + confirmar que Gen ya venía bajo
-                {
-                    silentL.store(0, std::memory_order_relaxed);
-                    silentR.store(0, std::memory_order_relaxed);
-
-                    // Reset suave de Gen + reaplicar parámetros
-                    JCBReverb::reset(m_PluginState);
-                    for (int i = 0; i < JCBReverb::num_params(); ++i)
-                    {
-                        const char* raw = JCBReverb::getparametername(m_PluginState, i);
-                        if (auto* p = apvts.getRawParameterValue(juce::String(raw ? raw : "")))
-                            JCBReverb::setparameter(m_PluginState, i, p->load(), nullptr);
-                    }
-
-                    // Failsafe para este bloque: copiar el canal sano si existe
-                    if (numChannels > 1)
-                        for (int n = 0; n < numSamples; ++n) wetL[n] = wetR[n];
-
-                    juce::MessageManager::callAsync([this]{
-                        auto get = [&](const char* id){ if (auto* p=apvts.getRawParameterValue(id)) return p->load(); return 0.f; };
-                        DBG("[JCBReverb] dump "
-                            << "size="    << get("e_SIZE")
-                            << " reflect="<< get("c_REFLECT")
-                            << " damp="   << get("d_DAMP")
-                            << " stereo=" << get("f_ST")
-                            << " freeze=" << get("g_FREEZE")
-                            << " drywet=" << get("b_DRYWET")
-                            << " lpf="    << get("k_LPF")
-                            << " hpf="    << get("l_HPF")
-                            << " compOn=" << get("r_ONOFFCOMP"));
-                    });
-                }
-            }
-            else silentL.store(0, std::memory_order_relaxed);
-
-            // R
-            if (wetMaxR < rel)
-            {
-                const int cR = silentR.fetch_add(1, std::memory_order_relaxed) + 1;
-                if (cR >= 3 && genMaxR_pre < rel)
-                {
-                    silentL.store(0, std::memory_order_relaxed);
-                    silentR.store(0, std::memory_order_relaxed);
-
-                    JCBReverb::reset(m_PluginState);
-                    for (int i = 0; i < JCBReverb::num_params(); ++i)
-                    {
-                        const char* raw = JCBReverb::getparametername(m_PluginState, i);
-                        if (auto* p = apvts.getRawParameterValue(juce::String(raw ? raw : "")))
-                            JCBReverb::setparameter(m_PluginState, i, p->load(), nullptr);
-                    }
-
-                    if (numChannels > 1)
-                        for (int n = 0; n < numSamples; ++n) wetR[n] = wetL[n];
-
-                    juce::MessageManager::callAsync([this]{
-                        auto get = [&](const char* id){ if (auto* p=apvts.getRawParameterValue(id)) return p->load(); return 0.f; };
-                        DBG("[JCBReverb] dump "
-                            << "size="    << get("e_SIZE")
-                            << " reflect="<< get("c_REFLECT")
-                            << " damp="   << get("d_DAMP")
-                            << " stereo=" << get("f_ST")
-                            << " freeze=" << get("g_FREEZE")
-                            << " drywet=" << get("b_DRYWET")
-                            << " lpf="    << get("k_LPF")
-                            << " hpf="    << get("l_HPF")
-                            << " compOn=" << get("r_ONOFFCOMP"));
-                    });
-                }
-            }
-            else silentR.store(0, std::memory_order_relaxed);
-        }
-        else
-        {
-            // sin entrada: no contamos
-            silentL.store(0, std::memory_order_relaxed);
-            silentR.store(0, std::memory_order_relaxed);
-        }
-    }
-    else
-    {
-        // FREEZE activo: no vigilar ni acumular contadores
-        silentL.store(0, std::memory_order_relaxed);
-        silentR.store(0, std::memory_order_relaxed);
-    }
-#endif
 
     // === 4. DRY sin compensación (JCBReverb no tiene latencia/lookahead) ===
     float* dryL = scratchDry.getWritePointer(0);
@@ -963,14 +635,6 @@ void JCBReverbAudioProcessor::fillOutputBuffers(juce::AudioBuffer<float>& buffer
     const int numSamples = buffer.getNumSamples();
     const auto mainOutputChannels = getMainBusNumOutputChannels();
 
-#if defined(JCB_DEBUG_TRACE_SILENCE)
-    const float genMainL_dbg = blockMaxAbs(m_OutputBuffers[0], numSamples);
-    const float genMainR_dbg = blockMaxAbs(m_OutputBuffers[1], numSamples);
-    const bool havePostTrim_dbg = (JCBReverb::num_outputs() >= 4 && m_OutputBuffers[2] && m_OutputBuffers[3]);
-    const float genPostL_dbg = havePostTrim_dbg ? blockMaxAbs(m_OutputBuffers[2], numSamples) : -1.0f;
-    const float genPostR_dbg = havePostTrim_dbg ? blockMaxAbs(m_OutputBuffers[3], numSamples) : -1.0f;
-#endif
-
     // Llenar buffers de salida principales - conversión double a float
     for (int i = 0; i < mainOutputChannels; i++) {
         float* destPtr = buffer.getWritePointer(i);
@@ -979,27 +643,6 @@ void JCBReverbAudioProcessor::fillOutputBuffers(juce::AudioBuffer<float>& buffer
             destPtr[j] = static_cast<float>(srcPtr[j]);
         }
     }
-
-#if defined(JCB_DEBUG_TRACE_SILENCE)
-    {
-        const float hostMaxL = blockMaxAbs(buffer.getReadPointer(0), numSamples);
-        const float hostMaxR = (mainOutputChannels > 1) ? blockMaxAbs(buffer.getReadPointer(1), numSamples) : hostMaxL;
-        const bool hostZero = (hostMaxL < 1.0e-8f) && (hostMaxR < 1.0e-8f);
-        const bool genHad   = (genMainL_dbg > 1.0e-8f) || (genMainR_dbg > 1.0e-8f) || (genPostL_dbg > 1.0e-8f) || (genPostR_dbg > 1.0e-8f);
-        static int lastReport = -1; // 0=ok,1=hostZeroWhileGenHad
-        const int now = hostZero && genHad ? 1 : 0;
-        if (now != lastReport)
-        {
-            lastReport = now;
-            if (now == 1)
-                DBG("[JCBReverb] TRACE copy anomaly: host ~0 but Gen had signal - mainL=" << genMainL_dbg
-                    << " mainR=" << genMainR_dbg << " postL=" << genPostL_dbg << " postR=" << genPostR_dbg);
-            else
-                DBG("[JCBReverb] TRACE copy ok: mainL=" << genMainL_dbg << " mainR=" << genMainR_dbg
-                    << " postL=" << genPostL_dbg << " postR=" << genPostR_dbg);
-        }
-    }
-#endif
 
     // Preparar buffer para medidores a partir de POST-TRIM si el patch los expone (outs 3/4 -> idx 2/3)
     if (JCBReverb::num_outputs() >= 4)
@@ -1047,19 +690,6 @@ void JCBReverbAudioProcessor::fillOutputBuffers(juce::AudioBuffer<float>& buffer
             }
         }
     }
-
-#if defined(JCB_DEBUG_METERS)
-    {
-        static int lastPath = -1; // 0=main, 1=post-trim
-        const int path = (JCBReverb::num_outputs() >= 4 && m_OutputBuffers[2] && m_OutputBuffers[3]) ? 1 : 0;
-        if (path != lastPath)
-        {
-            if (path == 1) DBG("[JCBReverb] meters: using POST-TRIM outs 3/4");
-            else           DBG("[JCBReverb] meters: using MAIN outs 0/1 (fallback)");
-            lastPath = path;
-        }
-    }
-#endif
 }
 
 //==============================================================================
@@ -1414,11 +1044,12 @@ void JCBReverbAudioProcessor::parameterChanged(const juce::String& parameterID, 
     pushParamToAudioThread(genIndex, newValue);
     // No hagas callAsync ni toques UI aquí.
 }
+
 //==============================================================================
 // Métodos de programa (presets)
 int JCBReverbAudioProcessor::getNumPrograms()
 {
-    return 0; // 3 antes, añadir 1 por comportamiento extraño algunos hosts
+    return 0;
 }
 
 int JCBReverbAudioProcessor::getCurrentProgram()
@@ -1472,8 +1103,6 @@ float JCBReverbAudioProcessor::getRmsOutputValue(const int channel) const noexce
         return rightOutputRMS.load(std::memory_order_relaxed);
     return -100.0f;  // Return -100dB for invalid channels
 }
-
-// Reverb no requiere función getGainReductionValue
 
 //==============================================================================
 // Utilidades
@@ -1619,7 +1248,6 @@ bool JCBReverbAudioProcessor::isPlaybackActive() const noexcept
     return true;
 }
 
-
 //==============================================================================
 // GESTIÓN DEL EDITOR
 //==============================================================================
@@ -1627,7 +1255,6 @@ juce::AudioProcessorEditor* JCBReverbAudioProcessor::createEditor()
 {
     return new JCBReverbAudioProcessorEditor(*this, guiUndoManager);
 }
-
 
 //==============================================================================
 // SERIALIZACIÓN DEL ESTADO
@@ -1784,15 +1411,6 @@ void JCBReverbAudioProcessor::setStateInformation(const void* data, int sizeInBy
                 pushParamToAudioThread(i, value);
             }
         }
-
-        // // Forzar actualización del editor de forma thread-safe
-        // // Usar MessageManager para evitar llamadas directas a getActiveEditor()
-        // juce::MessageManager::callAsync([this]() {
-        //     if (auto* editor = dynamic_cast<JCBReverbAudioProcessorEditor*>(getActiveEditor())) {
-        //         // El editor necesita actualizar la función de transferencia
-        //         editor->updateTransferFunctionFromProcessor();
-        //     }
-        // });
     }
 }
 
@@ -1835,7 +1453,6 @@ void JCBReverbAudioProcessor::copyBtoA()
     stateB.captureFrom(apvts);
     stateA = stateB;
 }
-
 
 //==============================================================================
 // MÉTODOS LEGACY
@@ -1948,7 +1565,6 @@ bool JCBReverbAudioProcessor::isOutputChannelStereoPair(int index) const
     return getMainBusNumOutputChannels() == 2;
 }
 
-
 //==============================================================================
 // Clip Detection Methods
 //==============================================================================
@@ -2031,8 +1647,6 @@ void JCBReverbAudioProcessor::resetClipIndicators()
     }
 }
 
-// Reverb no tiene gain reduction para reportar al host
-
 //==============================================================================
 // Timer implementation
 
@@ -2081,9 +1695,6 @@ void JCBReverbAudioProcessor::timerCallback()
     // Actualizar estado de playback para medidores
     // En distorsión no necesitamos lógica compleja de gain reduction
 }
-
-
-// (removed) fillGenInputBuffersFromScratch: unified to fillGenInputBuffers(buffer)
 
 //==============================================================================
 // FACTORY FUNCTION DEL PLUGIN
