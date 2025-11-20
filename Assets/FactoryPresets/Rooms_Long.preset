@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<PARAMETERS ui_right_tab="1">
+  <PARAM id="a_INPUT" value="1.788139343261719e-7"/>
+  <PARAM id="b_DRYWET" value="0.5"/>
+  <PARAM id="c_REFLECT" value="0.8199999928474426"/>
+  <PARAM id="d_DAMP" value="0.1000000014901161"/>
+  <PARAM id="e_SIZE" value="4.0"/>
+  <PARAM id="f_ST" value="0.4249999821186066"/>
+  <PARAM id="g_FREEZE" value="0.0"/>
+  <PARAM id="h_LOWGAIN" value="-15.73000049591064"/>
+  <PARAM id="i_PEAKGAIN" value="10.10999965667725"/>
+  <PARAM id="j_HIGAIN" value="-5.364418029785156e-7"/>
+  <PARAM id="k_LPF" value="12000.0"/>
+  <PARAM id="l_HPF" value="100.0"/>
+  <PARAM id="m_OUTPUT" value="3.576278686523438e-7"/>
+  <PARAM id="n_LOWFREQ" value="250.0"/>
+  <PARAM id="o_PEAKFREQ" value="1500.0"/>
+  <PARAM id="p_HIFREQ" value="8600.0"/>
+  <PARAM id="q_ONOFFEQ" value="0.0"/>
+  <PARAM id="r_ONOFFCOMP" value="0.0"/>
+  <PARAM id="s_THD" value="-38.90000152587891"/>
+  <PARAM id="t_RATIO" value="4.0"/>
+  <PARAM id="u_ATK" value="109.9999923706055"/>
+  <PARAM id="v_REL" value="749.9999389648438"/>
+  <PARAM id="w_MAKEUP" value="-1.341104507446289e-7"/>
+  <PARAM id="x_PUMP" value="0.0"/>
+  <PARAM id="y_FILTERS" value="0.0"/>
+  <PARAM id="z_BYPASS" value="0.0"/>
+  <Presets currentPresetID="0" tooltipEnabled="1" presetDisplayText="DEFAULT"
+           presetTextItalic="0" envelopeVisualEnabled="1" tooltipLanguageEnglish="0"
+           editorWidth="1260" editorHeight="360" displayModeIsFFT="0"/>
+  <ABStates isStateA="1">
+    <StateA/>
+    <StateB/>
+  </ABStates>
+  <UISettings displayModeIsFFT="0"/>
+</PARAMETERS>
