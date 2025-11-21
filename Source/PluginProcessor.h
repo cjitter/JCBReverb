@@ -104,6 +104,8 @@ public:
     // APVTS y gestión de parámetros
     juce::AudioProcessorValueTreeState apvts;
     void parameterChanged(const juce::String& parameterID, float newValue) override;
+    void enqueueAllParametersForAudioThread() noexcept;
+    void pushGenParamByName(const juce::String& name, float value) noexcept;
     
     //==============================================================================
     // Gestión de estado de la interfaz
@@ -403,6 +405,9 @@ public:
     int genIdxZBypass  { -1 }; // z_BYPASS index in Gen (internal)
     int genIdxDryWet   { -1 }; // b_DRYWET index in Gen (debug force wet)
     int genIdxFreeze   { -1 }; //
+    std::unordered_map<juce::String, int> genIndexByName; // lookup seguro para UI→AT
+    std::vector<std::pair<juce::String, int>> genParameterList; // nombres + índices, solo lectura tras prepare
+    void rebuildGenParameterLookup();
 
 
     // Especial para la reverb
