@@ -483,7 +483,7 @@ private:
     //==========================================================================
     
     // Título y versión en la parte inferior (combinado como ExpansorGate)
-    juce::TextButton titleLink{"JCBReverb v1.0.0"};
+    juce::TextButton titleLink{"JCBReverb v1.0.1"};
     
     // Imágenes de fondo
     juce::ImageComponent backgroundImage;

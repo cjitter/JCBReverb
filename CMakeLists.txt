@@ -19,7 +19,7 @@
 
 cmake_minimum_required(VERSION 3.20)
 
-project(JCBReverb VERSION 1.0.0)
+project(JCBReverb VERSION 1.0.1)
 
 # Configuración C++
 set(CMAKE_CXX_STANDARD 20)
@@ -66,7 +66,7 @@ juce_add_plugin(JCBReverb
         # Información básica del plugin
         PLUGIN_NAME "JCBReverb"
         PRODUCT_NAME "JCBReverb"
-        VERSION 1.0.0
+        VERSION 1.0.1
         DESCRIPTION "Stereo reverb (Freeverb-style) with EQ and utilities"
 
         # Información de la empresa
