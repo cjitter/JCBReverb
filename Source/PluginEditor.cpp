@@ -1876,16 +1876,6 @@ void JCBReverbAudioProcessorEditor::setupPresetArea()
                 float realValue = param->getNormalisableRange().convertFrom0to1(defaultValue);
                 leftKnobs.ceilingSlider.setValue(realValue, juce::sendNotificationSync);
             }
-            if (auto* param = processor.apvts.getParameter("b_DRIVE")) {
-                float defaultValue = param->getDefaultValue();
-                float realValue = param->getNormalisableRange().convertFrom0to1(defaultValue);
-                rightBottomKnobs.driveSlider.setValue(realValue, juce::sendNotificationSync);
-            }
-            if (auto* param = processor.apvts.getParameter("d_MODE")) {
-                float defaultValue = param->getDefaultValue();
-                float realValue = param->getNormalisableRange().convertFrom0to1(defaultValue);
-                reflectControls.reflectSlider.setValue(realValue, juce::sendNotificationSync);
-            }
             if (auto* param = processor.apvts.getParameter("l_OUTPUT")) {
                 float defaultValue = param->getDefaultValue();
                 float realValue = param->getNormalisableRange().convertFrom0to1(defaultValue);
@@ -2003,16 +1993,9 @@ void JCBReverbAudioProcessorEditor::setupPresetArea()
                     float value = param->load();
 
                     // Aplicar la misma validación que en parameterChanged()
-                    if (paramName == "b_DRIVE" && value < 1.0f) {
-                        value = 1.0f;  // Drive mínimo 1x
-                    }
-                    if (paramName == "d_MODE" && value > 7.0f) {
-                        value = 7.0f;   // Mode máximo 7
-                    }
-
-                    JCBReverb::setparameter(processor.getPluginState(), i, value, nullptr);
-                }
-            }
+            processor.pushGenParamByName(paramName, value);
+        }
+    }
         }
         else if (presetName.startsWith("Rooms_") || presetName.startsWith("Bass_") || presetName.startsWith("Drums_") ||
                  presetName.startsWith("Guitars_") || presetName.startsWith("Voces_") ||
@@ -2824,10 +2807,6 @@ void JCBReverbAudioProcessorEditor::updateSliderValues()
 
     // COMENTADO: Más sliders de distorsión
     /*
-    // Right bottom knobs - Todos usan CustomSliderAttachment
-    if (auto* param = processor.apvts.getRawParameterValue("b_DRIVE"))
-        rightBottomKnobs.driveSlider.setValue(param->load(), juce::dontSendNotification);
-
     if (auto* param = processor.apvts.getRawParameterValue("c_REFLECT"))
         leftKnobs.reflectSlider.setValue(param->load(), juce::dontSendNotification);
     */

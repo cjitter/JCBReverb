@@ -68,6 +68,7 @@ JCBReverbAudioProcessor::JCBReverbAudioProcessor()
     // Inicializar Gen~ state
     m_PluginState = (CommonState *)JCBReverb::create(44100, 64);
     JCBReverb::reset(m_PluginState);
+    rebuildGenParameterLookup();
 
     // Inicializar buffers de Gen~
     m_InputBuffers = new t_sample *[JCBReverb::num_inputs()];
@@ -238,6 +239,7 @@ void JCBReverbAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlo
     // 3) ***Clave***: sincroniza SR/VS con Gen y re-dimensiona sus delays/constantes
     //    Esto asegura que Gen use el sampleRate real del host (48k si el proyecto es 48k)
     JCBReverb::reset (m_PluginState);
+    rebuildGenParameterLookup();
 
     // Cachear indices de gen para evitar bucles por nombre
     genIdxZBypass = -1;
@@ -295,13 +297,70 @@ void JCBReverbAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlo
             JCBReverb::setparameter(m_PluginState, i, value, nullptr);
         }
     }
-    
+
     // Notify spectrum analyzer of sample rate change
     if (auto callback = std::atomic_load_explicit(&sampleRateChangedCallbackShared, std::memory_order_acquire))
     {
         (*callback)(sampleRate);
     }
 
+}
+
+//==============================================================================
+// SINCRONIZACIÓN DE PARÁMETROS GEN
+//==============================================================================
+void JCBReverbAudioProcessor::rebuildGenParameterLookup()
+{
+    genIndexByName.clear();
+    genParameterList.clear();
+
+    genIdxZBypass = -1;
+    genIdxDryWet  = -1;
+    genIdxFreeze  = -1;
+
+    if (m_PluginState == nullptr)
+        return;
+
+    const int totalParams = JCBReverb::num_params();
+    genIndexByName.reserve(static_cast<size_t>(totalParams));
+    genParameterList.reserve(static_cast<size_t>(totalParams));
+
+    for (int i = 0; i < totalParams; ++i)
+    {
+        const char* raw = JCBReverb::getparametername(m_PluginState, i);
+        juce::String name(raw ? raw : "");
+        genIndexByName[name] = i;
+        genParameterList.emplace_back(name, i);
+
+        if      (name == "z_BYPASS") genIdxZBypass = i;
+        else if (name == "b_DRYWET") genIdxDryWet  = i;
+        else if (name == "g_FREEZE") genIdxFreeze  = i;
+    }
+}
+
+void JCBReverbAudioProcessor::enqueueAllParametersForAudioThread() noexcept
+{
+    if (genParameterList.empty())
+        return;
+
+    for (const auto& entry : genParameterList)
+    {
+        if (auto* value = apvts.getRawParameterValue(entry.first))
+            pushParamToAudioThread(entry.second, value->load());
+    }
+}
+
+void JCBReverbAudioProcessor::pushGenParamByName(const juce::String& name, float value) noexcept
+{
+    auto it = genIndexByName.find(name);
+    if (it != genIndexByName.end())
+    {
+        pushParamToAudioThread(it->second, value);
+    }
+    else
+    {
+        jassertfalse; // nombre no cacheado
+    }
 }
 
 void JCBReverbAudioProcessor::releaseResources()
@@ -1327,15 +1386,7 @@ void JCBReverbAudioProcessor::setStateInformation(const void* data, int sizeInBy
 
         // Encolar todos los parámetros para que se apliquen en el audio thread
         if (m_PluginState)
-        {
-            for (int i = 0; i < JCBReverb::num_params(); ++i)
-            {
-                const char* raw = JCBReverb::getparametername(m_PluginState, i);
-                auto id = juce::String(raw ? raw : "");
-                if (auto* p = apvts.getRawParameterValue(id))
-                    pushParamToAudioThread(i, p->load());
-            }
-        }
+            enqueueAllParametersForAudioThread();
 
         // Clear undo history AFTER all values have been set
         // This prevents any parameter changes from being recorded in undo history
@@ -1385,32 +1436,6 @@ void JCBReverbAudioProcessor::setStateInformation(const void* data, int sizeInBy
             }
         }
 
-        // IMPORTANTE: Sincronizar todos los parámetros con Gen~ después de cargar el estado (enqueue)
-        for (int i = 0; i < JCBReverb::num_params(); ++i)
-        {
-            const char* raw = JCBReverb::getparametername(m_PluginState, i);
-            auto paramName = juce::String(raw ? raw : "");
-            if (auto* param = apvts.getRawParameterValue(paramName))
-            {
-                float value = param->load();
-
-                // Mantén las mismas correcciones si aplican a tu reverb
-                if (paramName == "d_ATK" && value < 0.1f) {
-                    value = 0.1f;
-                    if (auto* audioParam = apvts.getParameter(paramName))
-                        audioParam->setValueNotifyingHost(audioParam->convertTo0to1(value));
-                }
-                if (paramName == "e_REL" && value < 0.1f) {
-                    value = 0.1f;
-                    if (auto* audioParam = apvts.getParameter(paramName))
-                        audioParam->setValueNotifyingHost(audioParam->convertTo0to1(value));
-                }
-
-                // En vez de llamar a parameterChanged() (que ya encola),
-                // podemos encolar directamente con el índice i:
-                pushParamToAudioThread(i, value);
-            }
-        }
     }
 }
 
